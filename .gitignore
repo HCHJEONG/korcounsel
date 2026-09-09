@@ -29,7 +29,7 @@ __pycache__/
 .coverage
 htmlcov/
 node_modules/
-/frontend/dist/
-/frontend/coverage/
+/dist/
+/coverage/
 playwright-report/
 test-results/

@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: Step 0 및 추가 레거시 조사·설계 반영 / 구현 전
+> 상태: Step 1 기반 구축 완료 / 도메인·업무 기능은 후속 단계
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 이번 작업 범위: 2026-09-09 추가 지시의 identity·incremental·source fidelity를 관련 문서 전반에 반영한다. 코드·신규 수집·AWS 변경은 수행하지 않는다. 기존 Step 0 API smoke 기록은 유지한다.
+> 최신 작업: 2026-09-10 폴더 경계·단일 README 반영 및 Step 1 구현. AWS와 실제 판례 source 수집은 변경하지 않았다.
 
 ## 1. 목적과 성공 기준
 
@@ -25,7 +25,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 ## 2. 현재 상태와 작업 범위
 
-- 현재 프로젝트 폴더는 `korcounsel`이며, 코드 구현 전 문서를 준비하는 단계다.
+- 현재 프로젝트는 Step 1 scaffold를 구현했다. 인증·도메인 모델·수집·영속 worker는 아직 없다.
 - 배포 이름은 `korean-legal-gold`, Python 패키지는 `klegal_gold`, CLI는 `klegal`을 잠정 사용한다. 현재 폴더나 Git 저장소 이름은 자동 변경하지 않는다.
 - 사용자가 안내한 레거시 저장소 탐색 기준 경로는 **`I:\VSCodeBases`**다.
 - 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 실제 두 레포의 경로와 관련 코드를 확인했으며 docs의 두 레거시 조사 문서에 근거를 기록했다.
@@ -98,49 +98,31 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - private repository를 전제로 `.env`, 인증정보, 대규모 raw/artifact는 commit하지 않는다. 요청 로그와 manifest에도 credential을 넣지 않는다.
 - 코드 라이선스와 공개 데이터의 이용·재배포 조건은 별도 확인한다. proprietary/licensed 데이터는 MVP에 추가하지 않는다.
 
-## 4. 목표 구조
+## 4. 현재 구조와 변경 가능한 확장안
+
+확정 경계는 루트 프런트, backend Python 프로젝트, 루트 Compose, 단일 루트 README다. 내부 폴더·파일 세분화는 구현에 따라 조정한다. 아래는 현재 생성한 주요 파일이며 미래 업무 모듈·migration·worker 코드는 해당 단계에 추가한다.
 
 ```text
-pyproject.toml / uv.lock / .python-version
 README.md / AGENTS.md / DESIGN.md / PLAN.md
-LICENSE / .gitignore / .env.example
-docs/
-  architecture.md / dataset-schema.md / provenance.md
-  migration-from-legacy.md / law-open-api-contract.md / deployment.md / operations.md
-src/klegal_gold/
-  cli.py / config.py
-  domain/       # case, issue, authority, evidence, provenance
-  sources/      # CaseSource, law_go_kr 및 scourt 취득 adapter
-  identity/     # 후보·복합 신호·점수·연결 결정
-  ingestion/    # inventory·delta·fetch ledger·refresh
-  documents/    # artifact 분류·ordered blocks
-  assets/       # detect·reference manifest, 후속 acquire
-  enrichment/   # 후속 조문 링크 보강
-  normalize/    # case_number, court, dates, whitespace, numbering, legal_text
-  parse/        # case_structure, issues, gists, reasoning, statutes, precedents
-  segment/      # SentenceSplitter protocol, regex_splitter
-  pipeline/     # ingest, normalize, structure, build_dataset
-  validate/     # schema, provenance, quality
-  storage/      # raw persistence, jsonl, parquet
-  web/          # FastAPI app, 인증·세션, API router와 응답 schema
-  jobs/         # PostgreSQL 기반 작업 상태, 단일 worker, 종료 준비·재개
-  db/           # PostgreSQL 연결, persistence model, repository
-migrations/     # DB schema migration과 버전 관리
-frontend/
-  package.json / 프런트 lockfile
-  src/          # React 19 + TypeScript: pages, components, API client
-  public/
-tests/
-  fixtures/ / unit/ / integration/ / regression/
-data/
-  raw/ / normalized/ / structured/ / gold/
-scripts/
-.fordeploy/     # 배포·서비스·Scheduler 설정
-  aws-backup/
-    .gitkeep    # 실제 staging 파일은 Git에서 제외
+package.json / pnpm-lock.yaml / pnpm-workspace.yaml / .node-version
+index.html / vite.config.ts / tsconfig.json / eslint.config.js
+src/                  # React App, main, styles
+backend/
+  pyproject.toml / uv.lock / .python-version / .env.example
+  Dockerfile / .dockerignore
+  src/klegal_gold/     # config, cli, web/app, db/connection
+  tests/              # unit, integration, fixtures/legacy
+compose.yaml / compose.dev.yaml
+.fordeploy/frontend/Dockerfile
+.fordeploy/nginx/default.conf
+.fordeploy/compose.env.example
+.fordeploy/aws-backup/.env   # 사용자 제공, Git 제외
+playwright.config.ts / tests/e2e/
+docs/                 # 설계·조사·개발 문서, README 없음
+data/                 # runtime 데이터, Git 제외
 ```
 
-각 단계에 필요한 파일을 추가하며 미래 adapter와 빈 모듈을 일괄 구현하지 않는다. data 디렉터리에는 `.gitkeep`만 버전 관리한다. 소규모 fixture는 인증정보를 제거하고 출처·사용 가능 범위를 기록한다. 후보·검토·오류 보고서와 manifest는 데이터 출력 경로에 함께 보존한다.
+후속 Python 업무 모듈과 backend/migrations/는 필요 시 생성한다. data/는 개발 기본 경로이며 운영 DATA_DIR은 배포 코드 외부의 영속 경로로 지정한다. public/에는 private 판례·이미지를 넣지 않는다.
 
 ## 5. 구현 순서와 단계별 완료 기준
 
@@ -171,12 +153,14 @@ scripts/
 
 ### Step 1 — 프로젝트 scaffold와 품질 도구
 
-- [ ] uv 기반 src-layout, Python 3.12 제한, dependency/lockfile, ruff/mypy/pytest 설정을 구성한다.
-- [ ] `.gitignore`, `.env.example`, 데이터 경로와 logging/config 정책을 추가한다.
-- [ ] frontend에 React 19 + Vite + TypeScript scaffold와 lockfile, 타입 검사·lint·build 설정을 구성한다. Python core와 프런트 의존성을 분리한다.
-- [ ] FastAPI app 및 CLI의 최소 진입점을 준비하고 PostgreSQL 개발·테스트 환경과 연결 설정을 문서화한다.
+- [x] uv 기반 src-layout, Python 3.12 제한, dependency/lockfile, ruff/mypy/pytest 설정을 구성한다.
+- [x] `.gitignore`, `.env.example`, 데이터 경로와 logging/config 정책을 추가한다.
+- [x] 레포 루트에 React 19 + Vite + TypeScript scaffold와 lockfile, 타입 검사·lint·build 설정을 구성한다. Python core와 프런트 의존성을 분리한다.
+- [x] FastAPI app 및 CLI의 최소 진입점을 준비하고 PostgreSQL 개발·테스트 환경과 연결 설정을 문서화한다.
 
 완료 기준: `uv sync --locked`, 패키지 import 및 초기 품질 검사 구성이 실행된다.
+
+2026-09-10 검증: uv locked sync, Python lint/format/mypy, PostgreSQL 연결 포함 pytest 10건, 프런트 타입/lint/build, desktop/mobile E2E 6건, Compose 이미지 빌드·기동을 확인했다. 기존 합성 53건은 backend/tests/fixtures로 이동했으며 신규 domain 회귀 테스트가 실행된 것은 아니다. 테스트 라이브러리의 upstream deprecation warning 2건은 남아 있다.
 
 ### Step 2 — Domain model과 데이터 계약
 
@@ -364,6 +348,7 @@ unit은 모델·parser·변환 규칙, integration은 mock API/저장/CLI/FastAP
 Python 3.12, `LAW_OPEN_API_OC`, `DATABASE_URL` 및 migration이 적용된 PostgreSQL을 준비한 뒤 실행할 목표 데모:
 
 ```bash
+cd backend
 uv sync --locked
 uv run klegal fetch --limit 100
 uv run klegal normalize
@@ -410,7 +395,7 @@ stats에는 단계별 판례 수, 쟁점 수, alignment 상태, 검증 통과·�
 | gold 포함 정책 | Step 2 / 9~10 | 위 보수적 기본 정책을 schema와 검증기로 명문화 |
 | 코드 라이선스·데이터 재배포 범위 | Step 0 / 문서화 | 별도 확인 후 기록하며 라이선스를 임의 선택하지 않음 |
 
-Phase 1 이후 실제 오류 분포를 근거로 파싱과 alignment를 개선한다. Kiwi optional adapter, KSS 실험, 추가 source adapter와 LLM annotation은 별도 계획으로 다루며 현재 핵심 파이프라인의 의존성으로 만들지 않는다.
+Phase 1 이후 실제 오류 분포를 근거로 파싱과 alignment를 개선한다. Kiwi optional adapter, KSS 실험, scourt 외 추가 source adapter와 LLM annotation은 별도 계획으로 다루며 현재 핵심 파이프라인의 의존성으로 만들지 않는다.
 
 ## 9. 웹 앱 및 AWS 운영 결정 — 2026-09-09
 
@@ -533,7 +518,7 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 
 ### 구현 시 선택·고정할 항목
 
-React 19의 patch, Vite·TypeScript·Node.js·FastAPI·PostgreSQL의 지원 버전, 프런트 패키지 관리자, 라우터·조회 도구, Python DB driver·접근 도구·migration 도구, HTTPS 서버는 호환성 확인 후 고정한다. 이 문서는 주요 기술 선택을 확정한 것이며 패키지 설치나 서버·DB 구성을 완료했다는 기록이 아니다.
+Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.9.3, uv 0.12.5 및 Python 3.12를 사용했다. Python/Node 의존성의 정확한 해상 버전은 lockfile에 고정했다. DB 연결은 Psycopg 3, 로컬 서버는 PostgreSQL 17, 웹 서버는 Nginx다. ORM/migration·router·조회 라이브러리와 운영 TLS는 후속 선택이다.
 
 ### 참고한 공식 문서
 
@@ -552,7 +537,7 @@ React 19의 patch, Vite·TypeScript·Node.js·FastAPI·PostgreSQL의 지원 버�
 - README는 사용·운영 안내, AGENTS는 작업 지침, DESIGN은 UX 기준이며 구현 순서와 완료 판단은 루트 PLAN을 따른다.
 - 배포 자료 경로는 .fordeploy/로 통일한다. 기존 ops/ 계획은 대체하며 별도 배포 루트를 중복 생성하지 않는다. 설명은 README와 docs에 기록한다.
 - .fordeploy/aws-backup/.gitkeep을 빈 파일로 생성했다. 실제 백업·배포 archive는 생성하지 않았다. 이후 사용자가 .env를 제공했으며 .gitignore로 제외한다.
-- 향후 Docker 사용 시 staging·secret·runtime 자료가 build context에 포함되지 않도록 루트 .dockerignore를 추가했다. Docker/Compose 및 실제 배포 방식은 아직 구성·확정하지 않았다.
+- 향후 Docker 사용 시 staging·secret·runtime 자료가 build context에 포함되지 않도록 루트 .dockerignore를 추가했다. Docker/Compose 로컬 구성은 Step 1에 추가했다. 실제 AWS 배포·TLS·예약은 후속이다.
 - 문서와 제외 규칙만 변경했다. 실제 인프라·DB·DNS·인증서·운영 예약 변경이나 서버 접속은 수행하지 않았다.
 
 ## 12. 추가 지시 적용과 후속 fidelity

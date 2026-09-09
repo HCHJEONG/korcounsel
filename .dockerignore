@@ -17,7 +17,13 @@ data
 **/.mypy_cache
 **/.ruff_cache
 **/node_modules
-frontend/dist
-frontend/coverage
+dist
+coverage
 playwright-report
 test-results
+
+backend
+docs
+tests
+*.md
+.scaffold*

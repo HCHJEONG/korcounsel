@@ -1,0 +1,5 @@
+# Run Vite and uvicorn on the host; only PostgreSQL needs this override.
+services:
+  postgres:
+    ports:
+      - "127.0.0.1:55432:5432"

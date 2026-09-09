@@ -17,8 +17,8 @@
 
 ## 확정 아키텍처
 
-- 프런트: frontend/의 React 19 + Vite + TypeScript. Next.js와 루트 프런트 구조를 도입하지 않는다.
-- Python: src/klegal_gold/의 Python 3.12, uv와 pyproject.toml/uv.lock. requires-python은 >=3.12,<3.13이다.
+- 프런트: 루트 src/의 React 19 + Vite + TypeScript. Next.js는 도입하지 않는다. 프런트는 레포 루트, Python 프로젝트는 backend/를 사용한다.
+- Python: backend/src/klegal_gold/의 Python 3.12, uv와 pyproject.toml/uv.lock. requires-python은 >=3.12,<3.13이다.
 - API: FastAPI. Pydantic request/response schema와 OpenAPI가 프런트/API 계약의 기준이다. 외부 법률 데이터 API 명세와 혼동하지 않는다.
 - DB: PostgreSQL. SQLite를 운영 DB 또는 PostgreSQL integration 대체물로 사용하지 않는다.
 - 처리: 별도 Python worker. 초기 API 프로세스 1개, 처리 worker 1개로 시작하며 각자의 역할을 구분한다.
@@ -30,14 +30,14 @@
 
 ## 저장소 경계
 
-- frontend/: React 페이지·컴포넌트·API client·브라우저 상태.
-- src/klegal_gold/domain/: 명시적 판례·쟁점·evidence·authority·provenance 모델.
+- 루트 src/: React 페이지·컴포넌트·API client·브라우저 상태.
+- backend/src/klegal_gold/domain/: 명시적 판례·쟁점·evidence·authority·provenance 모델.
 - sources/: CaseSource protocol과 공식 API adapter.
 - normalize/, parse/, segment/: 결정론적 규칙과 문장 분리 interface.
 - pipeline/: 단계별 유스케이스, 웹/CLI 공용 core.
 - web/: FastAPI app·인증·router·HTTP schema.
 - jobs/: 작업 등록·claim·상태 전이·worker·종료 준비·재개.
-- db/: PostgreSQL 연결·persistence model·repository. migrations/는 루트에 둔다.
+- db/: PostgreSQL 연결·persistence model·repository. migration은 backend/migrations/에 둔다.
 - storage/, validate/: artifact 저장과 데이터 검증.
 - tests/fixtures/, unit/, integration/, regression/: 테스트 자료와 검증.
 - scripts/: 로컬 수집·개발·유지보수 도구.
@@ -113,7 +113,7 @@
 ## 로컬 실행과 검증
 
 - 초기 scaffold와 함께 개발·테스트 DB 준비, 환경 설정, migration, frontend/backend/worker 실행 순서를 문서화한다.
-- Docker Compose는 재현 가능한 로컬 DB/전체 환경이 필요할 때 검토할 수 있다. 채택 시 API·worker·DB 역할과 데이터 영속 위치를 분리한다. 아직 Docker/Compose 설치·구성이 완료되었다고 가정하지 않는다.
+- Docker Compose로 로컬 DB·전체 환경을 구성한다. API·worker·DB 역할과 영속 위치를 분리하고 로컬 검증을 AWS 운영 완료로 취급하지 않는다.
 - 개발 fixture와 계정을 운영 seed로 자동 주입하지 않는다. source 및 synthetic fixture를 구분하고 사용자·비밀번호를 소스에 넣지 않는다.
 - Python 변경은 ruff check/format, mypy, pytest와 해당 단계 전체 회귀 검증을 수행한다.
 - frontend 변경은 타입·lint·build 및 영향받는 브라우저 흐름을 검증한다. UI만 바꾼 경우에도 직접 URL·로그인 만료·빈 상태를 필요한 범위에서 확인한다.
@@ -133,7 +133,7 @@
 - 이미지/빌드 식별자, 포트, remote/runtime 경로와 health 경로를 명시적으로 설정한다. 임의의 /home/ubuntu 경로를 확인 없이 적용하지 않는다.
 - release/현재 코드와 DB·원본·artifact·환경파일 저장 위치를 분리한다. 재배포·cleanup에서 DB 볼륨이나 영속 데이터를 삭제하지 않는다.
 - 실제 환경파일 transfer/overwrite는 명시적 작업 범위와 대상 확인 후 수행한다. 재배포마다 자동 복사하지 않으며 파일 내용은 출력하지 않는다.
-- Docker를 채택하면 app build context에서 .fordeploy와 secret·dump·artifact를 제외한다. image archive는 transfer 자료이며 Git에 넣지 않는다. 배포 방식은 구현 시 고정한다.
+- Docker 구성에서는 app build context에서 .fordeploy와 secret·dump·artifact를 제외한다. image archive는 transfer 자료이며 Git에 넣지 않는다. 배포 방식은 구현 시 고정한다.
 - /api/health, frontend HTTP, DB 및 worker 상태를 개별 검증한다. 실패 시 원인과 복구 경로를 남기고 부분 성공을 전체 배포 성공으로 표시하지 않는다.
 - DB와 artifact의 일관된 백업·복원을 검증한다. 폴더나 script 존재만으로 백업 완료라고 보고하지 않는다.
 
@@ -150,12 +150,12 @@
 - .fordeploy/aws-backup/은 .gitkeep만 기본 추적한다. 실제 env, private key, DB dump, image archive, 배포 backup은 Git에서 제외한다.
 - 사용자가 제공한 .fordeploy/aws-backup/.env를 명시적 로컬 설정 경로로 사용할 수 있다. 값을 출력하거나 임의로 변경하지 않는다. LAW_OPEN_API_OC와 LAW_GO_KR_OC alias 계약은 docs/law-open-api-contract.md를 따른다. 운영자가 선택한 명시적 환경파일 경로를 사용하고 참조 저장소의 ONJU_* 값·계정·환경파일을 읽거나 가져오지 않는다.
 - .env.example에는 비밀값 없는 설명·예시만 둔다. runtime secret을 정적 번들·이미지·빌드 로그·manifest에 포함하지 않는다.
-- Docker 도입 시 .dockerignore를 유지하고 context가 달라지면 해당 경계에도 동등한 제외 규칙을 적용한다.
+- Docker 구성에서 .dockerignore를 유지하고 context가 달라지면 해당 경계에도 동등한 제외 규칙을 적용한다.
 - 실제 dump나 local DB를 AWS로 자동 이전하지 않는다. migration·seed·운영 import는 각각 별도 작업으로 구분한다.
 
 ## 참조 문서에서 변경한 사항
 
-- docs/PLAN.md → 루트 PLAN.md, Next.js 루트 앱/backend/ → frontend/와 src/klegal_gold/.
+- docs/PLAN.md → 루트 PLAN.md, Next.js 루트 앱/backend/ → 루트 React src/와 backend/src/klegal_gold/.
 - 주석 생성·출판 및 guest reader → 판례 데이터 생산·인증 검수 앱.
 - AI 실행·주석 편집·SES·editor roster → 현재 제외 또는 별도 미래 범위.
 - 원문 정규화 후 checksum → 원본 바이트 hash와 별도 변환 기록.
@@ -177,3 +177,13 @@
 - Selenium에는 DOM·세션·popup·iframe 책임이 있었다. 실제 source 검증 후 API/HTTP/세션/browser 전략을 선택하고 필요한 경우 Selenium/Playwright를 명시 기준으로 비교한다. 자동 패키지 교체·다중 browser 기본 실행을 피한다.
 - merge/split/relink는 이력을 남기고 기존 release·검토를 덮어쓰지 않는다. registry/link snapshot과 asset manifest도 재현·백업 대상이다.
 - 문서의 실제 레거시 관찰과 합성 fixture, offline 테스트와 live 검증을 구분한다. 추가 최소 15종을 포함한 fixture를 해당 구현 단계의 테스트에 연결한다.
+
+
+## 폴더 체계와 README — 2026-09-10
+
+- README.md는 레포 루트에 하나만 관리한다. backend/docs 등 하위 README를 추가하지 않는다. 의존성 설치물이 포함하는 README는 관리 대상 소스에 해당하지 않는다.
+- 확정 경계: 루트 React 프로젝트, backend/의 독립 uv Python 프로젝트, 루트 compose.yaml, 공통 docs/와 .fordeploy/.
+- 내부 파일명·폴더 세분화는 변경 가능한 설계다. 구현 필요에 따라 조정하고 PLAN/architecture/README와 연결 경로를 함께 갱신한다. 미래 모듈을 빈 파일로 생성하지 않는다.
+- Python 품질 명령은 backend/에서 uv로 실행하고 프런트 명령은 루트에서 pnpm으로 실행한다. Python fixture는 backend/tests/fixtures, 브라우저 테스트는 tests/e2e에 둔다.
+- Compose와 Nginx를 채택했다. 현재 Compose는 로컬 HTTP 검증용이며 외부 포트를 loopback에만 바인딩한다. TLS·운영 secret·배포 자동화는 Step 11B다.
+- Step 1 worker 서비스는 tools profile의 일회성 DB 연결 점검이다. 영속 queue/실제 worker 구현으로 간주하지 않는다. 상시 실행은 Step 2A에서 구현한다.

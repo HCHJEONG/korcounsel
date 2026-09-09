@@ -28,7 +28,7 @@
 
 ## 2. 전처리 규칙 판정표
 
-A는 개념 재사용, B는 수정 후 사용, C는 기본 pipeline에서 폐기다. A도 기존 함수를 그대로 사용한다는 뜻은 아니다. Test는 [회귀 fixture](../tests/fixtures/legacy/regression-cases.json)의 ID 또는 후속 테스트 요구다. fixture는 합성 데이터이며 앱 테스트 통과를 뜻하지 않는다.
+A는 개념 재사용, B는 수정 후 사용, C는 기본 pipeline에서 폐기다. A도 기존 함수를 그대로 사용한다는 뜻은 아니다. Test는 [회귀 fixture](../backend/tests/fixtures/legacy/regression-cases.json)의 ID 또는 후속 테스트 요구다. fixture는 합성 데이터이며 앱 테스트 통과를 뜻하지 않는다.
 
 | Legacy Rule | Current Meaning | Decision | Replacement | Test |
 | --- | --- | --- | --- | --- |
@@ -97,7 +97,7 @@ web2df Dockerfile은 `python:3.8.19-bullseye`이며 루트에 없는 requirement
 
 ## 8. 검증 상태와 남은 일
 
-회귀 fixture는 실제 정적 분석에서 발견한 규칙을 합성 입력과 기대 동작으로 기록했다. 운영 판례 원문·개인 데이터·인증값을 포함하지 않는다. fixture JSON 구조와 ID를 검증했으며 실행 가능한 신규 parser/pytest는 아직 없다. 구현 단계에서 각 fixture를 테스트에 연결해야 한다.
+회귀 fixture는 실제 정적 분석에서 발견한 규칙을 합성 입력과 기대 동작으로 기록했다. 운영 판례 원문·개인 데이터·인증값을 포함하지 않는다. fixture JSON 구조와 ID를 검증했으며 신규 parser와 이 fixture를 실행하는 도메인 회귀 테스트는 아직 없다. Step 1의 설정·health·DB 테스트와 구분한다. 구현 단계에서 각 fixture를 테스트에 연결해야 한다.
 
 공식 API 계약과 실제 소량 조회 결과는 [API 메모](law-open-api-contract.md)에 분리했다. 이 분석은 Step 0 산출물이며 Step 1 이후 구현·전체 레거시 실행 검증·AWS 배포 완료를 의미하지 않는다.
 
@@ -107,4 +107,4 @@ web2df Dockerfile은 `python:3.8.19-bullseye`이며 루트에 없는 requirement
 
 `gmeta_contId`와 `lmeta_serialno`는 source ID이고 canonical identity가 아니다. source+ID+hash는 원본 버전의 키로 유지하되 canonical 연결 revision을 별도로 둔다. `_02`의 ID 집합 비교를 inventory subsystem으로 계승한다. 모든 판례의 editorial 구조를 전제하지 않고 Detect/Preserve Reference를 초기 범위에 넣는다.
 
-새 회귀 범위는 [추가 fixture](../tests/fixtures/legacy/identity-fidelity-cases.json)에 있다. 원래 23건은 보존하며 추가 30건은 합성 계약 사례다. 저장 자료 8,482개 조사 수치는 고유 판례 수가 아니며 실제 관찰과 미검증 표본을 추가 보고서에서 구분한다.
+새 회귀 범위는 [추가 fixture](../backend/tests/fixtures/legacy/identity-fidelity-cases.json)에 있다. 원래 23건은 보존하며 추가 30건은 합성 계약 사례다. 저장 자료 8,482개 조사 수치는 고유 판례 수가 아니며 실제 관찰과 미검증 표본을 추가 보고서에서 구분한다.

@@ -1,182 +1,131 @@
 # KorCounsel
 
-공개 한국 판례를 재현 가능하고 원출처까지 추적 가능한 **Legal Issue Unit**으로 만드는 데이터 생산·검수 웹 앱입니다.
+공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
-국가법령정보 공동활용 OPEN API에서 판례를 수집하고, 판시사항·판결요지·판결이유·인용을 구조화하여 쟁점–답변–근거를 연결합니다. 자동 검증 결과와 사람의 검토 결과를 구분하며 원본과 변경 이력을 보존합니다.
+현재 **Step 1 기반 구축 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
 
-> 현재 상태: Step 0 및 추가 identity·incremental·fidelity 조사·설계 반영을 완료했습니다. 앱, CLI, DB schema, 배포 스크립트와 AWS 예약은 아직 구현하지 않았습니다. 아래 구성과 명령은 구현 목표이며 현재 실행 가능한 기능 목록이 아닙니다.
+## 폴더 원칙
 
-## 문서 안내
+README는 루트에 하나만 둡니다. 루트 React 프로젝트, backend/의 Python 프로젝트, 루트 compose.yaml, docs/와 .fordeploy/ 경계는 확정했습니다. 내부 모듈명·세분화는 변경 가능한 설계이며 필요한 단계에 추가합니다.
 
-| 문서 | 역할 |
+| 위치 | 역할 |
 | --- | --- |
-| [PLAN.md](PLAN.md) | 확정 범위, 단계별 구현 계획, 검증·완료 기준, AWS 운영 결정 |
-| [AGENTS.md](AGENTS.md) | 에이전트 작업 지침, 아키텍처 경계, 데이터·배포·검증 원칙 |
-| [DESIGN.md](DESIGN.md) | 화면 구조, 색상, 검색·검수·작업 UX, 접근성과 상태 표현 |
+| src/ | React 19 + Vite + TypeScript |
+| backend/src/klegal_gold/ | FastAPI·CLI·설정·DB, 후속 pipeline |
+| backend/tests/ | Python 테스트와 기존 합성 fixture 53건 |
+| tests/e2e/ | 실제 API 연동 desktop/mobile 브라우저 테스트 |
+| docs/ | 설계·조사·개발 안내 |
+| .fordeploy/ | Dockerfile·Nginx·배포 설정 |
+| data/ | 로컬 원본·결과 파일, Git 제외 |
 
-AGENTS.md와 DESIGN.md는 인접 `onju-ai-kr`의 문서를 참고해 이 프로젝트에 맞게 재구성했습니다. 참조 프로젝트의 구현 완료 기록과 운영 환경을 이 프로젝트의 상태로 간주하지 않습니다.
+## 빠른 시작 — WSL/Linux
 
-## 제품 범위
-
-Phase 1:
-
-- 공식 API 판례 100건 이상 실제 수집과 원본 JSON/XML 보존
-- 사건번호·법원·날짜 정규화, 판례 구조 및 참조조문·참조판례 추출
-- 독립 canonical identity와 source ID·매칭 사유, inventory 기반 신규 수집과 refresh
-- 판시사항·요지가 있는 경우 결정론적 alignment; 없는 전문·scan record도 정상 보존
-- image/PDF 참조 탐지·원래 위치·문맥·asset manifest 보존
-- evidence 위치, provenance 및 검증 결과를 가진 LegalIssueUnit 생성
-- JSONL·Parquet export, dataset manifest, 재실행·중복 방지
-- 인증된 소수 사용자용 웹 대시보드와 판례·쟁점 검수 화면
-- 웹에서 작업 등록·진행 조회, 별도 worker 실행, CLI 재현 경로
-
-Phase 1.5에는 쟁점 연결 수정, 근거 재선택, 승인·반려·보류, 검토 이력 및 실행 간 비교를 추가합니다.
-
-초기 범위에는 LLM 호출, 모델 학습, GPU, RAG, vector database, Elasticsearch, 공개 회원가입, 공개 판례 서비스, OCR·vision 해석이 포함되지 않습니다. scourt identity/inventory·원문 충실도 확보에 필요한 HTTP/browser adapter는 초기 확장 범위입니다. 이 앱은 데이터 생산과 전문 검토를 보조하며 법률 판단을 대신하지 않습니다. 자동 검증 통과는 법률적 정확성 보증이나 사람의 승인이 아닙니다.
-
-## 데이터 흐름
-
-```text
-공식 판례 API / scourt inventory·adapter
-  → 증분 취득·refresh
-  → RAW: 원본 바이트·수집 정보·hash
-  → NORMALIZED: 식별자·metadata·텍스트 정규화
-  → CANONICAL IDENTITY: source별 버전·연결 결정
-  → STRUCTURED / FULL TEXT / SCAN·ASSET: 구조·참조·순서
-  → LegalIssueUnit 후보: 쟁점 / 답변 / evidence / authority / provenance
-  → 검증·검토 대상 분류
-  → GOLD: 포함 정책을 통과한 JSONL·Parquet + manifest
-```
-
-- 원본 바이트 hash와 원문 텍스트 offset을 구분합니다. evidence는 기준 텍스트와 `[start, end)` 구간을 식별합니다.
-- `aligned`, `ambiguous`, `unmatched`는 연결 상태입니다. 자동 품질 검증과 사람의 검토 상태는 별도입니다.
-- 번호·구조가 모호하면 추측하지 않습니다. 실패·미연결 자료도 보고서와 후보에 남깁니다.
-- 판결요지 기반 근거와 판결이유까지 연결한 근거를 구별합니다.
-- 반복 실행은 같은 입력·규칙·설정에 대해 안정적인 ID와 결과를 생성해야 합니다.
-
-## 확정 기술 스택
-
-| 계층 | 선택 |
-| --- | --- |
-| 프런트 | React 19 + Vite + TypeScript, 정적 SPA |
-| API | FastAPI + ASGI 서버 |
-| 처리 | Python 3.12, 별도 worker 1개부터 시작 |
-| Python 패키지 관리 | uv, pyproject.toml, uv.lock |
-| DB | 동일 EC2의 PostgreSQL |
-| 파일 | 원본 JSON/XML/HTML·source artifact, inventory/asset manifest, JSONL·Parquet |
-| API 계약 | FastAPI OpenAPI와 명시적 Pydantic schema |
-| 검증 | pytest, pytest-cov, ruff, mypy 및 프런트 타입·lint·build·브라우저 검증 |
-
-세부 패키지 버전, Node.js, 프런트 패키지 관리자, 라우터·조회 도구, DB driver·접근 도구·migration 도구, HTTPS 서버는 구현 시 호환성을 확인해 고정합니다. Next.js는 사용하지 않습니다. 프런트는 로컬 또는 CI에서 빌드해 정적 결과를 배포합니다.
-
-## 실행 구조
-
-```text
-브라우저 → https://korcounsel.com → HTTPS 웹 서버
-  ├─ /       → React 정적 파일
-  └─ /api/*  → FastAPI → PostgreSQL ← Python worker
-                                        ↓
-                                  pipeline core
-                                        ↓
-                                 원본·dataset 파일
-
-CLI → 동일 core 및 작업 상태 관리
-EventBridge Scheduler → EC2 시작 / 종료 준비 제어
-```
-
-FastAPI는 인증·조회·작업 등록을 담당합니다. 긴 작업은 HTTP 요청이나 BackgroundTasks에서 실행하지 않고 PostgreSQL에 등록한 뒤 worker가 처리합니다. API 프로세스와 처리 worker는 각각 1개로 시작합니다.
-
-PostgreSQL에는 사용자·세션, 작업 queue·실행 이력, 조회용 판례·쟁점·근거, dataset 참조 및 향후 검토 기록을 저장합니다. 원본과 재현 artifact는 파일로 보존하며 DB에 위치·hash·버전을 연결합니다. DB와 파일을 함께 복구할 수 있도록 백업을 설계합니다.
-
-## 저장소 구조
-
-현재는 루트 문서와 배포용 디렉터리를 준비했으며, 다음 코드 구조를 목표로 합니다.
-
-```text
-README.md / AGENTS.md / DESIGN.md / PLAN.md
-pyproject.toml / uv.lock / .python-version     # 구현 시 생성
-src/klegal_gold/
-  domain/ / sources/ / normalize/ / parse/ / segment/
-  pipeline/ / validate/ / storage/ / web/ / jobs/ / db/
-frontend/                                    # React/Vite 앱
-migrations/                                  # PostgreSQL schema 이력
-tests/fixtures/ / unit/ / integration/ / regression/
-data/raw/ / normalized/ / structured/ / gold/
-docs/                                        # 구현·배포·운영 상세 문서
-scripts/                                     # 로컬 개발·수집·유지보수
-.fordeploy/                                  # 배포 스크립트·설정
-  aws-backup/
-    .gitkeep
-```
-
-`.fordeploy/aws-backup/`은 로컬 배포 자료와 백업 준비 공간입니다. 사용자가 제공한 `.env`가 있으며 Git에서 제외합니다. `.gitkeep`만 추적하고 DB dump·이미지 archive는 생성하지 않았습니다. 해당 폴더 생성은 실제 AWS 백업 구성을 완료했다는 뜻이 아닙니다.
-
-## 로컬 개발 — 구현 후 사용할 경로
-
-현재 `pyproject.toml`, 프런트 package.json, migration 및 CLI가 없으므로 아래 명령은 아직 실행할 수 없습니다.
-
-구현 시 Python 3.12, uv, 고정된 Node.js·프런트 패키지 관리자, 격리된 개발 PostgreSQL을 준비합니다. 환경 설정에는 `LAW_OPEN_API_OC`(호환 alias `LAW_GO_KR_OC`), `DATABASE_URL`, `DATA_DIR`, `LOG_LEVEL`, 인증·세션 설정이 포함됩니다. `.env.example`에는 비밀값 없는 예시만 작성합니다.
-
-DB 초기화/migration 후 실행할 목표 데모:
+Node 24.16.0, pnpm 11.23.0, uv 0.12.5, Docker Compose가 필요합니다. Python 3.12는 uv로 준비합니다. Windows 작업 경로는 WSL의 `/home/hchjeong/IntelliJProjects/korcounsel`에 대응합니다.
 
 ```bash
+pnpm install --frozen-lockfile
+cd backend
 uv sync --locked
-uv run klegal fetch --limit 100
-uv run klegal normalize
-uv run klegal structure
-uv run klegal build-gold
-uv run klegal validate
-uv run klegal stats
+cd ..
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml up -d --wait postgres
 ```
 
-목표 Python 검증 명령:
+별도 터미널에서 백엔드와 프런트를 실행합니다.
 
 ```bash
+# 터미널 1, 레포 루트
+cd backend
+uv run uvicorn klegal_gold.web.app:app --host 127.0.0.1 --port 8000 --reload
+```
+
+```bash
+# 터미널 2, 레포 루트
+pnpm dev
+```
+
+브라우저에서 http://127.0.0.1:5173 에 접속해 연결 확인을 누릅니다. Vite가 /api를 로컬 FastAPI로 전달합니다. 현재 개발 화면에는 실제 판례·인증 기능이 없습니다.
+
+## Compose 전체 실행
+
+```bash
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml up -d --build --wait web
+```
+
+http://127.0.0.1:8080 에서 Nginx→FastAPI 연결을 확인합니다. api는 PostgreSQL 준비 후 시작하며 health는 API 생존 여부만 뜻합니다. postgres는 named volume, API/향후 worker의 파일은 별도 case_data named volume을 사용합니다. 로컬 data/와 컨테이너 /data 볼륨은 별개의 저장소입니다.
+
+```bash
+# worker 이미지의 일회성 DB 연결 확인; 실제 작업 worker가 아님
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml run --rm worker
+# 컨테이너 정리, DB·판례 볼륨은 보존
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml down
+```
+
+compose.env.example의 비밀번호는 폐기 가능한 로컬 개발 전용입니다. 운영에 사용하지 않습니다. 현재 포트는 localhost에만 열려 있으며 TLS·운영 secret·백업·자동 재시작과 배포 절차는 Step 11B에서 완성합니다. 실제 DB 접근 권한과 migration은 후속 단계에 설계합니다.
+
+## 설정과 CLI
+
+기본적으로 프로세스 환경변수만 읽습니다. `.env`를 자동 탐색하지 않습니다. 필요하면 절대 경로의 `KLEGAL_ENV_FILE`로 파일을 명시하고, 같은 이름의 프로세스 환경변수가 우선합니다.
+
+```bash
+cd backend
+uv run klegal version
+uv run klegal check-config
+DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_dev' uv run klegal check-db
+```
+
+- LAW_OPEN_API_OC와 LAW_GO_KR_OC는 alias이며 값이 다르면 오류입니다. 실제 값은 출력하지 않습니다.
+- 사용자가 제공한 .fordeploy/aws-backup/.env는 그대로 보존하며 이번 scaffold 검증에 로드하지 않았습니다.
+- DATA_DIR은 절대 경로입니다. 로컬 기본값은 레포 data/이며 작업 디렉터리 변경에 영향받지 않습니다. 설정을 읽는 것만으로 파일을 생성하지 않습니다.
+- DATABASE_URL은 PostgreSQL 연결 문자열입니다. 미설정이면 health는 응답하지만 check-db는 실패합니다.
+- root .env.example은 공개 프런트 설정 안내, backend/.env.example은 백엔드 설정 예시입니다. 프런트에 DB·API secret을 넣지 않습니다.
+
+fetch/normalize/structure/build-gold/validate/stats는 후속 구현 명령입니다. 현재 CLI에 존재하지 않습니다.
+
+## 검증
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm build
+pnpm exec playwright install chromium
+pnpm test:e2e
+cd backend
 uv run ruff check .
 uv run ruff format --check .
-uv run mypy src
-uv run pytest --cov=klegal_gold
+uv run mypy
+uv run pytest
 ```
 
-unit은 외부 서비스 없이, DB integration은 격리된 실제 PostgreSQL에서 실행합니다. 공식 API live 검증은 별도로 수행합니다. 프런트는 타입·lint·핵심 UI 테스트·production build·로그인부터 원문 검수까지의 브라우저 흐름을 검증하며 구체적 명령은 scaffold 시 문서화합니다.
+기본 pytest는 local DB integration 1건을 건너뜁니다. 개발 PostgreSQL 실행 후 아래 명령은 실제 DB 테스트를 포함합니다.
 
-## 배포·운영 방침
+```bash
+KLEGAL_TEST_DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_dev' uv run pytest --cov=klegal_gold
+```
 
-- 도메인: 사용자가 확보한 `korcounsel.com`. DNS·HTTPS 연결과 실제 서비스 배포는 아직 미확인입니다.
-- 서버: 기존 `ssh aws-bastion` 대상 EC2. 신규 EC2 증설을 기본안으로 삼지 않습니다.
-- 크기: 사용자 설명상 현재 micro. 실제 계열·부하 확인 후 호환되는 small로 변경하고 부족하면 medium을 검토합니다.
-- 웹·FastAPI·PostgreSQL·worker를 같은 EC2에서 운영하고 DB/worker 포트는 외부에 공개하지 않습니다.
-- 한국 시간 `Asia/Seoul` 월~금 10:00 시작, 17:00 종료 준비. 토·일은 자동 시작하지 않으며 평일 공휴일은 운영합니다.
-- 17:00부터 새 작업 접수·대기 작업 실행을 막고 진행 작업 완료 또는 체크포인트 저장 후 중지합니다. 실제 종료는 늦어질 수 있습니다.
-- 중지 중에는 웹과 해당 bastion을 경유한 SSH를 사용할 수 없습니다. 기존 서버의 관리 접속·네트워크 역할을 확인한 뒤 예약을 적용합니다.
-- 중지 후에도 EBS·보유 Elastic IP·백업 비용이 남습니다. 실제 요금은 배포 시 산정합니다.
+Step 1 검증: pytest 10건, desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건은 미래 도메인 테스트의 입력 계약이며 현재 pytest 개수에 포함되지 않습니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
 
-배포 자료는 `.fordeploy/`, 설명과 명령 인계는 이 README 및 구현 후 `docs/deployment.md`, `docs/operations.md`에 둡니다. 최초 배포 전 인스턴스 ID·리전·계열, 기존 서비스·포트, DNS·고정 IP, runtime 경로, 데이터 영속 위치, migration·백업·복구 및 인증을 확인합니다.
+## 설계·조사 문서
 
-배포 절차는 준비·검증·적용·health 확인·복구를 구분합니다. API health는 `/api/health`를 기본 목표로 하고 웹 파일 제공, DB 연결, worker 상태도 각각 확인합니다. 재배포 시 DB 볼륨·원본·검토 이력·실제 환경파일을 덮어쓰지 않습니다. 구체적 배포 명령은 스크립트 구현과 로컬 검증 후 추가합니다.
+| 문서 | 내용 |
+| --- | --- |
+| [PLAN.md](PLAN.md) | 전체 단계·진행·완료 기준 |
+| [AGENTS.md](AGENTS.md) | 작업 규칙 |
+| [DESIGN.md](DESIGN.md) | 문서 중심 검수 UX |
+| [architecture](docs/architecture.md) | 계층·폴더 경계 |
+| [dataset schema](docs/dataset-schema.md) | 모델·결측·gold 계약 |
+| [provenance](docs/provenance.md) | 원본·버전·evidence |
+| [identity](docs/case-identity.md) | source/canonical 식별과 연결 이력 |
+| [incremental ingestion](docs/incremental-ingestion.md) | inventory·delta·refresh·재개 |
+| [source fidelity](docs/source-fidelity.md) | 이미지·scan 탐지와 보존 단계 |
+| [공식 API 계약](docs/law-open-api-contract.md) | 인증 alias·공식 자료·Step 0 실측 |
+| [레거시 이전](docs/migration-from-legacy.md) | 규칙별 재사용·수정·폐기 |
+| [identity·asset 조사](docs/legacy-case-identity-and-assets.md) | 실제 레거시 코드·8,482개 파일 관찰 |
+| [개발 안내](docs/development.md) | 도구 선택·Compose 범위·후속 과제 |
 
-## 참고 저장소와 자료 정책
+Step 0의 네 API 요청 기록과 소스·표본 해시는 docs/step0/에 보존합니다. 실제 source 간 이미지 손실 비교와 PDF/scan 실물 검증은 아직 남아 있습니다.
 
-- `I:\VSCodeBases` 아래 `web2df`, `df2preproc`: 실제 루트 확인 후 식별자·파싱·정규화 규칙을 분석합니다. 신규 core의 import dependency로 연결하지 않습니다.
-- 인접 `onju-ai-kr`: AGENTS/DESIGN의 작업·검수·시각·배포 원칙을 참고했습니다. 해당 프로젝트의 계정·도메인·데이터·AI 기능은 이전하지 않습니다.
-- 공개 법률 자료도 출처·수집 시각·사용 조건을 기록합니다. 코드 라이선스와 원천 데이터 재배포 조건은 별도 확인하며 현재 임의의 오픈소스 라이선스를 선언하지 않습니다.
-- 인증정보·환경파일·DB dump·원본 대량 데이터는 Git과 이미지에 넣지 않습니다. 소규모 fixture는 출처와 사용 가능 범위를 기록합니다.
+## 목표 운영과 데이터 원칙
 
-## Step 0 결과 — 2026-09-09
+운영 대상은 기존 aws-bastion 한 대이며 micro→호환 small, 필요 시 medium을 검토합니다. korcounsel.com에서 인증된 소수 사용자가 접근하고 같은 EC2에 API·worker·PostgreSQL·정적 웹을 둡니다. 월~금 한국 시간 10시 기동, 17시 작업 접수 중단·checkpoint 후 중지를 구현할 예정입니다. 평일 공휴일은 운영하며 주말은 자동 시작하지 않습니다.
 
-- [레거시 이전 분석](docs/migration-from-legacy.md): 실제 두 저장소 분석, 필드 연결, A/B/C 규칙과 새 모듈 배치.
-- [공식 API 계약](docs/law-open-api-contract.md): 사용자 제공 인증값으로 목록·상세 JSON/XML 네 요청 성공. 호출 제한·승인 범위의 미확인 항목을 별도로 기록.
-- [회귀 fixture](tests/fixtures/legacy/regression-cases.json): 발견한 손실·경계 문제를 합성 사례 23건으로 기록. 아직 신규 구현을 실행하는 테스트는 아님.
-- [docs 안내](docs/README.md): 현재 산출물과 단계별로 추가할 문서 구분.
-
-환경파일의 값은 변경하지 않았습니다. API 키 확인은 DB·세션 설정 준비나 AWS 배포 완료를 뜻하지 않습니다. 다음 구현 단계는 Step 1 scaffold입니다.
-
-## 추가 지시 반영 — Identity / Incremental / Fidelity
-
-동일 판례의 scourt contId와 law.go.kr serialno를 독립 canonical identity에 연결하되 원래 ID·내용·판단 근거를 보존합니다. 새로 등록된 판례는 inventory 차이로 찾고, 기존 ID의 본문 변경은 별도 refresh로 확인합니다. 판시사항·요지가 없거나 이미지가 아직 확보되지 않았다고 판례 전체를 삭제하지 않습니다.
-
-- [추가 레거시 조사](docs/legacy-case-identity-and-assets.md): `_01`~`_07`의 타협·예외와 실제 저장 자료 관찰.
-- [아키텍처](docs/architecture.md), [identity](docs/case-identity.md), [증분 수집](docs/incremental-ingestion.md), [원문 충실도](docs/source-fidelity.md).
-- [데이터 계약](docs/dataset-schema.md), [provenance](docs/provenance.md), [추가 합성 fixture 30건](tests/fixtures/legacy/identity-fidelity-cases.json).
-
-첫 fidelity 단계는 탐지와 참조 보존입니다. 이미지 다운로드·위치 복원·OCR는 후속으로 분리합니다. UI도 identity·판례 수집·asset 확보·gold 자격을 따로 보여줍니다. 추가 30건을 포함해 합성 fixture는 총 53건이며 앱 테스트는 아직 구현하지 않았습니다. 실제 source 간 이미지 손실 대조와 PDF/scan 실물 검증은 후속 milestone에 남아 있습니다.
+source ID와 canonical identity를 분리하고 원본·변경·연결 근거를 보존합니다. 판시사항·요지가 없거나 scan만 있어도 정상 판례로 수용합니다. gold에는 확실한 연결과 유효 evidence가 있는 쟁점만 포함하며 자동 검증과 사람 승인을 구분합니다. 이미지 탐지·참조 보존 뒤 취득·위치 복원·OCR를 순차 확장합니다. LLM·학습·GPU·OCR 해석은 초기 범위 밖입니다.

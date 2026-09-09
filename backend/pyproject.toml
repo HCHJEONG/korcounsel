@@ -1,0 +1,28 @@
+[project]
+name = "korean-legal-gold"
+version = "0.1.0"
+description = "KorCounsel legal dataset factory"
+requires-python = ">=3.12,<3.13"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic-settings>=2.6,<3", "psycopg[binary]>=3.2,<4", "typer>=0.15,<1"]
+[project.scripts]
+klegal = "klegal_gold.cli:app"
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["src/klegal_gold"]
+[dependency-groups]
+dev = ["httpx>=0.28,<1", "pytest>=8,<10", "pytest-cov>=6,<8", "ruff>=0.9,<1", "mypy>=1.14,<2"]
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = ["integration: requires an explicitly configured local PostgreSQL"]

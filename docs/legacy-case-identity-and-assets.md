@@ -75,4 +75,4 @@
 
 기존 migration 문서의 “Selenium/웹 scraping 제거” 결론은 수정한다. 구식 실행 결합·하드코딩을 그대로 가져오지 않되 필요한 원문 확보 수단과 그 이유는 계승한다. 추가 source 중 scourt identity/inventory와 Stage A/B는 초기 확장 milestone에 포함한다. OCR·LLM·LawnB 수집은 초기 범위에 넣지 않는다.
 
-추가 지시의 최소 15종과 증분/충돌 경계를 [합성 fixture](../tests/fixtures/legacy/identity-fidelity-cases.json)에 기록했다. 실제 공개 판례의 원문 복제 없이 metadata·표식 관찰 근거를 manifest로 남겼다. 확정 1:1 매핑·양 source 이미지 누락 비교·PDF 실물 검증은 아직 미완료이며 해당 live milestone의 조건으로 유지한다.
+추가 지시의 최소 15종과 증분/충돌 경계를 [합성 fixture](../backend/tests/fixtures/legacy/identity-fidelity-cases.json)에 기록했다. 실제 공개 판례의 원문 복제 없이 metadata·표식 관찰 근거를 manifest로 남겼다. 확정 1:1 매핑·양 source 이미지 누락 비교·PDF 실물 검증은 아직 미완료이며 해당 live milestone의 조건으로 유지한다.

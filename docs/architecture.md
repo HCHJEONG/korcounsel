@@ -41,3 +41,12 @@ identity 연결, 원문 취득, asset 취득, OCR, issue alignment, 자동 검�
 기존 EC2 한 대에 API 1개·worker 1개·PostgreSQL을 둔다. browser가 필요하면 worker의 제한된 작업으로 실행하고 웹 프로세스에 붙이지 않는다. asset 크기·보관량·browser 최대 메모리를 운영 전 측정하며 새 EC2·GPU를 기본으로 추가하지 않는다. 17시 drain은 snapshot/page·fetch·asset ledger를 보존해야 한다.
 
 세부 계약: [identity](case-identity.md), [incremental](incremental-ingestion.md), [fidelity](source-fidelity.md), [schema](dataset-schema.md), [provenance](provenance.md).
+
+
+## 폴더·도구 결정 — 2026-09-10
+
+루트 src/·package.json은 프런트, backend/는 pyproject.toml·uv.lock·backend/src/klegal_gold를 가진 독립 Python 프로젝트다. README는 루트 하나로 통합했다. 문서·배포는 루트 docs/·.fordeploy/, Compose는 루트 compose.yaml/compose.dev.yaml이다. 내부 모듈 배치는 변경 가능한 초안이며 단계에 필요한 코드만 만든다.
+
+Step 1은 공개 법률 데이터가 없는 개발용 상태 화면, /api/health liveness, CLI version/check-config/check-db, explicit env 및 PostgreSQL SELECT 1 검증을 제공한다. health 성공은 DB·worker 준비 완료가 아니다. 실제 queue·worker는 Step 2A다. 현재 worker Compose 서비스는 tools profile에서 일회성 DB 연결을 확인한다.
+
+API·worker 이미지는 backend/를 build context로, 프런트 이미지는 루트를 context로 사용한다. 루트 .dockerignore는 backend·data·.fordeploy·secret을 제외하며 Nginx 설정은 Compose의 읽기 전용 mount로 전달한다. 실제 이미지 취득·TLS·운영 배포는 후속이다. DB와 판례 데이터는 각각 named volume을 사용하고 `down -v`를 일반 종료 절차에 사용하지 않는다.
