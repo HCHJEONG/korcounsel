@@ -28,7 +28,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 - 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 하위 경로와 코드 내용은 아직 확인하지 않았다.
 - 레거시는 reference implementation으로만 활용한다. 새 프로젝트에서 import하거나 런타임 의존성으로 연결하지 않으며, 분석 대상 저장소는 수정하지 않는다.
 - `I:\VSCodeBases`는 개발 시 참고 경로다. 애플리케이션 코드나 실행 설정에 필수 절대경로로 넣지 않는다.
-- 공식 API 명세, 인증·호출 제한·이용 조건 및 실제 응답은 구현 전 공식 자료로 확인한다. 이 문서는 해당 확인을 완료했다는 의미가 아니다.
+- 공식 API 명세, 인증·호출 제한·이용 조건 및 실제 응답은 구현 전 공식 자료로 확인한다. Step 0의 확인 결과와 미확인 범위는 docs/law-open-api-contract.md에 기록했다.
 
 ### Phase 1에 포함
 
@@ -48,7 +48,7 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - `pandas`, `beautifulsoup4`, `lxml`은 필요가 확인된 기능에만 추가한다. API 응답 내부 markup 처리와 웹페이지 scraping을 구분한다.
 - Python 개발 도구는 `pytest`, `pytest-cov`, `ruff`, `mypy`다. 모든 public 함수와 메서드에 타입 힌트를 작성한다. 프런트는 React 19 + Vite + TypeScript를 사용하고 타입 검사·lint·핵심 UI 테스트·production build 검증을 별도로 구성한다. Node.js와 프런트 패키지 관리자는 구현 시 호환 버전을 고정하고 lockfile을 버전 관리한다. uv는 Python 의존성을 관리한다.
 - 기본 문장 분리는 외부 NLP 라이브러리 없이 동작한다. Kiwi는 후속 optional adapter, KSS는 호환성 확인 후 실험 대상으로 둔다.
-- 환경설정은 `LAW_OPEN_API_OC`, `DATA_DIR`, `LOG_LEVEL`, `DATABASE_URL`, 인증·세션 설정 등으로 관리한다. DB 비밀번호와 API credential을 프런트 환경변수나 정적 번들에 넣지 않는다. 애플리케이션 로그는 `logging`, CLI 출력은 필요시 `rich`를 사용한다.
+- 환경설정은 `LAW_OPEN_API_OC`(호환 alias `LAW_GO_KR_OC`; 둘이 다르면 오류), `DATA_DIR`, `LOG_LEVEL`, `DATABASE_URL`, 인증·세션 설정 등으로 관리한다. DB 비밀번호와 API credential을 프런트 환경변수나 정적 번들에 넣지 않는다. 애플리케이션 로그는 `logging`, CLI 출력은 필요시 `rich`를 사용한다.
 
 ### 원본과 provenance
 
@@ -100,7 +100,7 @@ README.md / AGENTS.md / DESIGN.md / PLAN.md
 LICENSE / .gitignore / .env.example
 docs/
   architecture.md / dataset-schema.md / provenance.md
-  migration-from-legacy.md / deployment.md / operations.md
+  migration-from-legacy.md / law-open-api-contract.md / deployment.md / operations.md
 src/klegal_gold/
   cli.py / config.py
   domain/       # case, issue, authority, evidence, provenance
@@ -137,15 +137,17 @@ scripts/
 
 ### Step 0 — 레거시 분석 및 API 계약 확인
 
-- [ ] `I:\VSCodeBases` 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한다. Windows/WSL 경로 매핑은 필요한 경우 확인하며 임의로 가정하지 않는다.
-- [ ] `web2df`의 식별자·중복 제거·metadata/원문 연결과 `case_full_no`, `decision_items`, `decision_gists`, `reasoning`, `applicable_acts`, `applicable_precedents` 의미를 분석한다.
-- [ ] `df2preproc`의 판사 표시, 별지·heading, 번호체계, whitespace, 문장 분리, 짧은 문장·숫자 fragment 규칙을 분석한다.
-- [ ] 규칙을 A 재사용 / B 수정 / C 폐기로 분류하고 `docs/migration-from-legacy.md`에 `Legacy Rule | Current Meaning | Decision | Replacement | Test` 표를 작성한다.
-- [ ] 제거할 dependency, hard-coded path, pickle 저장, DataFrame 결합, 중복·취약 regex, Python 호환성 문제 및 새 모듈 이동 위치를 기록한다.
-- [ ] 실제 발견한 버그·edge case를 회귀 fixture로 기록한다. 접근 불가나 미확인 내용은 추정하지 않고 명시한다.
-- [ ] 공식 자료로 API 인증, 목록·상세 조회, pagination, 응답 형식, 오류·호출 제한 및 이용 조건을 확인하고 출처와 확인일을 기록한다.
+- [x] `I:\VSCodeBases` 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한다. Windows/WSL 경로 매핑은 필요한 경우 확인하며 임의로 가정하지 않는다.
+- [x] `web2df`의 식별자·중복 제거·metadata/원문 연결과 `case_full_no`, `decision_items`, `decision_gists`, `reasoning`, `applicable_acts`, `applicable_precedents` 의미를 분석한다.
+- [x] `df2preproc`의 판사 표시, 별지·heading, 번호체계, whitespace, 문장 분리, 짧은 문장·숫자 fragment 규칙을 분석한다.
+- [x] 규칙을 A 재사용 / B 수정 / C 폐기로 분류하고 `docs/migration-from-legacy.md`에 `Legacy Rule | Current Meaning | Decision | Replacement | Test` 표를 작성한다.
+- [x] 제거할 dependency, hard-coded path, pickle 저장, DataFrame 결합, 중복·취약 regex, Python 호환성 문제 및 새 모듈 이동 위치를 기록한다.
+- [x] 실제 발견한 버그·edge case를 회귀 fixture로 기록한다. 접근 불가나 미확인 내용은 추정하지 않고 명시한다.
+- [x] 공식 자료로 API 인증, 목록·상세 조회, pagination, 응답 형식, 오류·호출 제한 및 이용 조건을 확인하고 출처와 확인일을 기록한다.
 
 완료 기준: 실제 코드에 근거한 레거시 분석 문서와 API 계약 메모가 존재한다. 레거시 분석 후 구현을 시작한다. live API 접근 여부는 오프라인 개발 가능 여부와 분리한다.
+
+2026-09-09 완료 기록: docs/migration-from-legacy.md, docs/law-open-api-contract.md, docs/step0/의 비밀값 없는 실측·소스 해시 기록 및 합성 회귀 fixture 23건을 작성했다. 사용자 제공 LAW_GO_KR_OC로 공식 API 네 요청이 성공했다. 고정 quota·전체 오류 schema·계정별 운영 승인 범위는 확인되지 않아 Step 3/운영 전 확인 항목으로 명시했다. 앱 구현·pytest·AWS 변경은 수행하지 않았다.
 
 ### Step 1 — 프로젝트 scaffold와 품질 도구
 
@@ -496,6 +498,6 @@ React 19의 patch, Vite·TypeScript·Node.js·FastAPI·PostgreSQL의 지원 버�
 - 참조 프로젝트의 Next.js 루트 앱/backend 구조, 공개 주석 reader, AI draft/출판, editor roster·SES·채팅, ALB·별도 호스트, 전용 env·Compose 버전과 구현 완료 기록은 이식하지 않았다. 사용자 승인 범위에 따른 작업 진행 원칙을 유지한다.
 - README는 사용·운영 안내, AGENTS는 작업 지침, DESIGN은 UX 기준이며 구현 순서와 완료 판단은 루트 PLAN을 따른다.
 - 배포 자료 경로는 .fordeploy/로 통일한다. 기존 ops/ 계획은 대체하며 별도 배포 루트를 중복 생성하지 않는다. 설명은 README와 docs에 기록한다.
-- .fordeploy/aws-backup/.gitkeep을 빈 파일로 생성했다. 실제 백업·환경파일·배포 archive는 생성하지 않았으며 .gitignore로 제외한다.
+- .fordeploy/aws-backup/.gitkeep을 빈 파일로 생성했다. 실제 백업·배포 archive는 생성하지 않았다. 이후 사용자가 .env를 제공했으며 .gitignore로 제외한다.
 - 향후 Docker 사용 시 staging·secret·runtime 자료가 build context에 포함되지 않도록 루트 .dockerignore를 추가했다. Docker/Compose 및 실제 배포 방식은 아직 구성·확정하지 않았다.
 - 문서와 제외 규칙만 변경했다. 실제 인프라·DB·DNS·인증서·운영 예약 변경이나 서버 접속은 수행하지 않았다.

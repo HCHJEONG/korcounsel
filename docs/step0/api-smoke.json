@@ -1,0 +1,166 @@
+{
+  "checked_at": "2026-09-09T08:26:37.5953974Z",
+  "scope": "Step 0 read-only API smoke; not MVP collection or adapter test",
+  "requests": [
+    {
+      "label": "list-page1",
+      "requested_at": "2026-09-09T08:26:33.7665616Z",
+      "endpoint": "https://www.law.go.kr/DRF/lawSearch.do",
+      "parameters": {
+        "display": "1",
+        "nb": "2017도953",
+        "org": "400201",
+        "page": "1",
+        "target": "prec",
+        "type": "JSON"
+      },
+      "credential_variable": "LAW_GO_KR_OC",
+      "http_status": 200,
+      "bytes": 769,
+      "content_type": "application/json; charset=UTF-8",
+      "sha256": "37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+      "raw_saved": false,
+      "root_fields": [
+        "PrecSearch"
+      ],
+      "total_count": "1",
+      "page": "1",
+      "prec_shape": "object",
+      "item_count": 1,
+      "document_ids": [
+        "195490"
+      ],
+      "item_fields": [
+        "id",
+        "사건번호",
+        "데이터출처명",
+        "사건종류코드",
+        "사건종류명",
+        "선고",
+        "선고일자",
+        "판례일련번호",
+        "판결유형",
+        "법원종류코드",
+        "법원명",
+        "판례상세링크",
+        "사건명"
+      ],
+      "parse_status": "parsed",
+      "raw_not_saved_reason": "Credential substring detected in payload; original bytes deliberately not persisted during smoke. Field causing match not established."
+    },
+    {
+      "label": "list-page2",
+      "requested_at": "2026-09-09T08:26:35.1410703Z",
+      "endpoint": "https://www.law.go.kr/DRF/lawSearch.do",
+      "parameters": {
+        "display": "1",
+        "nb": "2017도953",
+        "org": "400201",
+        "page": "2",
+        "target": "prec",
+        "type": "JSON"
+      },
+      "credential_variable": "LAW_GO_KR_OC",
+      "http_status": 200,
+      "bytes": 158,
+      "content_type": "application/json; charset=UTF-8",
+      "sha256": "5581b900cc03ca15163889797a3716fc2a28e554a7a64101fd3d4687a8ab626d",
+      "raw_saved": true,
+      "raw_path": "data/raw/step0-20260909T082633Z/list-page2.json",
+      "root_fields": [
+        "PrecSearch"
+      ],
+      "total_count": "1",
+      "page": "2",
+      "prec_shape": "absent",
+      "item_count": 0,
+      "parse_status": "parsed_empty",
+      "audit_note": "Rechecked saved JSON: PrecSearch has no prec property. Initial audit incorrectly wrapped null as an item; report corrected without another request."
+    },
+    {
+      "label": "detail",
+      "requested_at": "2026-09-09T08:26:36.3316943Z",
+      "endpoint": "https://www.law.go.kr/DRF/lawService.do",
+      "parameters": {
+        "ID": "195490",
+        "target": "prec",
+        "type": "JSON"
+      },
+      "credential_variable": "LAW_GO_KR_OC",
+      "http_status": 200,
+      "bytes": 7335,
+      "content_type": "application/json; charset=UTF-8",
+      "sha256": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "raw_saved": true,
+      "raw_path": "data/raw/step0-20260909T082633Z/detail.json",
+      "root_fields": [
+        "PrecService"
+      ],
+      "detail_fields": [
+        "판시사항",
+        "참조판례",
+        "사건종류명",
+        "판결요지",
+        "참조조문",
+        "선고일자",
+        "법원명",
+        "사건명",
+        "판례내용",
+        "사건번호",
+        "사건종류코드",
+        "판례정보일련번호",
+        "선고",
+        "판결유형",
+        "법원종류코드"
+      ],
+      "section_lengths": {
+        "판시사항": 380,
+        "판결요지": 0,
+        "참조조문": 99,
+        "참조판례": 284,
+        "판례내용": 2329
+      },
+      "body_has_markup": true,
+      "detail_id": "195490",
+      "parse_status": "parsed",
+      "section_length_unit": "UTF-16 code units (.NET String.Length), not evidence offsets"
+    },
+    {
+      "label": "detail-xml",
+      "requested_at": "2026-09-09T08:26:37.4848305Z",
+      "endpoint": "https://www.law.go.kr/DRF/lawService.do",
+      "parameters": {
+        "ID": "195490",
+        "target": "prec",
+        "type": "XML"
+      },
+      "credential_variable": "LAW_GO_KR_OC",
+      "http_status": 200,
+      "bytes": 7522,
+      "content_type": "text/xml; charset=UTF-8",
+      "sha256": "7440a1930fcacb3b5b8aaf3bc10fa70d3267d140267cc0c62264cba941eb2024",
+      "raw_saved": true,
+      "raw_path": "data/raw/step0-20260909T082633Z/detail-xml.xml",
+      "xml_root": "PrecService",
+      "detail_fields": [
+        "판례정보일련번호",
+        "사건명",
+        "사건번호",
+        "선고일자",
+        "선고",
+        "법원명",
+        "법원종류코드",
+        "사건종류명",
+        "사건종류코드",
+        "판결유형",
+        "판시사항",
+        "판결요지",
+        "참조조문",
+        "참조판례",
+        "판례내용"
+      ],
+      "parse_status": "parsed"
+    }
+  ],
+  "other_provider_key_used": false
+}

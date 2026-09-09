@@ -4,7 +4,7 @@
 
 국가법령정보 공동활용 OPEN API에서 판례를 수집하고, 판시사항·판결요지·판결이유·인용을 구조화하여 쟁점–답변–근거를 연결합니다. 자동 검증 결과와 사람의 검토 결과를 구분하며 원본과 변경 이력을 보존합니다.
 
-> 현재 상태: 설계 및 문서 준비 단계입니다. 앱, CLI, DB schema, 배포 스크립트와 AWS 예약은 아직 구현하지 않았습니다. 아래 구성과 명령은 구현 목표이며 현재 실행 가능한 기능 목록이 아닙니다.
+> 현재 상태: Step 0 레거시 분석과 공식 API 소량 조회를 완료했습니다. 앱, CLI, DB schema, 배포 스크립트와 AWS 예약은 아직 구현하지 않았습니다. 아래 구성과 명령은 구현 목표이며 현재 실행 가능한 기능 목록이 아닙니다.
 
 ## 문서 안내
 
@@ -105,13 +105,13 @@ scripts/                                     # 로컬 개발·수집·유지보�
     .gitkeep
 ```
 
-`.fordeploy/aws-backup/`은 로컬 배포 자료와 백업 준비 공간입니다. 현재 `.gitkeep`만 만들며 실제 환경파일·DB dump·이미지 archive는 생성하지 않습니다. 해당 폴더 생성은 실제 AWS 백업 구성을 완료했다는 뜻이 아닙니다.
+`.fordeploy/aws-backup/`은 로컬 배포 자료와 백업 준비 공간입니다. 사용자가 제공한 `.env`가 있으며 Git에서 제외합니다. `.gitkeep`만 추적하고 DB dump·이미지 archive는 생성하지 않았습니다. 해당 폴더 생성은 실제 AWS 백업 구성을 완료했다는 뜻이 아닙니다.
 
 ## 로컬 개발 — 구현 후 사용할 경로
 
 현재 `pyproject.toml`, 프런트 package.json, migration 및 CLI가 없으므로 아래 명령은 아직 실행할 수 없습니다.
 
-구현 시 Python 3.12, uv, 고정된 Node.js·프런트 패키지 관리자, 격리된 개발 PostgreSQL을 준비합니다. 환경 설정에는 `LAW_OPEN_API_OC`, `DATABASE_URL`, `DATA_DIR`, `LOG_LEVEL`, 인증·세션 설정이 포함됩니다. `.env.example`에는 비밀값 없는 예시만 작성합니다.
+구현 시 Python 3.12, uv, 고정된 Node.js·프런트 패키지 관리자, 격리된 개발 PostgreSQL을 준비합니다. 환경 설정에는 `LAW_OPEN_API_OC`(호환 alias `LAW_GO_KR_OC`), `DATABASE_URL`, `DATA_DIR`, `LOG_LEVEL`, 인증·세션 설정이 포함됩니다. `.env.example`에는 비밀값 없는 예시만 작성합니다.
 
 DB 초기화/migration 후 실행할 목표 데모:
 
@@ -157,3 +157,12 @@ unit은 외부 서비스 없이, DB integration은 격리된 실제 PostgreSQL�
 - 인접 `onju-ai-kr`: AGENTS/DESIGN의 작업·검수·시각·배포 원칙을 참고했습니다. 해당 프로젝트의 계정·도메인·데이터·AI 기능은 이전하지 않습니다.
 - 공개 법률 자료도 출처·수집 시각·사용 조건을 기록합니다. 코드 라이선스와 원천 데이터 재배포 조건은 별도 확인하며 현재 임의의 오픈소스 라이선스를 선언하지 않습니다.
 - 인증정보·환경파일·DB dump·원본 대량 데이터는 Git과 이미지에 넣지 않습니다. 소규모 fixture는 출처와 사용 가능 범위를 기록합니다.
+
+## Step 0 결과 — 2026-09-09
+
+- [레거시 이전 분석](docs/migration-from-legacy.md): 실제 두 저장소 분석, 필드 연결, A/B/C 규칙과 새 모듈 배치.
+- [공식 API 계약](docs/law-open-api-contract.md): 사용자 제공 인증값으로 목록·상세 JSON/XML 네 요청 성공. 호출 제한·승인 범위의 미확인 항목을 별도로 기록.
+- [회귀 fixture](tests/fixtures/legacy/regression-cases.json): 발견한 손실·경계 문제를 합성 사례 23건으로 기록. 아직 신규 구현을 실행하는 테스트는 아님.
+- [docs 안내](docs/README.md): 현재 산출물과 단계별로 추가할 문서 구분.
+
+환경파일의 값은 변경하지 않았습니다. API 키 확인은 DB·세션 설정 준비나 AWS 배포 완료를 뜻하지 않습니다. 다음 구현 단계는 Step 1 scaffold입니다.

@@ -42,7 +42,7 @@
 - tests/fixtures/, unit/, integration/, regression/: 테스트 자료와 검증.
 - scripts/: 로컬 수집·개발·유지보수 도구.
 - .fordeploy/: 배포 스크립트와 설정. 배포 설명은 README.md와 docs/에 둔다.
-- .fordeploy/aws-backup/: 로컬 배포 자료 staging 공간. 현재 .gitkeep 외 실제 자료는 없다.
+- .fordeploy/aws-backup/: 로컬 배포 자료 staging 공간. 사용자가 제공한 .env가 있으며 Git에서 제외한다. .gitkeep만 기본 추적한다.
 - ops/를 별도 배포 루트로 만들지 않는다. 기존 PLAN의 ops 개념은 .fordeploy로 통합한다.
 
 ## 레거시와 외부 자료
@@ -148,7 +148,7 @@
 ## Secret 및 배포 staging
 
 - .fordeploy/aws-backup/은 .gitkeep만 기본 추적한다. 실제 env, private key, DB dump, image archive, 배포 backup은 Git에서 제외한다.
-- 현재 실제 .env 파일은 생성하지 않는다. 향후 운영자가 선택한 명시적 환경파일 경로를 사용하고 참조 저장소의 ONJU_* 값·계정·환경파일을 읽거나 가져오지 않는다.
+- 사용자가 제공한 .fordeploy/aws-backup/.env를 명시적 로컬 설정 경로로 사용할 수 있다. 값을 출력하거나 임의로 변경하지 않는다. LAW_OPEN_API_OC와 LAW_GO_KR_OC alias 계약은 docs/law-open-api-contract.md를 따른다. 운영자가 선택한 명시적 환경파일 경로를 사용하고 참조 저장소의 ONJU_* 값·계정·환경파일을 읽거나 가져오지 않는다.
 - .env.example에는 비밀값 없는 설명·예시만 둔다. runtime secret을 정적 번들·이미지·빌드 로그·manifest에 포함하지 않는다.
 - Docker 도입 시 .dockerignore를 유지하고 context가 달라지면 해당 경계에도 동등한 제외 규칙을 적용한다.
 - 실제 dump나 local DB를 AWS로 자동 이전하지 않는다. migration·seed·운영 import는 각각 별도 작업으로 구분한다.

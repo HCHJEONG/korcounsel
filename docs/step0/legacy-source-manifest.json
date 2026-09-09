@@ -1,0 +1,118 @@
+{
+  "checked_date": "2026-09-09",
+  "method": "Root Python file inventory; selected source sections manually read, not a full recursive code audit. No imports, execution, or pickle loading.",
+  "roots": [
+    "I:\\VSCodeBases\\web2df",
+    "I:\\VSCodeBases\\df2preproc"
+  ],
+  "files": [
+    {
+      "repo": "web2df",
+      "file": "_00_crawl_lawnb.py",
+      "sha256": "e3a81406224ce159076d432eb38af472bd753a625a67ac038b98a7055908515a",
+      "line_count": 289
+    },
+    {
+      "repo": "web2df",
+      "file": "_01_crawl_glaw_and_lawgo_metadata.py",
+      "sha256": "fde60360b99866aab26276a06276c1c4f88dbeb9271e536bf725439dba96f359",
+      "line_count": 235
+    },
+    {
+      "repo": "web2df",
+      "file": "_02_crawl_glaw_updated_panre.py",
+      "sha256": "157a68807322e67e5b86f03c28648e67c6beb2424976fd14edce8ed0b446354b",
+      "line_count": 145
+    },
+    {
+      "repo": "web2df",
+      "file": "_03_create_new_df.py",
+      "sha256": "3c0353d2c429248be54fa296b9536b2380e649769fd53483dd6b8fb4cfaeb330",
+      "line_count": 2189
+    },
+    {
+      "repo": "web2df",
+      "file": "_04_concat_old_and_new_df_corpus_then_create_fullest.py",
+      "sha256": "23410f1b67c139a7c2f6ee12eed6550749ce7a2b5f89ee7096ca3867cbd62fe9",
+      "line_count": 583
+    },
+    {
+      "repo": "web2df",
+      "file": "_05_create_df_lmeta.py",
+      "sha256": "6ac346ba88f28e4217da28714d27efa0e661d01115827ce0019ec3030bfe5013",
+      "line_count": 114
+    },
+    {
+      "repo": "web2df",
+      "file": "_06_crawl_lawgo_jomun_image.py",
+      "sha256": "659d20a77dfb55123f6f7b29616d2a2d9474c06ff19df3bceff9c2a526d0f063",
+      "line_count": 497
+    },
+    {
+      "repo": "web2df",
+      "file": "_07_jomun_update.py",
+      "sha256": "f4cda53c3473b34b113032e80ad2dd7fc8a62e37ab748696e999ef3e2025657b",
+      "line_count": 63
+    },
+    {
+      "repo": "web2df",
+      "file": "_08_case_df_summary2full.py",
+      "sha256": "1fd02d4747eccf62d815dc6d38eaf51dbd4125ca2e4ccf3fac46fb9afada168a",
+      "line_count": 160
+    },
+    {
+      "repo": "web2df",
+      "file": "_09_case_df2_summary2fullest.py",
+      "sha256": "e1ee2c378623c4b2a813d24279239279650703141614672d85c580a5e30a2f0b",
+      "line_count": 220
+    },
+    {
+      "repo": "web2df",
+      "file": "_10_create_updated_df_lawgo_casesystem.py",
+      "sha256": "d5e7e4e1f9e2759e3a4e39242df866423f0ffe63e8dbd8ec152fe8a031101618",
+      "line_count": 1181
+    },
+    {
+      "repo": "web2df",
+      "file": "_11_law_open_api_scraping.py",
+      "sha256": "a9e8c4cd8fa2ac6ce58a474f146b736915336241098d964966429309eb036a26",
+      "line_count": 796
+    },
+    {
+      "repo": "web2df",
+      "file": "_util_crawl_buildingregister.py",
+      "sha256": "e1ff8c6433dbd0d3f7aae0d21e53099b2602f193d46f285b49a7bcb1796d9f3f",
+      "line_count": 303
+    },
+    {
+      "repo": "web2df",
+      "file": "_util_get_legal_jargons_list.py",
+      "sha256": "c3a70071913c53fd57c23e9997dc03fda81fe1152cc2dce1554cce0c0f13217d",
+      "line_count": 144
+    },
+    {
+      "repo": "web2df",
+      "file": "_util_web2df_sqlite_db_manager.py",
+      "sha256": "61ccb91ab5b5bbf155f988bccfb40827cf2ea35bae0dd57929166dc59bd180cd",
+      "line_count": 107
+    },
+    {
+      "repo": "web2df",
+      "file": "util_case_df2case_df_for_ml.py",
+      "sha256": "c9d497f438833aab1a31ecbd05f12cbe2b2d4f2d4909d8456f3513135b45f473",
+      "line_count": 156
+    },
+    {
+      "repo": "web2df",
+      "file": "util_df_standard_case.py",
+      "sha256": "992350d8f02d6424b84c28862bbc4825d4dca691f85819fa42d9f3056ad55252",
+      "line_count": 164
+    },
+    {
+      "repo": "df2preproc",
+      "file": "_1_glaw_df2preproc.py",
+      "sha256": "66b7dce9f4fb0a3284694fc2889cee8fa5be0edf66b6217f6f2304c49cc8f25f",
+      "line_count": 544
+    }
+  ]
+}
