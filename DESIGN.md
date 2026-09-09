@@ -82,7 +82,7 @@
 
 ## 대시보드
 
-- 총 수집 판례, 구조화 판례, 쟁점 후보, 자동 통과, 검토 필요, 실패, gold 수를 compact summary로 제공한다.
+- source record·canonical 판례·구조화/full-text/scan·쟁점·gold 수를 구분하고 identity·inventory delta/완전성·asset 부분 실패를 별도로 집계한다.
 - 각 수치는 같은 run/dataset 범위를 사용하고 집계 기준을 표시한다. 전체 누적과 최근 실행을 혼합하지 않는다.
 - 상태 수치를 누르면 해당 filter가 적용된 목록으로 이동한다.
 - 오류 유형, 근거 미확보, ambiguous/unmatched를 우선 탐색할 수 있게 한다.
@@ -97,7 +97,7 @@
 
 - 실행·법원·기간·사건번호·연결 상태·품질 상태 filter를 제공한다.
 - 판례 목록은 행 중심이며 법원, 날짜, 사건번호, 짧은 제목, 상태를 표시한다.
-- 선택 판례의 판시사항·판결요지·판결이유·참조조문·참조판례 구조를 compact tree/목록으로 보여준다.
+- 선택 source version에 실제 존재하는 section·document block·asset reference를 표시한다. editorial 데이터가 없으면 정상 안내와 전문/artifact 보기로 연결한다.
 - 병합 사건번호와 긴 제목은 상세 확인 경로를 유지한다. 중요한 식별자를 말줄임만으로 숨기지 않는다.
 - pagination과 결과 수를 표시하며 데이터 전체를 한 번에 내려받지 않는다.
 
@@ -222,3 +222,18 @@
 | 제한된 색상·3단 레이아웃·상위 이동 | 그대로 계승하되 판례 검수 동선으로 조정 |
 | Next.js frontend | React 19 + Vite + TypeScript SPA |
 | SES·대화·원고 업로드·AI 초안·출판 | 현재 범위에서 제외 |
+
+## Identity·inventory·source fidelity UX
+
+- canonical 판례 상세 안에서 scourt/lawgo source ID와 정확한 source version을 선택한다. 버전별 원문을 임의로 합친 “완전 원문”을 만들지 않는다. source 선택 시 evidence도 그 artifact에 맞춰 표시한다.
+- identity EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT는 issue alignment와 별도 badge다. 필드별 비교·충돌·사유를 열어 볼 수 있고 규칙 점수를 정확도 확률처럼 표시하지 않는다. Phase 1은 읽기, 연결 수정·merge/split은 Phase 1.5 이력 작업이다.
+- inventory 상세에는 source·검색 범위·관찰 시각·완전성·NEW/UNCHANGED/CHANGED/MISSING·실패 page와 재개 상태를 보여준다. metadata 미변경을 본문 최신성 보장으로 표시하지 않는다.
+- 작업 등록에서 신규 취득과 기존 ID refresh를 구분한다. 선고일 filter와 신규 등록 기준을 혼동하지 않도록 입력 범위를 설명한다.
+- 구조화 데이터 없음, 아직 미취득, 파싱 실패, source 누락은 서로 다른 정상/오류 상태다. 이유만 있는 판례나 scan은 전문/artifact 중심 검수 흐름을 제공한다.
+- 문서의 알려진 순서에 image placeholder를 두고 원래 참조·alt·전후 문맥·미확보 사유를 보여준다. asset 미취득 시 깨진 이미지 아이콘이나 생성된 대체 그림을 사용하지 않는다.
+- PDF 유형 미확인·OCR 필요·OCR 미처리를 구분한다. 아직 없는 OCR 실행·해석 버튼은 노출하지 않는다. source tier는 품질 순위로 표시하지 않는다.
+- 원문 HTML은 안전한 파생 viewer로 보여주고 script·임의 remote asset을 자동 실행/로드하지 않는다. asset 파일은 권한 있는 API 경로로 제공한다.
+- case ingestion 성공과 visual acquisition 부분 실패가 동시에 보일 수 있다. 필요한 visual evidence가 부족한 gold 제외 사유를 쟁점 상세에서 설명한다.
+- source/identity revision 변경은 기존 승인/검토 대상에 반영하되 과거 release와 직접 링크는 그대로 유지한다.
+
+추가 브라우저 검증: source/version 전환, 정상 no-editorial/full-text/scan 화면, reference-only 이미지 문맥·순서, UNKNOWN 표시, identity 복수 후보·충돌, 부분 snapshot·asset 실패, 과거 identity revision 링크. canonical/source/issue 수를 혼동하지 않는 집계도 확인한다.

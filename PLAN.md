@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: 초안 / 구현 전
+> 상태: Step 0 및 추가 레거시 조사·설계 반영 / 구현 전
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 이번 작업 범위: PLAN.md 갱신. 코드 구현, 서버 크기 변경, DNS·HTTPS 설정, AWS 예약 생성과 데이터 수집은 후속 작업으로 진행한다.
+> 이번 작업 범위: 2026-09-09 추가 지시의 identity·incremental·source fidelity를 관련 문서 전반에 반영한다. 코드·신규 수집·AWS 변경은 수행하지 않는다. 기존 Step 0 API smoke 기록은 유지한다.
 
 ## 1. 목적과 성공 기준
 
@@ -10,9 +10,12 @@
 
 ```text
 공식 공개 법률 데이터
+  → SOURCE INVENTORIES / 증분 취득 / refresh
   → RAW 원본 보존
   → NORMALIZED 식별자·텍스트 정규화
-  → STRUCTURED 판례 구조·인용 추출
+  → CANONICAL IDENTITY / source별 버전·연결 결정
+  → STRUCTURED / FULL TEXT / SCAN·ASSET 분기
+  → 판례 구조·인용 및 이미지 참조 보존
   → 쟁점 / 답변 / 근거 연결
   → 검증
   → GOLD 데이터셋 및 manifest
@@ -25,7 +28,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 - 현재 프로젝트 폴더는 `korcounsel`이며, 코드 구현 전 문서를 준비하는 단계다.
 - 배포 이름은 `korean-legal-gold`, Python 패키지는 `klegal_gold`, CLI는 `klegal`을 잠정 사용한다. 현재 폴더나 Git 저장소 이름은 자동 변경하지 않는다.
 - 사용자가 안내한 레거시 저장소 탐색 기준 경로는 **`I:\VSCodeBases`**다.
-- 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 하위 경로와 코드 내용은 아직 확인하지 않았다.
+- 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 실제 두 레포의 경로와 관련 코드를 확인했으며 docs의 두 레거시 조사 문서에 근거를 기록했다.
 - 레거시는 reference implementation으로만 활용한다. 새 프로젝트에서 import하거나 런타임 의존성으로 연결하지 않으며, 분석 대상 저장소는 수정하지 않는다.
 - `I:\VSCodeBases`는 개발 시 참고 경로다. 애플리케이션 코드나 실행 설정에 필수 절대경로로 넣지 않는다.
 - 공식 API 명세, 인증·호출 제한·이용 조건 및 실제 응답은 구현 전 공식 자료로 확인한다. Step 0의 확인 결과와 미확인 범위는 docs/law-open-api-contract.md에 기록했다.
@@ -34,9 +37,11 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 공식 판례 API adapter, 원본 저장, domain model, metadata 및 법률 텍스트 정규화, 구조 파싱, 판시사항·요지 alignment, evidence/provenance, 검증 보고서, 버전·manifest, JSONL·Parquet, 단계별 CLI, 테스트와 재현 문서를 구현한다. 처음부터 korcounsel.com에서 일반 브라우저로 접속하는 소수 사용자용 인증 웹 앱을 제공하고, 운영 환경의 수집·가공·검증·export 로직은 기존 aws-bastion EC2에서 실행한다. 실행 요약 대시보드, 원문·쟁점 검수 화면, 작업 등록·진행 조회 및 평일 가동 자동화를 포함한다. 프런트는 React 19 + Vite + TypeScript, 백엔드는 FastAPI, 운영 DB는 같은 EC2의 PostgreSQL로 확정한다.
 
+추가 초기 범위: 독립 canonical identity와 source별 ID, scourt/law_go_kr inventory·증분/refresh, optional editorial fields, source artifact 분류 및 Stage A/B 탐지·참조 보존. 기존 100건 API 데모와 아래 identity/incremental·fidelity 완료 기준을 각각 검증한다.
+
 ### Phase 1에서 제외
 
-LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, GPU 의존성, vector database, RAG, LangChain, LlamaIndex, agent framework, Elasticsearch, 마이크로서비스 분리는 제외한다. PostgreSQL은 사용자 후속 결정에 따라 Phase 1에 포함하며 초기 운영 DB로 사용한다. 사용자 후속 결정에 따라 웹 UI와 이를 제공하는 웹 서버 및 필요한 내부 HTTP endpoint는 포함한다. 범용 공개 API 서비스와 독립적인 다중 서버 구성은 초기 범위에서 제외한다. HTML 페이지 scraping과 추가 source adapter도 후속 범위다.
+LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, GPU 의존성, vector database, RAG, LangChain, LlamaIndex, agent framework, Elasticsearch, 마이크로서비스 분리는 제외한다. PostgreSQL은 사용자 후속 결정에 따라 Phase 1에 포함하며 초기 운영 DB로 사용한다. 사용자 후속 결정에 따라 웹 UI와 이를 제공하는 웹 서버 및 필요한 내부 HTTP endpoint는 포함한다. 범용 공개 API 서비스와 독립적인 다중 서버 구성은 초기 범위에서 제외한다. scourt identity/inventory 및 fidelity 확보에 필요한 source adapter는 초기 확장 milestone에 포함한다. 공식 API→direct HTTP→세션 보조 HTTP→browser 순으로 검증하고 필요한 browser automation을 일괄 배제하지 않는다. LawnB·기타 source 수집, OCR·vision·LLM 해석과 완전한 layout engine은 후속 범위다.
 
 ## 3. 기술 및 데이터 원칙
 
@@ -78,7 +83,8 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - 쟁점·답변의 original은 원문 발췌를 유지하고 normalized에는 결정론적 변환만 적용한다.
 - 판례 전체 참조조문·참조판례와 쟁점에 직접 연결된 authority의 범위를 구분한다.
 - 잠정 quality 상태는 `passed`, `needs_review`, `failed`다. 이는 자동 검증 결과이며 사람의 검수 결과인 `review_status`와 분리한다. 자동 통과를 법률적 의미의 정확성이나 사람의 승인으로 간주하지 않는다. 구체적 오류 코드와 포함 계약은 domain model 단계에서 고정한다.
-- 기본 gold에는 schema/provenance/중복/encoding 검증을 통과하고 쟁점·답변이 있으며, alignment가 확실하고, 유효한 원문 위치의 evidence가 하나 이상 있는 record를 포함한다.
+- LegalCase 저장 유효성과 gold LegalIssueUnit 자격은 분리한다. issues/summaries가 비거나 reasoning/full_text가 없어도 관찰한 artifact와 유효한 식별/provenance가 있으면 정상 판례다. 없는 editorial 데이터를 생성하지 않는다.
+- 기본 gold에는 schema/provenance/중복/encoding, 확실한 issue-answer alignment, 유효 evidence 및 필요한 source fidelity를 통과한 record만 포함한다. 불확실한 cross-source 결합이나 필요한 visual evidence 미확보는 후보로 남긴다. source 간 UNMATCHED 자체가 정상 source-local 쟁점의 자동 탈락 사유는 아니다.
 - 빈 답변, evidence 미확보, 모호한 alignment는 후보와 검토 보고서에 보존한다. 검증 실패도 원본이나 후보를 삭제하지 않고 오류 보고서에 남긴다.
 
 ### 중복, 버전 및 보안
@@ -86,7 +92,7 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - 원본 버전은 `source_system + source_document_id + raw_content_hash`로 식별한다. 같은 내용은 재사용하고 변경된 내용은 새 버전으로 보존한다.
 - 재다운로드 생략과 원문 변경을 확인하기 위한 refresh를 구분한다. 서버에 요청하지 않고 내용 변경 여부를 알 수 있다고 가정하지 않는다.
 - 처리 키에는 입력 hash, parser/normalizer/schema 버전과 관련 설정을 포함한다. 규칙이 바뀌면 필요한 단계부터 재처리한다.
-- 쟁점 ID는 판례 원본 버전과 안정적인 쟁점 위치 등에 기반해 결정론적으로 생성한다.
+- source key, source content version, 독립 canonical ID와 쟁점 revision을 구분한다. canonical ID 생성 알고리즘은 Step 2에서 안정성·재현성·merge/split을 검토해 결정하며 source ID 자체를 쓰지 않는다. 쟁점 revision은 실제 source version·위치·규칙에 기반한다.
 - 실행마다 `run_id`를 부여하고 dataset release의 `dataset_version`과 구분한다. 실행 이력에는 입력 snapshot, 설정, 단계별 상태·건수·오류를 기록한다. manifest에는 dataset/schema/parser/normalizer 버전, 고정된 입력 목록·hash, 코드 버전, 설정, 건수와 출력 checksum을 기록한다.
 - 같은 입력 snapshot·코드·설정에서는 record ID·내용·순서가 같아야 한다. 실행 시각 등 run metadata는 재현성 비교에서 분리한다.
 - private repository를 전제로 `.env`, 인증정보, 대규모 raw/artifact는 commit하지 않는다. 요청 로그와 manifest에도 credential을 넣지 않는다.
@@ -104,7 +110,12 @@ docs/
 src/klegal_gold/
   cli.py / config.py
   domain/       # case, issue, authority, evidence, provenance
-  sources/      # CaseSource protocol, law_open_api client/models/mapper
+  sources/      # CaseSource, law_go_kr 및 scourt 취득 adapter
+  identity/     # 후보·복합 신호·점수·연결 결정
+  ingestion/    # inventory·delta·fetch ledger·refresh
+  documents/    # artifact 분류·ordered blocks
+  assets/       # detect·reference manifest, 후속 acquire
+  enrichment/   # 후속 조문 링크 보강
   normalize/    # case_number, court, dates, whitespace, numbering, legal_text
   parse/        # case_structure, issues, gists, reasoning, statutes, precedents
   segment/      # SentenceSplitter protocol, regex_splitter
@@ -149,6 +160,15 @@ scripts/
 
 2026-09-09 완료 기록: docs/migration-from-legacy.md, docs/law-open-api-contract.md, docs/step0/의 비밀값 없는 실측·소스 해시 기록 및 합성 회귀 fixture 23건을 작성했다. 사용자 제공 LAW_GO_KR_OC로 공식 API 네 요청이 성공했다. 고정 quota·전체 오류 schema·계정별 운영 승인 범위는 확인되지 않아 Step 3/운영 전 확인 항목으로 명시했다. 앱 구현·pytest·AWS 변경은 수행하지 않았다.
 
+### Step 0A — 추가 identity·asset 조사와 설계 반영
+
+- [x] `_01`~`_07`의 source IDs·복합 매칭·뒤 숫자 prefix 보호·증분·이미지/조문 보강 책임을 조사한다.
+- [x] `docs/legacy-case-identity-and-assets.md`에 A–G 결과와 실제 저장 파일의 표식·이미지 경로 관찰을 기록한다.
+- [x] identity/incremental/fidelity, architecture/schema/provenance 계약과 추가 합성 fixture 30건을 작성한다.
+- [x] 기존 문서의 source ID=canonical 오해, Selenium 일괄 폐기, 필수 editorial 구조 전제를 수정한다.
+
+문서 조사 완료. 실제 1:1 source 대조, 양 source 이미지 손실 비교 및 PDF/scan 실물은 미검증이며 아래 구현 milestone에서 검증한다. 합성 fixture 존재를 구현 테스트 통과로 세지 않는다.
+
 ### Step 1 — 프로젝트 scaffold와 품질 도구
 
 - [ ] uv 기반 src-layout, Python 3.12 제한, dependency/lockfile, ruff/mypy/pytest 설정을 구성한다.
@@ -160,7 +180,8 @@ scripts/
 
 ### Step 2 — Domain model과 데이터 계약
 
-- [ ] Pydantic `LegalCase`, `LegalIssueUnit`, `LegalAuthority`, `EvidenceSpan`, `Provenance`를 정의한다.
+- [ ] Pydantic LegalCase/LegalIssueUnit/LegalAuthority/EvidenceSpan/Provenance와 SourceCaseIdentifier/CanonicalCaseIdentity/IdentityResolution/InventorySnapshot/SourceArtifact/VisualAssetReference/DocumentBlock을 정의한다.
+- [ ] canonical ID 생성·registry 재현·merge/split 정책을 검토해 기록하고 nullable editorial/full_text·field availability·fidelity 상태를 구현한다.
 - [ ] `CaseReference`, `RawLegalCase`와 구조 파싱용 번호·계층·원문 위치 정보를 정의한다.
 - [ ] 사건번호, 법원, 날짜, 사건명, 판시사항, 요지, 이유, 인용, URL, 원본 hash의 타입과 결측 정책을 정한다.
 - [ ] ID 생성, provenance, offset, alignment/quality 상태, 오류 코드, gold 포함 기준과 schema 버전을 문서화한다.
@@ -169,7 +190,7 @@ scripts/
 
 ### Step 2A — PostgreSQL persistence 및 migration
 
-- [ ] 도메인 모델과 DB 저장 모델을 분리하고 사용자·세션, 작업·실행 이력, 조회용 판례·쟁점·근거, dataset manifest 참조의 schema를 설계한다.
+- [ ] 도메인/DB를 분리하고 사용자·세션·작업·판례 projection 외 source-key unique·canonical registry/link revisions·inventory·fetch/asset ledger·manifest 참조를 설계한다. registry와 연결 이력을 보존 대상으로 둔다.
 - [ ] PostgreSQL driver·접근 도구·migration 도구를 선택하고 버전을 고정한다. Pydantic domain model을 ORM 모델에 종속시키지 않는다.
 - [ ] 최초 schema migration, 빈 DB 초기화 및 기존 버전에서의 업그레이드를 검증한다.
 - [ ] job claim, 중복 제출 방지, 상태 전이, heartbeat/lease 또는 동등한 복구 규칙을 정의하고 트랜잭션으로 구현한다.
@@ -188,12 +209,28 @@ scripts/
 
 완료 기준: credential 없는 테스트가 통과하며 실제 인증 설정이 있으면 소량의 API 응답을 검증한다. live 미실행은 명시한다.
 
+### Step 3A — scourt acquisition 전략 검증
+
+- [ ] 실제 source 조건·세션·DOM·popup·iframe·원문/asset 경로를 확인하고 공식 API→HTTP→세션 보조→browser 전략을 비교한다.
+- [ ] browser가 필요하면 Python 3.12/uv·headless·download/popup/iframe·network/DOM·Windows/Linux·testability로 Selenium/Playwright를 비교해 결정한다.
+- [ ] scourt metadata snapshot·contId 본문 취득 adapter를 구현하고 소량 live와 offline fixture를 구분해 검증한다.
+
+완료 기준: 선택 근거와 접근 조건, 동일 표본의 metadata·원문 충실도·자원 사용을 기록한다. 단순 패키지 교체나 과거 URL 재사용만으로 완료하지 않는다.
+
 ### Step 4 — Raw persistence 및 ingest
 
 - [ ] 목록·본문 원본 바이트, hash, 수집 metadata 및 비밀값을 제외한 요청 정보를 저장한다.
 - [ ] 동일 원본 재사용, 변경 버전 보존, 실패 재시도·중단 후 재개와 원자적 저장을 구현한다.
 
 완료 기준: 동일 응답 재실행 시 중복이 없고 원본 변경 시 이전 버전이 남으며 저장한 원본만으로 다음 단계를 재실행할 수 있다.
+
+### Step 4A — Inventory 기반 incremental ingestion
+
+- [ ] source/retrieved_at/total_count/source_ids/metadata_hash/collector_version과 per-ID hash·범위·완전성·실패 page를 snapshot으로 보존한다.
+- [ ] NEW/UNCHANGED/CHANGED/MISSING 비교, source availability, fetch ledger·실패 재시도·checkpoint를 구현한다.
+- [ ] 신규 ID 취득과 기존 ID refresh를 분리하고 SOURCE_UPDATED를 실제 재조회 hash로 검증한다. 부분 snapshot으로 삭제·철회를 추론하지 않는다.
+
+완료 기준: 오래된 선고일의 신규 ID, 재실행·중복, 같은 ID 수정, source disappearance/복귀, 범위 변화, 중단 후 미완료 fetch 재개를 검증한다.
 
 ### Step 5 — 판례 metadata 정규화
 
@@ -203,6 +240,14 @@ scripts/
 
 완료 기준: `대법원 2017. 4. 13. 선고 2017도953 판결`, 병합 사건, 법원명 변형, 날짜 오류·결측 fixture를 검증하고 실패 사유를 보존한다.
 
+### Step 5A — Cross-source identity resolution
+
+- [ ] 후보 생성과 전체 사건번호·법원 계층·날짜·disposition 기반 결정론적 matcher를 분리한다.
+- [ ] EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT, score·signals·reason·resolver version을 저장한다.
+- [ ] 복수 후보·약한 fuzzy·결측·모순을 자동 확정하지 않고 canonical link revision과 source별 provenance를 보존한다.
+
+완료 기준: scourt snapshot→신규 contId 취득→lawgo 후보 매칭→독립 canonical 생성·source IDs 유지→confidence/reason 및 미연결 출력이 가능하다. source 추가·relink에도 과거 dataset/검토가 바뀌지 않음을 검증한다.
+
 ### Step 6 — 판례 구조 파싱
 
 - [ ] 판시사항, 판결요지, 판결이유, 참조조문, 참조판례를 추출한다.
@@ -210,6 +255,14 @@ scripts/
 - [ ] 빈 section, 다중 항목, 중첩 번호, 응답 markup 변형을 테스트한다.
 
 완료 기준: fixture에서 구조화된 LegalCase를 만들고 각 결과를 원문으로 추적할 수 있다.
+
+### Step 6A — Source Fidelity 1: Detect / Preserve Reference
+
+- [ ] structured/full-text/scan 처리 유형과 optional issues/summaries/reasoning을 지원한다. field 부재·미취득·parse 실패를 구분한다.
+- [ ] image/PDF reference, nullable has_visual_assets/count/requires_ocr와 탐지 범위를 기록한다. URL 확장자만으로 scan 판정하지 않는다.
+- [ ] original src·source page·locator·order·alt·전후 문맥·부모 artifact와 asset manifest를 보존한다. ordered blocks schema를 수용한다.
+
+완료 기준: 추가 지시 최소 15종 fixture와 실제 표본으로 정상 full-text only, 이미지 참조, PDF_TEXT/SCAN·미확인 상태를 검증한다. binary 미취득을 성공으로 표시하지 않고 raw를 보존한다.
 
 ### Step 7 — 전처리 규칙 이전과 문장 분리
 
@@ -240,7 +293,7 @@ scripts/
 - [ ] 사건번호, provenance, 중복 ID, 빈 쟁점·답변, evidence offset, authority 타입, encoding, 원문 연결을 검증한다.
 - [ ] 통과·검토·실패 후보와 stage/record ID/오류 코드/사유를 보고서에 남긴다.
 - [ ] gold 포함 정책을 적용하고 JSONL과 Parquet으로 export한다.
-- [ ] dataset `0.1.0` manifest에 입력·버전·설정·건수·출력 checksum을 기록한다.
+- [ ] dataset `0.1.0` manifest에 inventory·identity registry/link snapshot·source versions·asset manifest·규칙·설정·건수·출력 checksum을 고정한다.
 - [ ] nested evidence/authority/provenance, null, 날짜의 round-trip 및 두 포맷의 의미적 동등성을 검증한다.
 
 완료 기준: gold에 중복 ID나 잘못된 evidence가 없고 실패 후보가 추적되며 동일 입력 재실행 결과가 일치한다.
@@ -258,7 +311,7 @@ scripts/
 
 - [ ] React 19 + Vite + TypeScript 프런트와 FastAPI API를 구현한다. routing과 데이터 조회 도구를 선택하고 핵심 pipeline, API, 프런트 계층을 분리한다.
 - [ ] 로그인·로그아웃, 제한된 사용자 계정, 세션 보호 및 작업 실행 권한을 구현한다. 공개 회원가입은 제공하지 않는다.
-- [ ] 실행별 단계 상태·건수·오류·검토 대상 목록을 표시하는 대시보드를 구현한다.
+- [ ] 실행별 source record/canonical/issue/asset 수, snapshot 범위·완전성·delta, identity·fidelity·asset 부분 실패를 별도로 표시한다.
 - [ ] 판례 원문/정규화 결과 비교, 쟁점/답변 비교, evidence 원문 강조 및 alignment 사유를 표시한다.
 - [ ] FastAPI가 웹 작업을 PostgreSQL에 등록하고 별도 Python worker가 실행한다. 긴 pipeline을 HTTP 요청이나 FastAPI BackgroundTasks에 맡기지 않는다.
 - [ ] 중복 제출 방지, 진행·실패 상태 조회, 브라우저 종료 후 작업 지속 및 서버 재시작 후 복구를 검증한다.
@@ -501,3 +554,20 @@ React 19의 patch, Vite·TypeScript·Node.js·FastAPI·PostgreSQL의 지원 버�
 - .fordeploy/aws-backup/.gitkeep을 빈 파일로 생성했다. 실제 백업·배포 archive는 생성하지 않았다. 이후 사용자가 .env를 제공했으며 .gitignore로 제외한다.
 - 향후 Docker 사용 시 staging·secret·runtime 자료가 build context에 포함되지 않도록 루트 .dockerignore를 추가했다. Docker/Compose 및 실제 배포 방식은 아직 구성·확정하지 않았다.
 - 문서와 제외 규칙만 변경했다. 실제 인프라·DB·DNS·인증서·운영 예약 변경이나 서버 접속은 수행하지 않았다.
+
+## 12. 추가 지시 적용과 후속 fidelity
+
+2026-09-09 추가 지시는 기존의 단일 API·text 중심 가정을 확장한다. 상세 계약은 docs/architecture.md, case-identity.md, incremental-ingestion.md, source-fidelity.md, dataset-schema.md, provenance.md에 둔다. 기존 Step 0은 당시 범위의 완료 기록이며 확장 milestone의 구현 완료를 뜻하지 않는다.
+
+실행 순서는 Step 0A → 1 → 2 → 2A → 3/3A → 4/4A → 5/5A → 6/6A → 7~12다. 두 source adapter의 독립 작업은 필요한 공통 계약을 먼저 고정한 뒤 진행한다. 기존 웹·EC2·PostgreSQL 결정은 유지한다.
+
+후속 Source Fidelity 2는 Stage C 취득(binary+metadata, SHA-256/MIME/size, retry/failure manifest/storage), Stage D 실제 문서 위치 복원, Stage E OCR adapter/해석 순서다. 최초 milestone에 전체 이미지 다운로드·완전 layout·OCR를 밀어 넣지 않는다. OCR/vision/LLM은 별도 후속 범위다.
+
+확장 DoD:
+
+- [ ] scourt/lawgo inventory 및 source key를 보존하고 신규만 fetch·refresh·실패 재개를 검증한다.
+- [ ] canonical identity와 confidence/reason, AMBIGUOUS/UNMATCHED/CONFLICT를 출력하고 잘못된 source 병합을 막는다.
+- [ ] 판시사항·요지 없는 정상 record, source artifact 유형, image reference·문맥·order, requires_ocr/UNKNOWN과 manifest를 검증한다.
+- [ ] case ingestion 성공·asset 부분 실패·OCR 미처리를 독립적으로 표현하고 필요한 evidence가 부족한 gold 발행을 막는다.
+- [ ] 실제 source pairing·이미지 누락 비교·PDF/scan 실물 검증의 미완료를 보고서에 남기고 완료 전 실측한다.
+- [ ] source/identity/asset 이력·snapshot과 DB를 일관되게 백업·복구하고 small EC2에서 browser·asset 자원을 측정한다.

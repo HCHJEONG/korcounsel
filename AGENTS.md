@@ -8,7 +8,7 @@
 
 - 이 프로젝트는 공개 한국 판례를 추적·재현·검증 가능한 LegalIssueUnit으로 생산하는 소수 사용자용 비공개 업무 앱이다. 법률 주석 편집·출판 SaaS나 포트폴리오 사이트가 아니다.
 - pipeline은 공식 API → RAW → NORMALIZED → STRUCTURED → 쟁점/답변/evidence → 검증 → GOLD다.
-- 초기에는 LLM API, 모델 학습, GPU, RAG, vector database, Elasticsearch, HTML 페이지 scraping을 구현하지 않는다.
+- 초기에는 LLM API, 모델 학습, GPU, RAG, vector database, Elasticsearch, OCR/vision 해석을 구현하지 않는다. scourt identity/inventory 및 fidelity 확보에 필요한 취득 adapter는 초기 확장 범위이며 HTML/browser 사용을 일괄 금지하지 않는다.
 - 한 번에 작은 검증 가능한 단계로 진행하고 관련 테스트·문서를 함께 갱신한다. 이미 사용자에게 허용된 범위에서는 불필요한 단계별 재승인을 요구하지 않는다.
 - 새 범위, 외부 운영 변경, 파괴적 조작은 현재 사용자의 지시와 작업 범위를 확인한다. 문서 작성 요청은 AWS 배포·리사이즈·DNS·IAM 변경 권한을 뜻하지 않는다.
 - 현황을 실제 증거로 기록한다. 참조 프로젝트의 완료 보고서·배포 이력·테스트 수를 현재 상태로 복사하지 않는다.
@@ -50,7 +50,7 @@
 - web2df와 df2preproc는 I:\VSCodeBases 아래에서 실제 루트를 확인한 뒤 읽는다. 해당 경로를 앱 런타임 필수값으로 hard-code하지 않는다.
 - 레거시 분석과 docs/migration-from-legacy.md 작성 후 구현한다. legacy field 의미, 재사용/수정/폐기 규칙, 경로·pickle·DataFrame 결합·취약 regex·호환성을 기록한다.
 - 발견한 버그와 edge case를 회귀 fixture로 만든다. 참조 저장소를 수정하거나 새 프로젝트에서 import하지 않는다.
-- 첫 source는 국가법령정보 공동활용 OPEN API의 판례 목록·본문이다. 실제 명세·인증·pagination·응답·호출 제한·이용 조건을 공식 문서로 확인한다.
+- 첫 source는 국가법령정보 공동활용 OPEN API이며 scourt snapshot/identity/fidelity adapter를 확장 초기 단계에서 구현한다. 실제 명세·인증·pagination·응답·호출 제한·이용 조건을 공식 문서로 확인한다.
 - timeout, 제한된 retry/backoff, API 오류와 부분 수집을 명시적으로 처리한다. API credential을 코드·로그·URL 출력에 노출하지 않는다.
 - 공개 자료라는 이유로 재배포 조건을 추정하지 않는다. 출처·수집 정보·사용 범위를 기록한다.
 
@@ -82,7 +82,7 @@
 
 - 사용자·권한·세션, 작업·실행 이력, 향후 검토 결정은 PostgreSQL의 운영 데이터다. 조회용 판례·쟁점 정보는 버전 있는 artifact에 연결한다.
 - 조회 projection은 재구성할 수 있어야 하지만 사용자·검토·작업 기록은 재수집이나 seed로 덮어쓰지 않는다.
-- 원본 JSON/XML, 중간 artifact, JSONL·Parquet export는 파일로 보존한다. DB 도입으로 immutable 파일 정책을 없애지 않는다.
+- 원본 JSON/XML/HTML 및 관찰된 source artifact, inventory·asset manifest, 중간 artifact, JSONL·Parquet export는 파일로 보존한다. DB 도입으로 immutable 파일 정책을 없애지 않는다.
 - 긴 작업을 API 요청이나 FastAPI BackgroundTasks로 실행하지 않는다. job을 영속 등록하고 단일 worker가 claim한다.
 - 중복 제출 방지, 트랜잭션 상태 전이, worker 생존 확인·lease 또는 동등한 복구 규칙을 구현한다. 실제 실행이 중복될 수 있는 실패 상황도 idempotency로 처리한다.
 - 브라우저 응답 유실을 작업 실패로 단정하지 않는다. request identity를 유지하고 상태를 조회한 후 동일 요청 재시도 여부를 판단한다.
@@ -162,3 +162,18 @@
 - 날짜별 강제 중복 archive → 문서 ID+내용 hash 기반 원본 재사용 및 수집 이력.
 - ALB·별도 target host → 기존 bastion 한 대의 직접 HTTPS 서비스.
 - 참조 프로젝트 전용 단계 승인·수동 배포·backup 비활성 기본값·Compose 고정 버전·secret 경로는 그대로 이식하지 않는다. 현재 PLAN과 실제 사용자 지시를 따른다.
+
+## 추가 identity·incremental·fidelity 지침
+
+- 구현 전 docs/legacy-case-identity-and-assets.md와 architecture.md, case-identity.md, incremental-ingestion.md, source-fidelity.md, dataset-schema.md, provenance.md를 읽는다. 추가 지시가 기존 단일-source/text 전제보다 우선한다.
+- contId와 serialno는 별도 namespace의 source IDs다. canonical ID와 source version·issue revision을 분리한다. canonical 생성법은 Step 2에서 결정한다.
+- identity/는 후보·전체 번호·법원/지원·날짜·disposition·점수/사유를 다룬다. 첫 후보·substring·fuzzy 점수만으로 확정하지 않는다. EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT와 연결 revision을 보존한다.
+- ingestion/는 inventory·delta·fetch ledger·refresh, documents/는 artifact/blocks, assets/는 탐지·참조/후속 취득, enrichment/는 후속 조문 보강을 담당한다. shared metadata normalization을 중복 작성하지 않는다.
+- snapshot은 범위·완전성·per-ID metadata hash를 보존한다. 선고일만으로 신규를 판단하거나 부분 목록에서 삭제를 추정하지 않는다. UNCHANGED metadata는 unchanged body 보장이 아니다. 상세 실패 ID도 재시도한다.
+- issues/summaries 빈 배열·reasoning/full_text null은 정상 LegalCase에서 허용한다. field 부재와 취득/parse 실패를 구분하고 없는 editorial 내용을 생성하지 않는다.
+- fidelity tier는 처리 분류다. has_visual_assets/count/requires_ocr의 UNKNOWN을 false/0으로 덮지 않는다. img 부재·PDF URL만으로 원문 완전성이나 scan 여부를 단정하지 않는다.
+- Detect→Preserve Reference→Acquire→Reconstruct→Interpret를 분리한다. original src·부모 artifact·위치/order·alt·전후 문맥을 보존하며 첫 단계에 OCR를 추가하지 않는다.
+- case 성공, asset 부분 실패, OCR 미처리와 gold 적합성을 구분한다. 시각 evidence를 text offset으로 위조하거나 source 간 내용/이미지를 출처 없이 합치지 않는다.
+- Selenium에는 DOM·세션·popup·iframe 책임이 있었다. 실제 source 검증 후 API/HTTP/세션/browser 전략을 선택하고 필요한 경우 Selenium/Playwright를 명시 기준으로 비교한다. 자동 패키지 교체·다중 browser 기본 실행을 피한다.
+- merge/split/relink는 이력을 남기고 기존 release·검토를 덮어쓰지 않는다. registry/link snapshot과 asset manifest도 재현·백업 대상이다.
+- 문서의 실제 레거시 관찰과 합성 fixture, offline 테스트와 live 검증을 구분한다. 추가 최소 15종을 포함한 fixture를 해당 구현 단계의 테스트에 연결한다.

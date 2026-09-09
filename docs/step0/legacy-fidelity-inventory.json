@@ -1,0 +1,46 @@
+{
+  "checked_date": "2026-09-09",
+  "method": "Read-only UTF-8 text/HTML marker inventory; not semantic field validation. No pickle load, HTML execution, or PDF text-layer classification.",
+  "root": "I:\\VSCodeBases\\web2df",
+  "file_count": 8482,
+  "text_files_read": 8482,
+  "counts": {
+    "summary-heading-only": 21,
+    "neither-heading-marker": 438,
+    "image-tag": 4222,
+    "issue-heading-only": 439,
+    "both-heading-markers": 7584
+  },
+  "samples": {
+    "neither-heading-marker": {
+      "relative_path": "saved\\20240723\\glaw_updated_panre_txt\\2029039.txt",
+      "sha256": "03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+      "bytes": 281783,
+      "image_tag_count": 34
+    },
+    "summary-heading-only": {
+      "relative_path": "saved\\20240723\\lawgo_jomunupdated_panre_txt\\64176-2061329-194079.txt",
+      "sha256": "05852757fd7bad955364186a7ba0dca58a704299cd26a7d48821713a4b91ddfe",
+      "bytes": 9132,
+      "image_tag_count": 0
+    },
+    "image-tag": {
+      "relative_path": "saved\\20240723\\glaw_updated_panre_txt\\2029039.txt",
+      "sha256": "03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+      "bytes": 281783,
+      "image_tag_count": 34
+    },
+    "both-heading-markers": {
+      "relative_path": "saved\\20240723\\glaw_updated_panre_txt\\3325503.txt",
+      "sha256": "6d321fd76d6baaefd686df29efc9160193d22824f843c76bf1e47bfe8fef05f4",
+      "bytes": 12518,
+      "image_tag_count": 1
+    },
+    "issue-heading-only": {
+      "relative_path": "saved\\20240723\\glaw_updated_panre_txt\\3325151.txt",
+      "sha256": "304a4eb6828700966ff3c30499afeab52b6397b47ff33e621fc861a41c26f741",
+      "bytes": 9699,
+      "image_tag_count": 0
+    }
+  }
+}

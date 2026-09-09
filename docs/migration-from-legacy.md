@@ -14,7 +14,7 @@
 
 | Legacy field | 실제 의미 / 관찰 위치 | 새 계약과 이동 위치 |
 | --- | --- | --- |
-| case_full_no | 법원·날짜·사건번호·판결/결정 및 일부 표시가 섞인 인용 문자열. `_03:735–786` | 원래 표시를 보존하고 `domain/LegalCase`, `normalize/metadata`에서 구성 요소 분리. 식별자는 source+공식 serial |
+| case_full_no | 법원·날짜·사건번호·판결/결정 및 일부 표시가 섞인 인용 문자열. `_03:735–786` | 원래 표시를 보존하고 `domain/LegalCase`, `normalize/metadata`에서 구성 요소 분리. source 식별자는 source+공식 serial이며 canonical은 별도 registry ID |
 | case_txt_in_file | 파일에서 읽은 원문. `_03:909` 이후 section 탐색 및 summary 행에 반복 저장 | 원본 응답은 `storage/`; 디코딩된 기준 텍스트와 필드별 위치는 provenance로 참조 |
 | decision_items | 판시사항 section. `_03:913–920` | `parse/`에서 번호·범위를 보존한 issue 후보 |
 | decision_gists | 판결요지 section. `_03:923–931` | answer 후보. 결측이면 생성하지 않고 unmatched |
@@ -59,7 +59,7 @@ A는 개념 재사용, B는 수정 후 사용, C는 기본 pipeline에서 폐기
 
 ## 3. 제거할 dependency와 실행 결합
 
-web2df의 Selenium/브라우저 driver, pdfplumber 기반 표준 판례집 입력, BeautifulSoup 기반 웹 scraping, parmap·multiprocessing 수집, 학습용 konlpy/Okt·gensim/Word2Vec 및 NumPy shuffle 흐름은 MVP에서 제거한다. df2preproc의 KSS는 선택적 후속 adapter로 미루며 주석 처리된 Kkma/Kiwi/NLTK는 실제 활성 dependency로 세지 않는다.
+추가 지시로 Selenium/BeautifulSoup/웹 scraping의 일괄 폐기 판단을 수정한다. DOM·세션·popup·iframe·image reference 확보 역할을 조사하고 scourt adapter에 필요한 취득 수단을 선택한다. 기존 driver 하드코딩·parmap/multiprocessing 결합은 그대로 이전하지 않는다. pdfplumber 표준 판례집 입력과 학습용 konlpy/Okt·gensim/Word2Vec·NumPy shuffle은 초기 제외하되 PDF_TEXT/SCAN artifact schema는 포함한다. df2preproc의 KSS는 선택적 후속 adapter로 미루며 주석 처리된 Kkma/Kiwi/NLTK는 실제 활성 dependency로 세지 않는다.
 
 pandas는 도메인 계약과 중간 저장의 필수 의존성에서 제거한다. 공식 API 통신·JSON/XML parsing·Parquet export에 필요한 패키지는 Step 1/3에서 별도로 고정한다. stdlib re/logging/hashlib 같은 기능과 section·citation 추출 개념은 유지한다. 라이브러리 버전 전체를 추정해 requirements를 복원하지 않는다.
 
@@ -90,7 +90,7 @@ web2df Dockerfile은 `python:3.8.19-bullseye`이며 루트에 없는 requirement
 
 1. `sources/`: 공식 목록·상세 client, ID 유지, pagination, timeout/retry와 명시적 오류. `_11`의 절차 개념만 참고한다.
 2. `storage/`, `domain/`: immutable raw 및 hash, LegalCase/LegalIssueUnit/EvidenceSpan/LegalAuthority/Provenance.
-3. `normalize/`, `parse/`: metadata, section, 번호, citation을 작은 함수로 재작성한다.
+3. `normalize/`, `identity/`, `ingestion/`에서 metadata·canonical·inventory를 분리한다. `parse/`, `documents/`, `assets/`에서 section·citation 및 source fidelity를 보존한다.
 4. `segment/`, `pipeline/`: 문서 경계와 위치를 보존하며 alignment 및 후보/오류를 출력한다.
 5. `validate/`: evidence exact slice, 결측, ambiguous, 버전·재현성 검증 후 export한다.
 6. `db/`, `jobs/`, `web/`와 frontend는 같은 core 결과를 조회·실행한다. 레거시 학습용 CSV/DataFrame UI를 만들지 않는다.
@@ -100,3 +100,11 @@ web2df Dockerfile은 `python:3.8.19-bullseye`이며 루트에 없는 requirement
 회귀 fixture는 실제 정적 분석에서 발견한 규칙을 합성 입력과 기대 동작으로 기록했다. 운영 판례 원문·개인 데이터·인증값을 포함하지 않는다. fixture JSON 구조와 ID를 검증했으며 실행 가능한 신규 parser/pytest는 아직 없다. 구현 단계에서 각 fixture를 테스트에 연결해야 한다.
 
 공식 API 계약과 실제 소량 조회 결과는 [API 메모](law-open-api-contract.md)에 분리했다. 이 분석은 Step 0 산출물이며 Step 1 이후 구현·전체 레거시 실행 검증·AWS 배포 완료를 의미하지 않는다.
+
+## 추가 조사에 따른 정정 — 2026-09-09
+
+초기 Step 0은 `_05/_06`의 복합 identity 매칭·이미지 보존 책임을 충분히 다루지 못했다. [추가 조사 보고서](legacy-case-identity-and-assets.md)가 이를 보완한다. 첫 사건번호 사용에는 병합 표기 대응과 뒤 숫자 prefix 오탐 보호라는 의도가 있었으며 새 resolver에서 전체 번호·유일 후보 검증으로 계승한다.
+
+`gmeta_contId`와 `lmeta_serialno`는 source ID이고 canonical identity가 아니다. source+ID+hash는 원본 버전의 키로 유지하되 canonical 연결 revision을 별도로 둔다. `_02`의 ID 집합 비교를 inventory subsystem으로 계승한다. 모든 판례의 editorial 구조를 전제하지 않고 Detect/Preserve Reference를 초기 범위에 넣는다.
+
+새 회귀 범위는 [추가 fixture](../tests/fixtures/legacy/identity-fidelity-cases.json)에 있다. 원래 23건은 보존하며 추가 30건은 합성 계약 사례다. 저장 자료 8,482개 조사 수치는 고유 판례 수가 아니며 실제 관찰과 미검증 표본을 추가 보고서에서 구분한다.

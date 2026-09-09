@@ -6,7 +6,7 @@
 
 목록 endpoint는 `/DRF/lawSearch.do`이고 `OC`, `target=prec`, `type`이 필요하다. page는 1부터, display는 기본 20·최대 100이다. `nb`는 사건번호, `org=400201`은 대법원, `400202`는 하위법원 필터다. 목록의 판례일련번호를 후속 상세 식별자로 사용하며 row의 id와 혼동하지 않는다. [공식 목록 명세](https://open.law.go.kr/LSO/openApi/guideResult.do?htmlName=precListGuide)
 
-본문 endpoint는 `/DRF/lawService.do`이며 동일 기본 인자에 `ID`를 전달한다. 응답의 판례정보일련번호를 확인한다. JSON/XML/HTML을 안내하지만 국세청 판례 본문은 HTML만 제공한다고 명시한다. MVP가 처리하지 않는 형식은 unsupported로 기록하며 웹 scraping으로 자동 전환하지 않는다. [공식 본문 명세](https://open.law.go.kr/LSO/openApi/guideResult.do?htmlName=precInfoGuide)
+본문 endpoint는 `/DRF/lawService.do`이며 동일 기본 인자에 `ID`를 전달한다. 응답의 판례정보일련번호를 확인한다. JSON/XML/HTML을 안내하지만 국세청 판례 본문은 HTML만 제공한다고 명시한다. 현재 adapter의 미지원 형식은 unsupported로 기록한다. fidelity용 별도 취득 adapter는 설계할 수 있으나 실패 시 무조건 browser로 전환하지 않는다. [공식 본문 명세](https://open.law.go.kr/LSO/openApi/guideResult.do?htmlName=precInfoGuide)
 
 문서 예시는 HTTP지만 이번 검증은 `https://www.law.go.kr`로 직접 요청해 성공했다. 앱도 HTTPS를 기본으로 하고 credential이 담긴 요청 URL·redirect·예외 전문을 로그에 남기지 않는다.
 
@@ -51,3 +51,9 @@ JSON/XML을 decode한 필드 텍스트와 HTML markup 변환을 각각 버전 �
 공식 이용안내는 공동활용 승인 후 사용, 운영 신청 시 활용사례 등록, 트래픽 등으로 인한 제한 가능성을 안내한다. 저작권 정책은 영리 목적을 포함한 활용을 설명하면서 이용조건·제3자 권리 준수와 출처 표시를 요구한다. 이를 모든 외부 출처 데이터의 무조건적 재배포 허가로 확대하지 않는다. [공식 이용안내·저작권 정책](https://open.law.go.kr/LSO/information/guide.do)
 
 이번 키로 소량 조회가 성공한 사실과 해당 계정의 모든 운영/재배포 승인 범위는 별개다. source_system, 원 제공 출처, source_document_id, credential 없는 URL, retrieved_at, raw hash와 변환 버전을 보존한다. 공개 배포 전 실제 제공 데이터·신청 범위에 맞는 표시 및 조건을 확인한다. 합성 회귀 fixture에는 실제 판례 본문을 복제하지 않았다.
+
+## 추가 지시와의 연결
+
+이 메모의 source_document_id는 law_go_kr namespace의 serialno이며 canonical ID가 아니다. scourt contId와의 복합 매칭은 [identity 계약](case-identity.md), source 목록·상세 재조회는 [incremental 계약](incremental-ingestion.md)을 따른다. 실제 네 건의 smoke는 두 source reconciliation이나 전체 inventory 수집 검증이 아니다.
+
+빈 판결요지는 정상 LegalCase에서 허용하고 field 부재/parse 실패를 구분한다. JSON/XML text에 이미지 참조가 없더라도 판결문 전체에 이미지가 없다고 확정하지 않는다. [fidelity 계약](source-fidelity.md)에 따라 reference·탐지 범위·UNKNOWN 상태를 보존한다. API 목록/본문의 원 ID·raw·field provenance는 canonical 연결 후에도 유지한다.

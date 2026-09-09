@@ -4,7 +4,7 @@
 
 국가법령정보 공동활용 OPEN API에서 판례를 수집하고, 판시사항·판결요지·판결이유·인용을 구조화하여 쟁점–답변–근거를 연결합니다. 자동 검증 결과와 사람의 검토 결과를 구분하며 원본과 변경 이력을 보존합니다.
 
-> 현재 상태: Step 0 레거시 분석과 공식 API 소량 조회를 완료했습니다. 앱, CLI, DB schema, 배포 스크립트와 AWS 예약은 아직 구현하지 않았습니다. 아래 구성과 명령은 구현 목표이며 현재 실행 가능한 기능 목록이 아닙니다.
+> 현재 상태: Step 0 및 추가 identity·incremental·fidelity 조사·설계 반영을 완료했습니다. 앱, CLI, DB schema, 배포 스크립트와 AWS 예약은 아직 구현하지 않았습니다. 아래 구성과 명령은 구현 목표이며 현재 실행 가능한 기능 목록이 아닙니다.
 
 ## 문서 안내
 
@@ -22,7 +22,9 @@ Phase 1:
 
 - 공식 API 판례 100건 이상 실제 수집과 원본 JSON/XML 보존
 - 사건번호·법원·날짜 정규화, 판례 구조 및 참조조문·참조판례 추출
-- 판시사항과 판결요지의 결정론적 alignment
+- 독립 canonical identity와 source ID·매칭 사유, inventory 기반 신규 수집과 refresh
+- 판시사항·요지가 있는 경우 결정론적 alignment; 없는 전문·scan record도 정상 보존
+- image/PDF 참조 탐지·원래 위치·문맥·asset manifest 보존
 - evidence 위치, provenance 및 검증 결과를 가진 LegalIssueUnit 생성
 - JSONL·Parquet export, dataset manifest, 재실행·중복 방지
 - 인증된 소수 사용자용 웹 대시보드와 판례·쟁점 검수 화면
@@ -30,15 +32,17 @@ Phase 1:
 
 Phase 1.5에는 쟁점 연결 수정, 근거 재선택, 승인·반려·보류, 검토 이력 및 실행 간 비교를 추가합니다.
 
-초기 범위에는 LLM 호출, 모델 학습, GPU, RAG, vector database, Elasticsearch, 공개 회원가입, 공개 판례 서비스 및 HTML 페이지 scraping이 포함되지 않습니다. 이 앱은 데이터 생산과 전문 검토를 보조하며 법률 판단을 대신하지 않습니다. 자동 검증 통과는 법률적 정확성 보증이나 사람의 승인이 아닙니다.
+초기 범위에는 LLM 호출, 모델 학습, GPU, RAG, vector database, Elasticsearch, 공개 회원가입, 공개 판례 서비스, OCR·vision 해석이 포함되지 않습니다. scourt identity/inventory·원문 충실도 확보에 필요한 HTTP/browser adapter는 초기 확장 범위입니다. 이 앱은 데이터 생산과 전문 검토를 보조하며 법률 판단을 대신하지 않습니다. 자동 검증 통과는 법률적 정확성 보증이나 사람의 승인이 아닙니다.
 
 ## 데이터 흐름
 
 ```text
-공식 판례 API
+공식 판례 API / scourt inventory·adapter
+  → 증분 취득·refresh
   → RAW: 원본 바이트·수집 정보·hash
   → NORMALIZED: 식별자·metadata·텍스트 정규화
-  → STRUCTURED: 판시사항·요지·이유·인용 및 원문 위치
+  → CANONICAL IDENTITY: source별 버전·연결 결정
+  → STRUCTURED / FULL TEXT / SCAN·ASSET: 구조·참조·순서
   → LegalIssueUnit 후보: 쟁점 / 답변 / evidence / authority / provenance
   → 검증·검토 대상 분류
   → GOLD: 포함 정책을 통과한 JSONL·Parquet + manifest
@@ -59,7 +63,7 @@ Phase 1.5에는 쟁점 연결 수정, 근거 재선택, 승인·반려·보류, 
 | 처리 | Python 3.12, 별도 worker 1개부터 시작 |
 | Python 패키지 관리 | uv, pyproject.toml, uv.lock |
 | DB | 동일 EC2의 PostgreSQL |
-| 파일 | 원본 JSON/XML, 단계별 artifact, JSONL·Parquet |
+| 파일 | 원본 JSON/XML/HTML·source artifact, inventory/asset manifest, JSONL·Parquet |
 | API 계약 | FastAPI OpenAPI와 명시적 Pydantic schema |
 | 검증 | pytest, pytest-cov, ruff, mypy 및 프런트 타입·lint·build·브라우저 검증 |
 
@@ -166,3 +170,13 @@ unit은 외부 서비스 없이, DB integration은 격리된 실제 PostgreSQL�
 - [docs 안내](docs/README.md): 현재 산출물과 단계별로 추가할 문서 구분.
 
 환경파일의 값은 변경하지 않았습니다. API 키 확인은 DB·세션 설정 준비나 AWS 배포 완료를 뜻하지 않습니다. 다음 구현 단계는 Step 1 scaffold입니다.
+
+## 추가 지시 반영 — Identity / Incremental / Fidelity
+
+동일 판례의 scourt contId와 law.go.kr serialno를 독립 canonical identity에 연결하되 원래 ID·내용·판단 근거를 보존합니다. 새로 등록된 판례는 inventory 차이로 찾고, 기존 ID의 본문 변경은 별도 refresh로 확인합니다. 판시사항·요지가 없거나 이미지가 아직 확보되지 않았다고 판례 전체를 삭제하지 않습니다.
+
+- [추가 레거시 조사](docs/legacy-case-identity-and-assets.md): `_01`~`_07`의 타협·예외와 실제 저장 자료 관찰.
+- [아키텍처](docs/architecture.md), [identity](docs/case-identity.md), [증분 수집](docs/incremental-ingestion.md), [원문 충실도](docs/source-fidelity.md).
+- [데이터 계약](docs/dataset-schema.md), [provenance](docs/provenance.md), [추가 합성 fixture 30건](tests/fixtures/legacy/identity-fidelity-cases.json).
+
+첫 fidelity 단계는 탐지와 참조 보존입니다. 이미지 다운로드·위치 복원·OCR는 후속으로 분리합니다. UI도 identity·판례 수집·asset 확보·gold 자격을 따로 보여줍니다. 추가 30건을 포함해 합성 fixture는 총 53건이며 앱 테스트는 아직 구현하지 않았습니다. 실제 source 간 이미지 손실 대조와 PDF/scan 실물 검증은 후속 milestone에 남아 있습니다.
