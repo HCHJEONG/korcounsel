@@ -1,0 +1,23 @@
+# Apply equivalent rules if a future build uses a narrower context
+.git
+.fordeploy
+**/.fordeploy
+.env
+.env.*
+**/.env
+**/.env.*
+**/*.pem
+**/*.key
+**/*.dump
+**/*.sql.gz
+data
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/node_modules
+frontend/dist
+frontend/coverage
+playwright-report
+test-results

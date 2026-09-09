@@ -1,0 +1,35 @@
+# Runtime credentials and local environment
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+
+# Local deployment staging: only the empty placeholder belongs in Git
+/.fordeploy/aws-backup/*
+!/.fordeploy/aws-backup/.gitkeep
+
+# Runtime data (small test fixtures live under tests/fixtures)
+/data/**
+!/data/**/
+!/data/**/.gitkeep
+*.dump
+*.sql.gz
+
+# Generated Python and frontend files
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+node_modules/
+/frontend/dist/
+/frontend/coverage/
+playwright-report/
+test-results/
