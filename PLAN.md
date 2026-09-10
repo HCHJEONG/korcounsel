@@ -1,5 +1,9 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**이미지 실물 보존 — 2026-09-10 사용자 확정:** 기존 corpus 정비·Parquet 전환의 이번 작업 범위에 이미지 참조 전수 점검, 취득 가능한 이미지 bytes 저장·검증, 원문 위치 연결 및 실패/재시도 관리를 포함한다. 신규 판례에도 URL과 실물 파일 병행 보존을 적용한다. 저장 용량은 현재 선행 장애로 두지 않으며 실측은 운영 계획을 위해 수행한다. 원문 HTML은 유지하고 이미지 파일·SHA-256·원 src/name·제공자 매핑·취득 시각·반복 위치를 manifest로 연결한다. Parquet에는 참조·상태를 담는다. 기존의 binary 취득을 먼 후속으로 미룬 범위보다 이 결정이 우선한다. OCR·이미지 해석은 별도이며 실제 전수 취득 완료를 의미하지 않는다. [범위와 완료 기준](docs/image-preservation-review.md).
+
+**이미지 보존 검토 — 2026-09-10:** 기존 이미지 2개의 과거 주소는 로컬 DNS 해석 실패, 현재 제공자 매핑 주소는 cookie 없이 HTTP 200/GIF header를 확인하고 조사용 bytes를 보존했다. 전체 링크 실패나 과거 binary 동일성을 뜻하지 않는다. URL+실물 파일+위치 manifest 보존을 권고하며 운영 downloader·전수 취득은 미구현이다. [실측과 권고](docs/image-preservation-review.md).
+
 **교정 후 Parquet 확정 — 2026-09-10:** 기준 원문은 태그 있는 스크레이핑 텍스트로 보존하고, 추출 필드의 확인된 오류를 고친 결과를 Parquet에 담는다. 기존 pickle은 동결 보관한다. 다음은 decision_date·closing_argument의 기존 로직 보완과 전수 대조, 다른 추출 오류 목록화다. 원문 불변·교정 근거·변경 이력·미확정 상태를 검증하며 실제 전수 교정과 Parquet 생성은 아직 미실행이다. [확정 계약](docs/legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
 
 **날짜 로직 조사 — 2026-09-10:** 기존 date 함수의 parser.parser/parse 오호출을 재현했다. 146행 중 145행은 호출 수정으로 날짜 추출, 나머지 군사법원 1행은 사건번호 regex 오인식이며 기존 datetime도 2072-01-01 오류 표식이다. closing_argument는 date 30개·no_info 116개 모두 기존값과 일치했다. 다음 우선 작업은 기존 로직 보완·날짜 전수 대조이며 원본 수정·전수 복구는 아직 하지 않았다. [조사 근거](docs/legacy-date-logic-audit.md).

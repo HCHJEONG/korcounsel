@@ -1,5 +1,7 @@
 # KorCounsel Agent Instructions
 
+**이미지 실물 보존 — 2026-09-10 사용자 확정:** 기존 corpus 정비·Parquet 전환의 이번 작업 범위에 이미지 참조 전수 점검, 취득 가능한 이미지 bytes 저장·검증, 원문 위치 연결 및 실패/재시도 관리를 포함한다. 신규 판례에도 URL과 실물 파일 병행 보존을 적용한다. 저장 용량은 현재 선행 장애로 두지 않으며 실측은 운영 계획을 위해 수행한다. 원문 HTML은 유지하고 이미지 파일·SHA-256·원 src/name·제공자 매핑·취득 시각·반복 위치를 manifest로 연결한다. Parquet에는 참조·상태를 담는다. 기존의 binary 취득을 먼 후속으로 미룬 범위보다 이 결정이 우선한다. OCR·이미지 해석은 별도이며 실제 전수 취득 완료를 의미하지 않는다. docs/image-preservation-review.md 참조.
+
 **원문·교정 정책 — 2026-09-10 사용자 확정:** 태그 있는 스크레이핑 텍스트가 기준 원문이며 추출 필드는 교정 가능한 파생 데이터다. 기존 pickle은 동결 archive로 유지하고 확인된 추출 오류를 교정한 DataFrame을 Parquet에 담는다. 원문 문자열은 변경하지 않고 보강 이력·원래 행 locator·수정 전후 값/참조·근거·규칙 버전·미확정 상태를 기록한다. FULL_ROW 원행 보존 규칙은 교정 전 archive 계약이며 잘못된 값을 운영 필드에 영구 유지하라는 뜻이 아니다. 날짜 두 필드 교정·전수 대조를 우선하고 다른 추출 오류도 목록화한다. docs/legacy-full-row-import.md 참조. 전수 교정은 아직 미실행이다.
 
 **FULL_ROW import 규칙 — 2026-09-10:** 기존 pickle의 DataFrame을 재사용하며 text 파일로 재구성하지 않는다. pandas/NumPy·allowlist unpickler는 분석용 export에만 두고 앱 worker에는 넣지 않는다. 해시 고정 bundle·전체 컬럼/position·원행·OPAQUE archive 참조·행별 격리/재개 ledger를 보존한다. 보존 성공을 canonical 등록·gold 완료로 취급하지 않는다. docs/legacy-full-row-import.md 참조.

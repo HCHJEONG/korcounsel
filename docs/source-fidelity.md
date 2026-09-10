@@ -1,5 +1,7 @@
 # Source fidelity와 artifact 보존 계약
 
+**이미지 실물 보존 — 2026-09-10 사용자 확정:** 기존 corpus 정비·Parquet 전환의 이번 작업 범위에 이미지 참조 전수 점검, 취득 가능한 이미지 bytes 저장·검증, 원문 위치 연결 및 실패/재시도 관리를 포함한다. 신규 판례에도 URL과 실물 파일 병행 보존을 적용한다. 저장 용량은 현재 선행 장애로 두지 않으며 실측은 운영 계획을 위해 수행한다. 원문 HTML은 유지하고 이미지 파일·SHA-256·원 src/name·제공자 매핑·취득 시각·반복 위치를 manifest로 연결한다. Parquet에는 참조·상태를 담는다. 기존의 binary 취득을 먼 후속으로 미룬 범위보다 이 결정이 우선한다. OCR·이미지 해석은 별도이며 실제 전수 취득 완료를 의미하지 않는다. [확정 계약](image-preservation-review.md). 아래 Stage C의 후속 표기는 이전 계획이며 이번 범위에 포함된 것으로 갱신한다.
+
 2026-09-09 추가 지시 반영. 텍스트 외 시각·구조 요소도 판결의 의미를 담을 수 있다. 최초 범위는 Detect → Preserve Reference이며 Acquire → Reconstruct Position → Interpret는 별도 단계다.
 
 ## 구조와 결측

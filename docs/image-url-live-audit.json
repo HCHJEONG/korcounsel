@@ -1,0 +1,57 @@
+{
+  "scope": "2 files from one historical decision; not whole corpus",
+  "responses": [
+    {
+      "filename": "11w0401-009-01.gif",
+      "route": "legacy",
+      "requested_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-01.gif",
+      "at": "2026-09-10T09:08:20.400125+00:00",
+      "context": "plain GET, no cookies or Referer",
+      "error": "URLError: <urlopen error [Errno -2] Name or service not known>"
+    },
+    {
+      "filename": "11w0401-009-01.gif",
+      "route": "current",
+      "requested_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-01.gif",
+      "at": "2026-09-10T09:08:20.913810+00:00",
+      "context": "plain GET, no cookies or Referer",
+      "status": 200,
+      "final_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-01.gif",
+      "content_type": "application/x-octetstream",
+      "bytes_read": 9351,
+      "sha256": "8b6f335a057b3a9a3a5704fddfed110f4bceabeabf69a2b99f8d56c00329902e",
+      "artifact": "data/image-url-audit/8b6f335a057b3a9a3a5704fddfed110f4bceabeabf69a2b99f8d56c00329902e",
+      "gif_signature": true,
+      "gif_header_dimensions": [
+        530,
+        425
+      ]
+    },
+    {
+      "filename": "11w0401-009-02.gif",
+      "route": "legacy",
+      "requested_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-02.gif",
+      "at": "2026-09-10T09:08:21.510024+00:00",
+      "context": "plain GET, no cookies or Referer",
+      "error": "URLError: <urlopen error [Errno -2] Name or service not known>"
+    },
+    {
+      "filename": "11w0401-009-02.gif",
+      "route": "current",
+      "requested_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-02.gif",
+      "at": "2026-09-10T09:08:22.018275+00:00",
+      "context": "plain GET, no cookies or Referer",
+      "status": 200,
+      "final_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-02.gif",
+      "content_type": "application/x-octetstream",
+      "bytes_read": 13154,
+      "sha256": "eccc81e7dffce0751fc6cd841b7a22a5f389c6363dafc13db39177fa17519dad",
+      "artifact": "data/image-url-audit/eccc81e7dffce0751fc6cd841b7a22a5f389c6363dafc13db39177fa17519dad",
+      "gif_signature": true,
+      "gif_header_dimensions": [
+        289,
+        185
+      ]
+    }
+  ]
+}

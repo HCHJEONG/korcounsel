@@ -1,5 +1,7 @@
 # 아키텍처 설계
 
+**이미지 확보 범위 확정 — 2026-09-10:** 이번 corpus 정비에서 이미지 bytes를 영속 파일로 확보·검증하고, 기준 HTML의 원 src/name·매핑·등장 위치에 연결한다. 기존·신규 자료 모두 URL과 실물 파일을 함께 보존한다. Parquet은 asset/manifest 참조와 상태, PostgreSQL은 작업·조회 상태를 담당한다. 저장 용량을 현재 선행 장애로 두지 않으며 백업 대상에 이미지 파일을 포함한다. [사용자 확정 범위](image-preservation-review.md).
+
 **교정 데이터 경계 — 2026-09-10 사용자 확정:** 태그 있는 스크레이핑 텍스트는 기준 원문으로 보존하고, 추출 필드는 근거와 변경 이력을 남겨 교정한다. 동결 pickle archive와 교정된 운영용 Parquet을 구분한다. 운영용 Parquet은 기준 원문과 검증된 교정값을 담으며 과거 오류 객체를 정상 필드로 계승하지 않는다. [확정 계약](legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
 
 **Legacy 보존 경계:** 원본 pickle은 역사적 Python object graph 보존본, 후속 Parquet은 전체 컬럼의 이식 가능한 snapshot, PostgreSQL은 검색 projection·registry·운영 이력이다. 현재 구현 흐름은 분석용 기존 DataFrame → hash 고정 행별 FULL_ROW bundle → 단일 worker → 원행 artifact/격리·행 ledger 순서이며, Parquet 표본 schema와 Python/Node 교차 검증은 146행에서 완료했으며 전수 exporter·worker 입력은 후속이다. [실측과 한계](legacy-parquet-validation.md). 앱 runtime은 pickle·pandas를 사용하지 않고 React는 대형 Parquet을 직접 읽지 않는다. [구현·실행·저장 매체 계약](legacy-full-row-import.md).
