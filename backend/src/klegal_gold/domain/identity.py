@@ -61,7 +61,8 @@ class CourtCaseKey(DomainModel):
 
 
 class CanonicalCaseIdentity(DomainModel):
-    # Opaque: existing government-derived IDs must remain usable; allocation is pending audit.
+    # Canonical represents one decision document; business keys may be shared across documents.
+    # Allocation/legacy proposals and frozen registry reuse: docs/case-identity.md.
     canonical_id: Text
     link_revision: Revision
     court_case_keys: tuple[CourtCaseKey, ...] = Field(default_factory=tuple)

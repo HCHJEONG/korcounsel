@@ -963,6 +963,375 @@
       "title": "InventorySnapshot",
       "type": "object"
     },
+    "LegacyCaseRecord": {
+      "additionalProperties": false,
+      "description": "Preserved row with a document identity proposal, pending registry validation.",
+      "properties": {
+        "asset_acquisition_state": {
+          "const": "UNKNOWN",
+          "default": "UNKNOWN",
+          "title": "Asset Acquisition State",
+          "type": "string"
+        },
+        "body_state": {
+          "enum": [
+            "PRESERVED",
+            "NOT_INCLUDED"
+          ],
+          "title": "Body State",
+          "type": "string"
+        },
+        "business_key": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CourtCaseKey"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "date_source_fields": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Date Source Fields",
+          "type": "array"
+        },
+        "document_id_proposal": {
+          "minLength": 1,
+          "title": "Document Id Proposal",
+          "type": "string"
+        },
+        "enrichment_state": {
+          "enum": [
+            "PRESERVED_UNVERIFIED",
+            "UNKNOWN"
+          ],
+          "title": "Enrichment State",
+          "type": "string"
+        },
+        "identity_state": {
+          "const": "LEGACY_OBSERVED",
+          "default": "LEGACY_OBSERVED",
+          "title": "Identity State",
+          "type": "string"
+        },
+        "metadata": {
+          "$ref": "#/$defs/CaseMetadata"
+        },
+        "observed_source_ids": {
+          "items": {
+            "$ref": "#/$defs/SourceCaseIdentifier"
+          },
+          "title": "Observed Source Ids",
+          "type": "array"
+        },
+        "original": {
+          "$ref": "#/$defs/LegacyRow"
+        },
+        "preservation_id": {
+          "minLength": 1,
+          "title": "Preservation Id",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/LegacyImportProvenance"
+        },
+        "reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "original",
+        "provenance",
+        "preservation_id",
+        "document_id_proposal",
+        "metadata",
+        "reasons",
+        "body_state",
+        "enrichment_state"
+      ],
+      "title": "LegacyCaseRecord",
+      "type": "object"
+    },
+    "LegacyField": {
+      "additionalProperties": false,
+      "description": "Opaque values remain in the snapshot; JSON is an explicit serialized value.",
+      "properties": {
+        "encoding": {
+          "enum": [
+            "STRING",
+            "INTEGER",
+            "NULL",
+            "JSON",
+            "OPAQUE"
+          ],
+          "title": "Encoding",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "original_type": {
+          "minLength": 1,
+          "title": "Original Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "name",
+        "original_type",
+        "encoding"
+      ],
+      "title": "LegacyField",
+      "type": "object"
+    },
+    "LegacyImportProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "historical_raw_content_hash": {
+          "default": null,
+          "title": "Historical Raw Content Hash",
+          "type": "null"
+        },
+        "historical_retrieved_at": {
+          "default": null,
+          "title": "Historical Retrieved At",
+          "type": "null"
+        },
+        "historical_source_url": {
+          "default": null,
+          "title": "Historical Source Url",
+          "type": "null"
+        },
+        "import_rules_version": {
+          "minLength": 1,
+          "title": "Import Rules Version",
+          "type": "string"
+        },
+        "imported_at": {
+          "format": "date-time",
+          "title": "Imported At",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/LegacyRowLocator"
+        },
+        "missing_reasons": {
+          "default": [
+            "HISTORICAL_ACQUISITION_NOT_RECORDED",
+            "HTTP_RESPONSE_BYTES_NOT_AVAILABLE",
+            "HISTORICAL_SOURCE_URL_NOT_VERIFIED"
+          ],
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Missing Reasons",
+          "type": "array"
+        },
+        "origin": {
+          "const": "LEGACY_ARCHIVE",
+          "default": "LEGACY_ARCHIVE",
+          "title": "Origin",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "locator",
+        "imported_at",
+        "import_rules_version"
+      ],
+      "title": "LegacyImportProvenance",
+      "type": "object"
+    },
+    "LegacyRow": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage": {
+          "enum": [
+            "METADATA_PROJECTION",
+            "FULL_ROW"
+          ],
+          "title": "Coverage",
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/LegacyField"
+          },
+          "minItems": 1,
+          "title": "Fields",
+          "type": "array"
+        },
+        "locator": {
+          "$ref": "#/$defs/LegacyRowLocator"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stored_texts": {
+          "items": {
+            "$ref": "#/$defs/LegacyStoredText"
+          },
+          "title": "Stored Texts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "locator",
+        "fields",
+        "coverage"
+      ],
+      "title": "LegacyRow",
+      "type": "object"
+    },
+    "LegacyRowLocator": {
+      "additionalProperties": false,
+      "properties": {
+        "original_index": {
+          "minLength": 1,
+          "title": "Original Index",
+          "type": "string"
+        },
+        "position": {
+          "minimum": 0,
+          "title": "Position",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Snapshot Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "snapshot_sha256",
+        "position",
+        "original_index"
+      ],
+      "title": "LegacyRowLocator",
+      "type": "object"
+    },
+    "LegacyStoredText": {
+      "additionalProperties": false,
+      "description": "Exact decoded UTF-8 file text, or a stored string field; never RESPONSE_BYTES.",
+      "properties": {
+        "file_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "File Sha256"
+        },
+        "historical_http_hash": {
+          "default": null,
+          "title": "Historical Http Hash",
+          "type": "null"
+        },
+        "historical_retrieved_at": {
+          "default": null,
+          "title": "Historical Retrieved At",
+          "type": "null"
+        },
+        "original_locator": {
+          "minLength": 1,
+          "title": "Original Locator",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "SAVED_HTML",
+            "ENRICHED_HTML",
+            "EXTRACTED_TEXT"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "utf8_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Utf8 Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "original_locator",
+        "text",
+        "utf8_sha256"
+      ],
+      "title": "LegacyStoredText",
+      "type": "object"
+    },
     "LegalAuthority": {
       "additionalProperties": false,
       "properties": {
@@ -2144,6 +2513,15 @@
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "anyOf": [
+    {
+      "$ref": "#/$defs/LegacyCaseRecord"
+    },
+    {
+      "$ref": "#/$defs/LegacyRow"
+    },
+    {
+      "$ref": "#/$defs/LegacyImportProvenance"
+    },
     {
       "$ref": "#/$defs/LegalCase"
     },

@@ -1,6 +1,6 @@
 # 판례 식별과 기존 corpus 계승 계약
 
-2026-09-10 사용자 추가 결정 반영. Step 2 모델은 구현 초안이며 canonical ID 발급 정책은 기존 corpus의 실제 식별자 분석에 앞서 확정하지 않는다.
+2026-09-10 사용자 추가 결정 반영. 기존 corpus 분석 후 canonical을 개별 결정 문서 단위로 확정했다. 신규 대표값 후보·기존 registry 재사용·merge/split 계약은 [legacy import 계약](legacy-import-contract.md)을 따른다. 아래 조사 전 원칙은 이 확정 정책과 함께 읽는다.
 
 ## 기존 자료가 출발점
 
@@ -14,7 +14,7 @@ canonical_id는 모델에서 opaque 문자열이다. 기존 정부 ID를 대표�
 | --- | --- |
 | CourtCaseKey | **법원명 + 사건번호**. 사용자가 확인한 고유 업무 식별키. 정부 ID 없는 LawnB 보유 판례도 등록·대조 가능 |
 | source 식별자 | scourt contId, law_go_kr 판례일련번호, 존재하는 LawnB 자체 ID를 각각 원래 namespace에서 보존 |
-| canonical_id | registry에서 대표 판례를 가리키는 안정적인 값. 기존 대표/공식 ID 활용을 우선 조사하며 발급 정책은 분석 후 결정 |
+| canonical_id | registry에서 대표 판례를 가리키는 안정적인 값. 개별 결정 문서 대표값; 기존 registry 우선, 미등록은 scourt/lawgo ID 우선 후보 |
 | 내용/연결 revision | source bytes hash, issue content revision, identity link revision을 각각 보존. 등록키·내용 변경·연결 정정을 혼동하지 않음 |
 
 정부 ID가 없다는 이유로 레거시 행을 버리거나 가짜 정부 ID를 만들지 않는다. 기존 행은 snapshot 파일 hash + 원래 index/position으로도 추적한다. 이는 원자료의 행 locator이며 법원명+사건번호 업무키나 법적 판례 identity 자체를 대신하지 않는다.
@@ -51,4 +51,4 @@ merge/split/relink는 새 연결 revision과 사유로 기록하며 기존 relea
 
 [조사 보고서](legacy-corpus-bootstrap.md)를 기준으로 대표 ID 정책을 확정한다. 최종 corpus 60컬럼에 canonical_id 컬럼은 없고 gmeta_contId/lmeta_serialno 및 행 index가 있다. 공식 ID를 대표로 활용할 근거는 있으나 공식 ID 하나가 항상 corpus 행 하나와 일대일인 것은 아니다.
 
-법원명+사건번호의 업무키 고유성은 유지한다. 다만 저장된 scourt/law_go_kr metadata 양쪽에서 대법원 2008재도11의 2011-01-20 판결과 2010-10-29 결정이 각각 다른 ID로 확인됐다. 서울고등법원 2001나60578도 판결/중간판결 자료가 있다. **사건 업무키와 그 사건의 개별 판결·결정 문서 identity를 구분**해야 원자료를 지울 필요가 없다. 여러 문서가 한 업무키에 속하는 경우를 수작업 키 오류로 분류하지 않는다. canonical을 어느 단위의 대표값으로 사용할지, 사건→결정 문서→source representation 연결을 import 설계에서 확정한다. 이 결정 전에는 모든 문서 행에 court+docket UNIQUE를 직접 걸지 않는다.
+법원명+사건번호의 업무키 고유성은 유지한다. 다만 저장된 scourt/law_go_kr metadata 양쪽에서 대법원 2008재도11의 2011-01-20 판결과 2010-10-29 결정이 각각 다른 ID로 확인됐다. 서울고등법원 2001나60578도 판결/중간판결 자료가 있다. **사건 업무키와 그 사건의 개별 판결·결정 문서 identity를 구분**해야 원자료를 지울 필요가 없다. 여러 문서가 한 업무키에 속하는 경우를 수작업 키 오류로 분류하지 않는다. canonical은 개별 결정 문서 단위로 확정했다. 사건→복수 문서→source representation 관계를 유지하며 문서 행에 court+docket UNIQUE를 직접 걸지 않는다. legacy 후보를 확정 registry에 반영하는 트랜잭션은 Step 2A다.

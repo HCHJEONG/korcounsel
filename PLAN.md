@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: Step 1 완료 / Step 2 계약 초안 및 기존 corpus 식별자 전수·표본 분석 완료 / ID·legacy import 계약 후속
+> 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A persistence 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 최신 작업: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
+> 최신 작업: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
 
 ## 1. 목적과 성공 기준
 
@@ -25,7 +25,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 ## 2. 현재 상태와 작업 범위
 
-- 현재 프로젝트는 Step 1 scaffold를 구현했다. 도메인 모델은 Step 2 초안이며 인증·수집·영속 worker는 아직 없다.
+- 현재 프로젝트는 Step 1 scaffold를 구현했다. 도메인 모델과 legacy staging 계약은 Step 2 범위에서 검증했으며 인증·수집·영속 worker는 아직 없다.
 - 배포 이름은 `korean-legal-gold`, Python 패키지는 `klegal_gold`, CLI는 `klegal`을 잠정 사용한다. 현재 폴더나 Git 저장소 이름은 자동 변경하지 않는다.
 - 사용자가 안내한 레거시 저장소 탐색 기준 경로는 **`I:\VSCodeBases`**다.
 - 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 실제 두 레포의 경로와 관련 코드를 확인했으며 docs의 두 레거시 조사 문서에 근거를 기록했다.
@@ -167,21 +167,21 @@ data/                 # runtime 데이터, Git 제외
 - [x] 최종 pickle 실제 행·컬럼·공식 ID 분포·중복·출처 연결을 전수 조사하고 CSV와 교차 확인한다.
 - [x] 법원명+사건번호 업무키의 coverage·중복 representation·충돌을 분리하고 결측·타입·이미지·editorial 층화 표본을 읽는다.
 - [x] 기존 ID·원문·행 locator 보존 및 재실행 가능한 초기 import, 이후 delta/refresh 계획을 기록한다.
-- [ ] 공식 ID를 대표값으로 계승할지 기존 별도 ID가 있는지 확인한 뒤 canonical 정책을 확정한다. 단순히 새 UUID를 부여하지 않는다.
+- [x] 공식 ID를 대표값으로 계승할지 기존 별도 ID가 있는지 확인한 뒤 canonical 정책을 확정한다. 단순히 새 UUID를 부여하지 않는다.
 
 이 단계는 기존 89,130건을 신규 수집으로 대체하는 작업이 아니다. LawnB 등 정부 ID 없는 자료에도 법원명+사건번호 업무키를 사용하며 극소수 역사적 오류는 예외 이력으로 다룬다.
 
-2026-09-10 조사 기록: 최종 corpus 89,130행·60컬럼, 층화 195행, 두 metadata catalog와 대표 12행 대조 완료. [조사 보고서](docs/legacy-corpus-bootstrap.md)에 ID 재사용·다문서 관계·날짜 객체·bootstrap 계획을 기록했다. canonical 발급/대표 단위 및 legacy provenance 계약 확정은 다음 작업이다.
+2026-09-10 조사 기록: 최종 corpus 89,130행·60컬럼, 층화 195행, 두 metadata catalog와 대표 12행 대조 완료. [조사 보고서](docs/legacy-corpus-bootstrap.md)에 ID 재사용·다문서 관계·날짜 객체·bootstrap 계획을 기록했다. 후속으로 개별 결정 문서 대표값·legacy provenance 계약을 확정했다. docs/legacy-import-contract.md 참조.
 
 ### Step 2 — Domain model과 데이터 계약
 
 - [x] Pydantic LegalCase/LegalIssueUnit/LegalAuthority/EvidenceSpan/Provenance와 SourceCaseIdentifier/CanonicalCaseIdentity/IdentityResolution/InventorySnapshot/SourceArtifact/VisualAssetReference/DocumentBlock을 정의한다.
-- [ ] canonical ID 생성·registry 재현·merge/split 정책을 검토해 기록하고 nullable editorial/full_text·field availability·fidelity 상태를 구현한다.
+- [x] canonical ID 생성·registry 재현·merge/split 정책을 검토해 기록하고 nullable editorial/full_text·field availability·fidelity 상태를 구현한다.
 - [x] `CaseReference`, `RawLegalCase`와 구조 파싱용 번호·계층·원문 위치 정보를 정의한다.
-- [ ] 사건번호, 법원, 날짜, 사건명, 판시사항, 요지, 이유, 인용, URL, 원본 hash의 타입과 결측 정책을 정한다.
-- [ ] ID 생성, provenance, offset, alignment/quality 상태, 오류 코드, gold 포함 기준과 schema 버전을 문서화한다.
+- [x] 사건번호, 법원, 날짜, 사건명, 판시사항, 요지, 이유, 인용, URL, 원본 hash의 타입과 결측 정책을 정한다.
+- [x] ID 생성, provenance, offset, alignment/quality 상태, 오류 코드, gold 포함 기준과 schema 버전을 문서화한다.
 
-현재: 일반 domain schema 0.1.0 초안, CourtCaseKey·공식/legacy namespace·opaque canonical ID·Unicode evidence·revision 검증을 구현했다. Python 84건 통과. legacy origin/과거 provenance 결측과 개별 결정 문서의 대표 단위가 미완료이므로 Step 2 전체 완료는 아니다.
+현재: 개발 중 domain schema 0.1.0에 legacy 보존 계약을 추가했다. canonical은 개별 결정 문서 단위이며 기존 registry 우선 재사용·공식 ID 우선 후보 정책을 기록했다. LegacyCaseRecord는 과거 HTTP provenance를 강제하지 않는 별도 staging이다. 실제 metadata 15행·저장 HTML 4개와 JSONL/재실행을 검증했다. 전체 corpus import, legacy→LegalCase/Issue 구조화, DB registry 트랜잭션 및 Parquet은 후속이다. Step 2 완료는 계약·표본 검증 범위이며 운영 import 완료가 아니다. 상세: docs/legacy-import-contract.md.
 
 완료 기준: 유효·결측·잘못된 타입·offset 사례를 구분하고 직렬화 round-trip 테스트를 통과한다. `docs/dataset-schema.md`, `docs/provenance.md`에 계약이 기록된다.
 
@@ -580,3 +580,5 @@ Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.
 - [ ] case ingestion 성공·asset 부분 실패·OCR 미처리를 독립적으로 표현하고 필요한 evidence가 부족한 gold 발행을 막는다.
 - [ ] 실제 source pairing·이미지 누락 비교·PDF/scan 실물 검증의 미완료를 보고서에 남기고 완료 전 실측한다.
 - [ ] source/identity/asset 이력·snapshot과 DB를 일관되게 백업·복구하고 small EC2에서 browser·asset 자원을 측정한다.
+
+2026-09-10 최종 검증: backend에서 uv ruff check·ruff format --check·mypy 통과, 로컬 PostgreSQL 연결 포함 pytest **105건 통과**. 기존 upstream deprecation warning 2건 유지. 실제 metadata 15행·저장 HTML 4개 검증 및 git diff --check 통과. 프런트·분석 전용 도구는 변경하지 않았으며 해당 테스트를 이번 작업에서 재실행하지 않았다.

@@ -2,7 +2,9 @@
 
 공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
-현재 **Step 1 완료, Step 2 데이터 계약 초안·기존 corpus 전수/표본 분석 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
+현재 **Step 1·Step 2 데이터 계약 및 legacy 표본 검증 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
+
+legacy 보존 모델은 과거 취득시각·HTTP hash를 만들지 않고 기존 필드와 행 locator를 유지합니다. 실제 metadata 15행과 저장 HTML 4개를 검증했으며 전체 corpus/DB import는 후속입니다. [import 계약과 표본 재현](docs/legacy-import-contract.md)을 참고하세요.
 
 ## 폴더 원칙
 

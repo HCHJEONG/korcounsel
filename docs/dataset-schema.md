@@ -1,6 +1,6 @@
 # 데이터 schema 설계 계약
 
-2026-09-10: backend/src/klegal_gold/domain/에 Pydantic 2 모델 초안과 schema 0.1.0을 구현했다. DB·실제 import·resolver는 미구현이다. 기존 corpus 조사에 따른 legacy provenance 및 사건/개별 결정 문서의 대표 단위 확정이 남아 있으므로 아직 운영 import 계약 완료로 취급하지 않는다.
+2026-09-10: backend/src/klegal_gold/domain/에 Pydantic 2 모델 초안과 schema 0.1.0을 구현했다. DB·실제 import·resolver는 미구현이다. legacy provenance와 개별 결정 문서 대표 단위는 후속으로 확정했다. 개발 중 0.1.0 bundle에 LegacyRow/LegacyCaseRecord/LegacyImportProvenance를 추가했으며 별도 운영 릴리스를 만든 것은 아니다. DB·전체 corpus import 완료를 뜻하지 않는다.
 
 | 모델 | 주요 필드·불변식 |
 | --- | --- |
@@ -45,3 +45,7 @@ PostgreSQL에는 source key unique, canonical registry/link revision, snapshot/l
 주요 모델 오류 코드는 INVALID_TEXT_SPAN, EVIDENCE_OUT_OF_RANGE, EVIDENCE_TEXT_MISMATCH, EVIDENCE_SOURCE_VERSION_MISMATCH, RAW_PROVENANCE_MISMATCH, FIELD_AVAILABILITY_MISMATCH, INSUFFICIENT_EXACT_METADATA, NON_UNIQUE_EXACT_CANDIDATE, UNPROVEN_COMPLETE_INVENTORY, STALE_REVIEW, STALE_GOLD_ASSESSMENT다. Pydantic의 scalar type/enum 오류와 구분한다. 원자료를 삭제하지 않고 후속 validation report에 사유를 기록하는 계약이다.
 
 JSON/model round-trip과 합성 회귀를 검증했다. Parquet·실제 import·full gold validation·DB unique/transaction은 후속 단계이며 현재 통과로 표시하지 않는다.
+
+## Legacy staging 계약 추가
+
+[legacy import 계약](legacy-import-contract.md)의 LegacyCaseRecord는 원래 필드·타입·snapshot 행 locator와 검증 전 문서 ID 후보를 보존한다. 역사적 HTTP hash/취득시각/URL은 null로 강제하고 결측 이유를 둔다. LegacyStoredText는 저장 문자열 UTF-8 hash와 실제 파일 hash를 구분한다. 일반 RawLegalCase/LegalCase의 실제 응답 provenance 제약은 유지한다. staging을 gold 또는 전체 구조화 완료로 사용하지 않는다. 실제 metadata 15행·저장 HTML 4개의 JSONL round-trip과 재실행 content revision을 검증했다.

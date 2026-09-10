@@ -26,11 +26,15 @@ from .identity import (
 )
 from .inventory import InventorySnapshot
 from .issues import GoldAssessment, LegalIssueUnit, ReviewDecision
+from .legacy import LegacyCaseRecord, LegacyImportProvenance, LegacyRow
 from .provenance import Provenance
 
 
 def domain_json_schema() -> dict[str, Any]:
     models: list[type[BaseModel]] = [
+        LegacyCaseRecord,
+        LegacyRow,
+        LegacyImportProvenance,
         LegalCase,
         RawLegalCase,
         LegalIssueUnit,

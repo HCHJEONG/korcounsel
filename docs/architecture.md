@@ -56,7 +56,7 @@ API·worker 이미지는 backend/를 build context로, 프런트 이미지는 �
 
 legacy archive → 읽기 전용 전수/표본 audit → ID/업무키·결정 문서/출처 표현 구분 → 보존 import + mapping manifest → inventory delta/refresh 순서로 확장한다. UUID 발급은 선결정하지 않는다. 공식 ID가 없는 자료는 법원명+사건번호 업무키와 legacy locator를 유지한다. 일회성 분석용 pandas/NumPy는 runtime dependency가 아니다.
 
-Step 2 domain 초안은 backend/src/klegal_gold/domain/에 있으며 실제 import mapper/DB registry는 아직 없다. [bootstrap 조사](legacy-corpus-bootstrap.md)의 결측·문서 단위·과거 provenance 문제를 해결하고 계약을 고정한 뒤 Step 2A migration을 진행한다.
+Step 2 domain 초안은 backend/src/klegal_gold/domain/에 있으며 표본용 ingestion/legacy.py staging mapper를 추가했으며 전체 import/DB registry는 아직 없다. [bootstrap 조사](legacy-corpus-bootstrap.md)의 결측·문서 단위·과거 provenance 문제를 해결하고 고정한 [legacy 계약](legacy-import-contract.md)을 기준으로 Step 2A migration을 진행한다.
 
 ## 기본 본문과 보강 역할
 

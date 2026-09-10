@@ -114,3 +114,7 @@ uv run --no-project --with pandas==2.2.3 --with numpy==1.26.4 python scripts/ana
 ## 내용 보강·증분 목적의 추가 확인
 
 2026-09-10 후속 조사에서 scourt 기본 HTML→이미지 주소 보완→lawgo 조문 jtable 보강의 실제 전후 저장 표본을 확인했다. 신규 contId 차집합 및 보강 미완료/재개 코드도 확인했다. [내용 보강·증분 계승 전략](legacy-enrichment-and-incremental.md)을 bootstrap 이후 구현의 기준으로 추가한다.
+
+## Step 2 후속 완료 기록
+
+개별 결정 문서 단위 canonical 정책과 legacy provenance/staging 계약을 확정했다. 기존 전수 조사를 반복하지 않고 metadata projection 15행·기존 저장 HTML 4개를 새 보존 모델로 변환·검증했다. [확정 import 계약](legacy-import-contract.md), [실행 보고서](step0/legacy-contract-verification.json) 참조. 위 조사 시점의 미완료 항목 중 계약·표본 검증만 완료했으며 전체 corpus import·DB registry·현행 사이트 검증은 남아 있다.

@@ -21,7 +21,7 @@
 
 `case_txt_scraped_with_tags`도 레거시 조문/이미지 보강을 거친 저장 문자열일 수 있다. 이를 과거 서버의 원본 HTTP bytes로 다시 이름 붙이지 않는다. 기존 필드 그대로 보존한 legacy artifact와 새 API response artifact를 구분하고, 이번 import 시각을 역사적 수집 시각으로 기록하지 않는다. 역사적 raw hash가 없으면 없는 것으로 유지한다. 0/empty/parser 객체 등 원래 값은 원 archive에 남기고 mapper의 변환/결측 사유를 별도로 남긴다.
 
-현재 domain 0.1.0의 일반 source Provenance는 과거 취득시각·URL·raw hash를 아는 흐름의 초안이다. legacy artifact origin/unknown acquisition을 표현하는 import 계약을 완성하기 전, 기존 89,130행을 이 schema에 맞추려고 가짜 값을 채우지 않는다. 이 보완은 Step 2 완료의 선행 조건이다.
+일반 source Provenance는 과거 취득시각·URL·raw hash를 아는 흐름의 초안이다. legacy artifact origin/unknown acquisition을 표현하는 import 계약을 완성하기 전, 기존 89,130행을 이 schema에 맞추려고 가짜 값을 채우지 않는다. 이 보완은 별도 LegacyImportProvenance/LegacyCaseRecord로 구현했다. 일반 HTTP provenance를 완화하지 않고 staging을 구분한다. [확정 계약과 검증](legacy-import-contract.md)을 따른다.
 
 새 issue content revision은 내용·출처 버전·evidence·규칙으로 계산하며 run/release metadata를 제외한다. registry/link revision은 별도로 고정한다. 자동 검증과 사람의 검토는 둘 다 정확한 issue 및 link revision을 참조한다.
 
