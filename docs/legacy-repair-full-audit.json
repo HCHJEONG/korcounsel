@@ -1,0 +1,53 @@
+{
+  "scope": "FULL_OFFLINE_REPAIR_AUDIT_AND_IMAGE_INVENTORY",
+  "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+  "rows": 89130,
+  "columns": 60,
+  "rules_version": "legacy-date-repair-3",
+  "decision": {
+    "READY": 89130
+  },
+  "closing": {
+    "NOT_FOUND": 75567,
+    "READY": 13518,
+    "REVIEW_MULTIPLE": 45
+  },
+  "images": {
+    "rows_with_images": 43794,
+    "occurrences": 105793,
+    "suspected_ui": 90345,
+    "rows_without_images": 45336,
+    "other_or_unknown": 15448
+  },
+  "unique_resolved_urls": 8423,
+  "counts": {
+    "dates.jsonl": 89130,
+    "images.jsonl": 89130,
+    "quarantine.jsonl": 0
+  },
+  "files": {
+    "quarantine.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "images.jsonl": {
+      "sha256": "097bf3c0ae35a497275116d848bd79d1daa0b881f9e670344ce81d9280be6d28",
+      "bytes": 70599563
+    },
+    "repair-overlay.parquet": {
+      "sha256": "60a57183eb3a9fe3d788216268364826b2c3d87965bd629b992831e09ce73df7",
+      "bytes": 3746031
+    },
+    "dates.jsonl": {
+      "sha256": "ed24b3d3b312c47cf732daf9be27e2ca447ab0afe03a4691a684e15c3579828b",
+      "bytes": 96555694
+    }
+  },
+  "output": "/home/hchjeong/IntelliJProjects/korcounsel/data/repair-audit-20260910-v3",
+  "overlay_roundtrip": true,
+  "source_stat_unchanged": true,
+  "elapsed_seconds": 273.38172508700063,
+  "peak_rss_kib": 8308500,
+  "applied_to_original": false,
+  "canonical_registered": false
+}

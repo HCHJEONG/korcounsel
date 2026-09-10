@@ -1,5 +1,7 @@
 # 기존 DataFrame FULL_ROW 보존 importer
 
+**전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 전체 60컬럼 최종 Parquet·이미지 전수 취득·DB import는 미완료다. [결과와 한계](legacy-repair-and-images-progress.md).
+
 **이미지 보존 범위 확정 — 2026-09-10:** 이번 교정·Parquet 전환에는 이미지 참조 전수 점검과 취득 가능한 실물 파일 확보·검증·본문 위치 연결도 포함한다. 원문 문자열과 원래 URL/name은 보존하고 Parquet에는 이미지 파일/manifest 참조·취득 상태를 담는다. 용량은 현재 선행 장애로 두지 않는다. [확정 범위와 완료 기준](image-preservation-review.md).
 
 **전수 text 대조 후속:** 89,130행의 본문과 별도 파일 8,482개를 대조했다. 신규 미포함 판례로 확정한 자료는 없으며 ID 없는 기존 재결 6429행의 연결 검토가 필요하다. [상세 결과](legacy-text-coverage-audit.md).

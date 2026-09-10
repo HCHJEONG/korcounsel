@@ -1,0 +1,188 @@
+{
+  "scope": "offline legacy references; acquisition plan not identity confirmation",
+  "source_inventory_sha256": "097bf3c0ae35a497275116d848bd79d1daa0b881f9e670344ce81d9280be6d28",
+  "source_groups": 1864,
+  "target_urls": 8418,
+  "paths": {
+    "/wsjo/cm/imgDownload.do": 10860,
+    "/wsjodocs/images/contents/flag_03.gif": 4390,
+    "/wsjodocs/images/contents/flag_01.gif": 181,
+    "null": 17
+  },
+  "missing_or_unrecognized": [
+    {
+      "position": 160,
+      "scourt_id": "2064785",
+      "ref": {
+        "order": 0,
+        "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "name": null,
+        "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "srcset_original": null,
+        "alt": "변경",
+        "html_line_column": [
+          109,
+          659
+        ],
+        "provider_mapping_values": [],
+        "host": "glaw.scourt.go.kr",
+        "path": "/wsjodocs/images/contents/flag_03.gif",
+        "legacy_contId": [],
+        "legacy_filename": [],
+        "suspected_ui": false
+      }
+    },
+    {
+      "position": 160,
+      "scourt_id": "2064785",
+      "ref": {
+        "order": 1,
+        "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "name": null,
+        "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "srcset_original": null,
+        "alt": "변경",
+        "html_line_column": [
+          111,
+          364
+        ],
+        "provider_mapping_values": [],
+        "host": "glaw.scourt.go.kr",
+        "path": "/wsjodocs/images/contents/flag_03.gif",
+        "legacy_contId": [],
+        "legacy_filename": [],
+        "suspected_ui": false
+      }
+    },
+    {
+      "position": 162,
+      "scourt_id": "1970100",
+      "ref": {
+        "order": 5,
+        "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "name": null,
+        "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/flag_03.gif",
+        "srcset_original": null,
+        "alt": "변경",
+        "html_line_column": [
+          417,
+          669
+        ],
+        "provider_mapping_values": [],
+        "host": "glaw.scourt.go.kr",
+        "path": "/wsjodocs/images/contents/flag_03.gif",
+        "legacy_contId": [],
+        "legacy_filename": [],
+        "suspected_ui": false
+      }
+    }
+  ],
+  "cross_document_refs": [
+    {
+      "position": 3456,
+      "row_id": "2123101",
+      "image_id": "1984968"
+    },
+    {
+      "position": 8856,
+      "row_id": "3258762",
+      "image_id": "3258825"
+    },
+    {
+      "position": 28784,
+      "row_id": "2258708",
+      "image_id": "3222159"
+    },
+    {
+      "position": 39343,
+      "row_id": "1984142",
+      "image_id": "2123056"
+    },
+    {
+      "position": 41279,
+      "row_id": "3312876",
+      "image_id": "3281613"
+    }
+  ],
+  "small_sample_candidates": [
+    {
+      "source_id": "1955787",
+      "urls": [
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1955787&attachImgNm=07dp0101r017-01.gif",
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1955787&attachImgNm=07dp0101r017-02.gif"
+      ],
+      "positions": [
+        11792
+      ],
+      "filenames": [
+        "07dp0101r017-01.gif",
+        "07dp0101r017-02.gif"
+      ]
+    },
+    {
+      "source_id": "1955834",
+      "urls": [
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1955834&attachImgNm=08dp0315017-01.gif"
+      ],
+      "positions": [
+        8467
+      ],
+      "filenames": [
+        "08dp0315017-01.gif"
+      ]
+    },
+    {
+      "source_id": "1956328",
+      "urls": [
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956328&attachImgNm=05dp0315r005.gif",
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956328&attachImgNm=05dp0315r006.gif"
+      ],
+      "positions": [
+        15920
+      ],
+      "filenames": [
+        "05dp0315r005.gif",
+        "05dp0315r006.gif"
+      ]
+    },
+    {
+      "source_id": "1956496",
+      "urls": [
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956496&attachImgNm=07dp0115r017-01.gif",
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956496&attachImgNm=07dp0115r017-02.gif"
+      ],
+      "positions": [
+        11636
+      ],
+      "filenames": [
+        "07dp0115r017-01.gif",
+        "07dp0115r017-02.gif"
+      ]
+    },
+    {
+      "source_id": "1956917",
+      "urls": [
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956917&attachImgNm=08dp0501023-01.gif",
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956917&attachImgNm=08dp0501023-02.gif",
+        "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1956917&attachImgNm=08dp0501023-03.gif"
+      ],
+      "positions": [
+        8288
+      ],
+      "filenames": [
+        "08dp0501023-01.gif",
+        "08dp0501023-02.gif",
+        "08dp0501023-03.gif"
+      ]
+    }
+  ],
+  "missing_or_unrecognized_count": 4593,
+  "cross_document_ref_count": 27,
+  "cross_document_positions": [
+    3456,
+    8856,
+    28784,
+    39343,
+    41279
+  ]
+}

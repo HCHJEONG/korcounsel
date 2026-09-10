@@ -1,0 +1,10 @@
+{
+  "rows": 89130,
+  "parquet_sha256": "60a57183eb3a9fe3d788216268364826b2c3d87965bd629b992831e09ce73df7",
+  "value_sha256": "a18a6c8c96458210f350096b2499546897c5ae4c45a40ff3185c3eb8b0b9a1c1",
+  "all_cells_equal": true,
+  "node": "v24.16.0",
+  "duckdb_node_api": "1.5.5-r.4",
+  "rules_version": "legacy-date-repair-3",
+  "scope": "FULL_REPAIR_OVERLAY_NOT_60_COLUMN_CORPUS"
+}

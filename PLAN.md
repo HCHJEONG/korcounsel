@@ -1,5 +1,9 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 전체 60컬럼 최종 Parquet·이미지 전수 취득·DB import는 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
+
+이하 표본 조사·미실행 표시는 당시 이력이며 최신 완료 범위는 위 보고서를 따른다.
+
 **이미지 실물 보존 — 2026-09-10 사용자 확정:** 기존 corpus 정비·Parquet 전환의 이번 작업 범위에 이미지 참조 전수 점검, 취득 가능한 이미지 bytes 저장·검증, 원문 위치 연결 및 실패/재시도 관리를 포함한다. 신규 판례에도 URL과 실물 파일 병행 보존을 적용한다. 저장 용량은 현재 선행 장애로 두지 않으며 실측은 운영 계획을 위해 수행한다. 원문 HTML은 유지하고 이미지 파일·SHA-256·원 src/name·제공자 매핑·취득 시각·반복 위치를 manifest로 연결한다. Parquet에는 참조·상태를 담는다. 기존의 binary 취득을 먼 후속으로 미룬 범위보다 이 결정이 우선한다. OCR·이미지 해석은 별도이며 실제 전수 취득 완료를 의미하지 않는다. [범위와 완료 기준](docs/image-preservation-review.md).
 
 **이미지 보존 검토 — 2026-09-10:** 기존 이미지 2개의 과거 주소는 로컬 DNS 해석 실패, 현재 제공자 매핑 주소는 cookie 없이 HTTP 200/GIF header를 확인하고 조사용 bytes를 보존했다. 전체 링크 실패나 과거 binary 동일성을 뜻하지 않는다. URL+실물 파일+위치 manifest 보존을 권고하며 운영 downloader·전수 취득은 미구현이다. [실측과 권고](docs/image-preservation-review.md).

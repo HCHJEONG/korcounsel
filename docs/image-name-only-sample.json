@@ -1,0 +1,29 @@
+[
+  {
+    "source_id": "1970841",
+    "occurrences": 6,
+    "unique_urls": 2,
+    "acquired_urls": 2,
+    "total_unique_bytes": 12998,
+    "all_occurrences_linked": false,
+    "manifest_sha256": "90a53e58fe20566b3621054dfb02e57e115b318822507f86ad558d79be8c1388"
+  },
+  {
+    "source_id": "1982647",
+    "occurrences": 14,
+    "unique_urls": 0,
+    "acquired_urls": 0,
+    "total_unique_bytes": 0,
+    "all_occurrences_linked": false,
+    "manifest_sha256": "66ceb1fc3296d2b63edb3f1ff823b7fdc7e908578c362d63f482c1f916a651c4"
+  },
+  {
+    "source_id": "2067140",
+    "occurrences": 0,
+    "unique_urls": 0,
+    "acquired_urls": 0,
+    "total_unique_bytes": 0,
+    "all_occurrences_linked": false,
+    "manifest_sha256": "40a5d3346bf082d22423eac220006db6bf968e0b677db42447eb777a391c675a"
+  }
+]

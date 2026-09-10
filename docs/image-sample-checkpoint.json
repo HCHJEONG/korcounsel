@@ -1,0 +1,711 @@
+{
+  "source_id": "2029039",
+  "parent_html_sha256": "487ac087b4ac2dbe0905ba04eaa59732a6c635d14bcba93e2aa8060924d55eae",
+  "occurrences": 34,
+  "unique_urls": 33,
+  "acquired_urls": 3,
+  "new_downloads": 3,
+  "verified_reused": 0,
+  "unique_binary_hashes": 3,
+  "total_unique_bytes": 36548,
+  "failed_urls": 0,
+  "pending_urls": 30,
+  "unresolved_occurrences": 0,
+  "all_occurrences_linked": false,
+  "images": [
+    {
+      "order": 0,
+      "original_src": null,
+      "name": "img1",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-01.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        29,
+        115
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-01.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-01.gif",
+        "at": "2026-09-10T09:25:03.853967+00:00",
+        "status": "ACQUIRED",
+        "http_status": 200,
+        "content_type": "application/x-octetstream",
+        "sha256": "8b6f335a057b3a9a3a5704fddfed110f4bceabeabf69a2b99f8d56c00329902e",
+        "storage_key": "blobs/8b/8b6f335a057b3a9a3a5704fddfed110f4bceabeabf69a2b99f8d56c00329902e",
+        "bytes": 9351,
+        "image": {
+          "format": "GIF",
+          "size": [
+            530,
+            425
+          ],
+          "frames": 1
+        }
+      }
+    },
+    {
+      "order": 1,
+      "original_src": null,
+      "name": "img2",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-02.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        29,
+        255
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-02.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-02.gif",
+        "at": "2026-09-10T09:25:04.486421+00:00",
+        "status": "ACQUIRED",
+        "http_status": 200,
+        "content_type": "application/x-octetstream",
+        "sha256": "eccc81e7dffce0751fc6cd841b7a22a5f389c6363dafc13db39177fa17519dad",
+        "storage_key": "blobs/ec/eccc81e7dffce0751fc6cd841b7a22a5f389c6363dafc13db39177fa17519dad",
+        "bytes": 13154,
+        "image": {
+          "format": "GIF",
+          "size": [
+            289,
+            185
+          ],
+          "frames": 1
+        }
+      }
+    },
+    {
+      "order": 2,
+      "original_src": null,
+      "name": "img3",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-03.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        29,
+        300
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-03.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-03.gif",
+        "at": "2026-09-10T09:25:05.087526+00:00",
+        "status": "ACQUIRED",
+        "http_status": 200,
+        "content_type": "application/x-octetstream",
+        "sha256": "779f469c73e394abffce27ad1330293052ac16d734399b119db93132dec44f02",
+        "storage_key": "blobs/77/779f469c73e394abffce27ad1330293052ac16d734399b119db93132dec44f02",
+        "bytes": 14043,
+        "image": {
+          "format": "GIF",
+          "size": [
+            289,
+            185
+          ],
+          "frames": 1
+        }
+      }
+    },
+    {
+      "order": 3,
+      "original_src": null,
+      "name": "img4",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-04.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        29,
+        352
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-04.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 4,
+      "original_src": null,
+      "name": "img5",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-05.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        29,
+        397
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-05.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 5,
+      "original_src": null,
+      "name": "img6",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-06.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        5275
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-06.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 6,
+      "original_src": null,
+      "name": "img7",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-07.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        5320
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-07.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 7,
+      "original_src": null,
+      "name": "img8",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-08.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        5372
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-08.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 8,
+      "original_src": null,
+      "name": "img9",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-09.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        5775
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-09.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 9,
+      "original_src": null,
+      "name": "img10",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-10.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        5820
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-10.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 10,
+      "original_src": null,
+      "name": "img11",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-11.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        30,
+        6117
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-11.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 11,
+      "original_src": null,
+      "name": "img12",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-12.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        33,
+        1102
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-12.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 12,
+      "original_src": null,
+      "name": "img13",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-13.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        33,
+        1535
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-13.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 13,
+      "original_src": null,
+      "name": "img14",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-14.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        34,
+        2934
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-14.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 14,
+      "original_src": null,
+      "name": "img15",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-15.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        35,
+        91
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-15.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 15,
+      "original_src": null,
+      "name": "img16",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-16.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        38,
+        2290
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-16.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 16,
+      "original_src": null,
+      "name": "img17",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-17.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        40,
+        1521
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-17.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 17,
+      "original_src": null,
+      "name": "img18",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-18.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        40,
+        3304
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-18.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 18,
+      "original_src": null,
+      "name": "img19",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-19.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        40,
+        4525
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-19.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 19,
+      "original_src": null,
+      "name": "img20",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-20.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        40,
+        9215
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-20.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 20,
+      "original_src": null,
+      "name": "img21",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-21.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        42,
+        1512
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-21.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 21,
+      "original_src": null,
+      "name": "img22",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-22.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        64,
+        1051
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-22.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 22,
+      "original_src": null,
+      "name": "img23",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-23.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        64,
+        2620
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-23.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 23,
+      "original_src": null,
+      "name": "img24",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-24.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        64,
+        2724
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-24.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 24,
+      "original_src": null,
+      "name": "img25",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-25.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        69,
+        1264
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-25.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 25,
+      "original_src": null,
+      "name": "img26",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-26.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        1092
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-26.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 26,
+      "original_src": null,
+      "name": "img27",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-27.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        2330
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-27.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 27,
+      "original_src": null,
+      "name": "img28",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-28.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        2479
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-28.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 28,
+      "original_src": null,
+      "name": "img29",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-29.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        2532
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-29.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 29,
+      "original_src": null,
+      "name": "img30",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-30.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        2585
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-30.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 30,
+      "original_src": null,
+      "name": "img27",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-27.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        2777
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-27.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 31,
+      "original_src": null,
+      "name": "img31",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-31.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        3230
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-31.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 32,
+      "original_src": null,
+      "name": "img32",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-32.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        76,
+        3283
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-32.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    },
+    {
+      "order": 33,
+      "original_src": null,
+      "name": "img33",
+      "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-33.gif",
+      "srcset_original": null,
+      "alt": null,
+      "html_line_column": [
+        82,
+        1309
+      ],
+      "provider_mapping_values": [
+        "11w0401-009-33.gif"
+      ],
+      "resolution_basis": "Observed provider contImagePath name/value mapping",
+      "acquisition": {
+        "status": "PENDING"
+      }
+    }
+  ],
+  "validation": "Pillow verify plus first-frame decode; no OCR",
+  "historical_binary_identity_verified": false,
+  "manifest_sha256": "3443caf2654915b3e2d260a91d25cfa452407a30d740d38b6db9d66e7d957eb0"
+}
