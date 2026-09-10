@@ -1,0 +1,17 @@
+{
+  "scope": "FULL_CORRECTED_LEGACY_PARQUET_NODE_CHECK",
+  "rows": 89130,
+  "columns": 62,
+  "legacy_columns": 60,
+  "parquet_sha256": "3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2",
+  "decision_date_json_rows": 89130,
+  "closing_argument_json_rows": 13563,
+  "closing_argument_string_rows": 75567,
+  "position_range": [
+    0,
+    89129
+  ],
+  "node": "v24.16.0",
+  "duckdb_node_api": "1.5.5-r.4",
+  "check_passed": true
+}

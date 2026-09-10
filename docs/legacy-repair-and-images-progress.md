@@ -1,6 +1,6 @@
 # 날짜 전수 교정 검증과 이미지 보존 진행 — 2026-09-10
 
-89,130행×60컬럼의 기존 DataFrame을 읽어 날짜 교정 후보와 이미지 inventory를 전수 생성했다. 원본 pickle·태그 있는 HTML은 수정하지 않았다. 이번 산출물은 **검증된 교정 변경분 Parquet**이며 60컬럼 최종 corpus, PostgreSQL 전수 적재, canonical 등록 또는 GOLD 완료가 아니다.
+89,130행×60컬럼의 기존 DataFrame을 읽어 날짜 교정 후보와 이미지 inventory를 전수 생성했고, 그 overlay를 적용한 **전체 60컬럼 corrected Parquet**까지 만들었다. 원본 pickle·태그 있는 HTML은 수정하지 않았다. PostgreSQL 전수 적재, canonical 등록, 이미지 전수 취득 또는 GOLD 완료가 아니다.
 
 ## 날짜 결과
 
@@ -30,7 +30,21 @@
 
 [전수 실행 보고서](legacy-repair-full-audit.json), [Node 전체 셀 검증](repair-overlay-node-verification.json). PyArrow 자체 왕복과 DuckDB Node의 89,130행 전체 9컬럼 값 비교를 통과했다. Node v24.16.0, DuckDB Node API 1.5.5-r.4. 소요 약 273초, peak RSS 약 7.9 GiB이며 원본 시작 SHA 확인·종료 stat 불변을 검사했다.
 
-재현은 backend 분석 환경에서 `scripts/audit_legacy_repairs.py`에 `--snapshot`, `--expected-sha256`, 새로운 `--output`, `--report`를 명시한다. pandas 2.2.3·NumPy 1.26.4·PyArrow 25.0.0은 분석용이며 앱 의존성으로 추가하지 않았다. allowlist unpickler를 사용하며 레거시 모듈의 최상위 코드를 실행하지 않는다.
+## 전체 60컬럼 corrected Parquet
+
+`scripts/export_corrected_legacy_parquet.py`로 기존 60컬럼 전체를 유지하고 `repair-overlay.parquet`의 apply=true 값만 반영한 전수 snapshot을 생성했다. `decision_date`는 89,130행 모두 교정 날짜로 바뀌었고, `closing_argument`는 기존 `no_info`였던 17행만 추가 교정했다. apply=false인 75,567행과 복수 후보 45행은 기존값을 삭제하거나 임의 확정하지 않았다.
+
+- 출력: `data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet`
+- 보고서: [Python 전수 export 보고서](corrected-legacy-parquet-full-export.json), [Node/DuckDB 검증](corrected-legacy-parquet-node-verification.json)
+- Parquet SHA-256: `3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2`
+- 크기: 1,215,542,924 bytes, row group 349개, row group size 256
+- Python 검증: 전체 row group 재읽기·셀 표현 대조 통과, source stat 불변, OPAQUE 0셀
+- Node 검증: 89,130행, 62컬럼(원 60컬럼 + locator 2컬럼), `decision_date` JSON 날짜 89,130행, `closing_argument` JSON 날짜 13,563행 확인
+- 소요: 전체 약 342초, 쓰기 약 114초, 재읽기 검증 약 130초, peak RSS 약 15.0 GiB
+
+이 Parquet은 교정된 snapshot이지 원본 pickle의 대체 폐기 근거가 아니다. manifest는 원본 snapshot hash와 overlay hash를 함께 고정한다.
+
+재현은 backend 분석 환경에서 `scripts/export_corrected_legacy_parquet.py`에 `--snapshot`, `--expected-sha256`, `--overlay`, 새로운 `--output`, `--report`를 명시한다. pandas 2.2.3·NumPy 1.26.4·PyArrow 25.0.0은 분석용이며 앱 의존성으로 추가하지 않았다. allowlist unpickler를 사용하며 레거시 모듈의 최상위 코드를 실행하지 않는다.
 
 ## 이미지 전수 inventory
 
@@ -75,4 +89,4 @@
 - 새 Python 파일 ruff 검사, Node syntax 검증. 기존 backend ruff/format/mypy 통과, pytest 225 passed / 56 skipped. 이번에는 PostgreSQL 테스트 URL 미설정으로 DB 통합 테스트를 실행하지 않았다. DB 코드는 변경하지 않았다.
 - 원본 pickle과 레거시 코드·원문 HTML 수정, PostgreSQL 전수 적재, canonical 등록, AWS 변경은 없다.
 
-다음은 (1) 검증된 변경분을 적용하는 60컬럼 전체 Parquet exporter와 full-row 입력 계약, (2) 이미지별 영속 ledger와 worker 취득·재시도 연결, (3) 8,418 URL 대상의 제한된 batch 확대 및 name-only/ID 불일치 예외 처리다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다. 전체 snapshot과 이미지 manifest/파일의 일관된 검증·백업 후 PostgreSQL 보존 import로 이어간다.
+다음은 (1) corrected Parquet을 읽는 full-row/DB import 경로 연결, (2) 이미지별 영속 ledger와 worker 취득·재시도 연결, (3) 8,418 URL 대상의 제한된 batch 확대 및 name-only/ID 불일치 예외 처리다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다. 전체 snapshot과 이미지 manifest/파일의 일관된 검증·백업 후 PostgreSQL 보존 import로 이어간다.

@@ -1,6 +1,6 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-**전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 전체 60컬럼 최종 Parquet·이미지 전수 취득·DB import는 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
+**전수 corrected Parquet — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. 이미지 전수 취득·DB import·canonical 등록은 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
 
 이하 표본 조사·미실행 표시는 당시 이력이며 최신 완료 범위는 위 보고서를 따른다.
 
@@ -8,7 +8,7 @@
 
 **이미지 보존 검토 — 2026-09-10:** 기존 이미지 2개의 과거 주소는 로컬 DNS 해석 실패, 현재 제공자 매핑 주소는 cookie 없이 HTTP 200/GIF header를 확인하고 조사용 bytes를 보존했다. 전체 링크 실패나 과거 binary 동일성을 뜻하지 않는다. URL+실물 파일+위치 manifest 보존을 권고하며 운영 downloader·전수 취득은 미구현이다. [실측과 권고](docs/image-preservation-review.md).
 
-**교정 후 Parquet 확정 — 2026-09-10:** 기준 원문은 태그 있는 스크레이핑 텍스트로 보존하고, 추출 필드의 확인된 오류를 고친 결과를 Parquet에 담는다. 기존 pickle은 동결 보관한다. 다음은 decision_date·closing_argument의 기존 로직 보완과 전수 대조, 다른 추출 오류 목록화다. 원문 불변·교정 근거·변경 이력·미확정 상태를 검증하며 실제 전수 교정과 Parquet 생성은 아직 미실행이다. [확정 계약](docs/legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
+**교정 후 Parquet 확정 — 2026-09-11:** 기준 원문은 태그 있는 스크레이핑 텍스트로 보존하고, 추출 필드의 확인된 오류를 고친 결과를 Parquet에 담았다. 기존 pickle은 동결 보관한다. 원문 불변·교정 근거·변경 이력·미확정 상태·Python/Node 읽기를 검증했다. [확정 계약](docs/legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
 
 **날짜 로직 조사 — 2026-09-10:** 기존 date 함수의 parser.parser/parse 오호출을 재현했다. 146행 중 145행은 호출 수정으로 날짜 추출, 나머지 군사법원 1행은 사건번호 regex 오인식이며 기존 datetime도 2072-01-01 오류 표식이다. closing_argument는 date 30개·no_info 116개 모두 기존값과 일치했다. 다음 우선 작업은 기존 로직 보완·날짜 전수 대조이며 원본 수정·전수 복구는 아직 하지 않았다. [조사 근거](docs/legacy-date-logic-audit.md).
 
