@@ -18,8 +18,10 @@ from klegal_gold.domain.legacy import (
     LegacyImportProvenance,
     LegacyRow,
 )
+from klegal_gold.identity.allocation import canonical_id_for_request
+from klegal_gold.normalize.decision import decision_kind, docket_aliases
 
-IMPORT_RULES_VERSION = "legacy-staging-0.1.0"
+IMPORT_RULES_VERSION = "legacy-staging-0.2.0"
 
 
 def _text(field: LegacyField | None) -> str | None:
@@ -41,7 +43,7 @@ def _date(value: str) -> date:
 
 
 def map_legacy_row(row: LegacyRow, *, imported_at: datetime) -> LegacyCaseRecord:
-    """Preserve every input value and propose a source-local decision document ID."""
+    """Preserve every input value and propose a source-independent registration ID."""
     fields = {field.name: field for field in row.fields}
     reasons = ["LEGACY_LINK_NOT_REVALIDATED"]
     ids: list[SourceCaseIdentifier] = []
@@ -99,14 +101,19 @@ def map_legacy_row(row: LegacyRow, *, imported_at: datetime) -> LegacyCaseRecord
         match = re.search(r"(중간판결|판결|결정|명령)\s*[★☆]*\s*$", citation)
         if match:
             disposition = match[1]
+    kind = decision_kind(disposition)
+    if kind is None:
+        reasons.append("DECISION_KIND_UNRESOLVED")
+    if docket and not docket_aliases(docket):
+        reasons.append("DECISION_DOCKET_UNRESOLVED")
     for name in ("decision_items", "decision_gists", "reasoning"):
         field = fields.get(name)
         if field is not None and _text(field) is None:
             reasons.append(f"LEGACY_FIELD_AVAILABILITY_UNKNOWN:{name}")
     locator = row.locator
     preserved_id = f"legacy-row:{locator.snapshot_sha256}:{locator.position}"
-    # No-source records receive a local proposal tied to the immutable snapshot, not a fake ID.
-    proposal = f"{ids[0].source}:{ids[0].source_id}" if ids else preserved_id
+    # The locator is a registration request, not a claim that two rows are different decisions.
+    proposal = canonical_id_for_request(preserved_id)
     body = bool(row.stored_texts) or any(
         f.name in {"case_txt_scraped_with_tags", "case_txt_in_file"}
         and f.encoding == "STRING"

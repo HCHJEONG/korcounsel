@@ -155,3 +155,37 @@ def submit_scourt_inventory(
         request_key, query=query, max_pages=max_pages, display=display
     )
     typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("submit-legacy-import")
+@_safe
+def submit_legacy_import(request_key: str, manifest_hash: str) -> None:
+    """Queue a FULL_ROW bundle already staged in the shared DATA_DIR CAS."""
+    _, _, queue = _services()
+    job = queue.submit_legacy_import(request_key, manifest_hash)
+    typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("legacy-import-status")
+@_safe
+def legacy_import_status(job_id: UUID) -> None:
+    """Report committed row counts, including after interruption or partial failure."""
+    db, _, queue = _services()
+    job = queue.get(job_id)
+    if job.kind != "IMPORT_LEGACY_BUNDLE":
+        raise ValueError("NOT_LEGACY_IMPORT_JOB")
+    with db.connect() as conn:
+        rows = conn.execute(
+            "SELECT status,count(*) AS n FROM legacy_bundle_rows WHERE job_id=%s GROUP BY status",
+            (job_id,),
+        ).fetchall()
+    typer.echo(
+        json.dumps(
+            {
+                "job_id": str(job_id),
+                "status": job.status,
+                "committed_rows": {row["status"]: row["n"] for row in rows},
+                "result_manifest": job.checkpoint.get("result_manifest"),
+            }
+        )
+    )

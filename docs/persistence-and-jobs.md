@@ -1,5 +1,9 @@
 # PostgreSQL 저장·migration·worker — Step 2A
 
+**추가 구현:** migration 0008의 legacy_bundle_rows와 IMPORT_LEGACY_BUNDLE handler가 전체 컬럼 행 보존·격리·lease 확인·재개를 수행한다. [FULL_ROW 계약과 검증](legacy-full-row-import.md).
+
+**후속 구현 완료 — 2026-09-10:** DecisionKey·출처 독립 ID·Registry.register/find_decision·migration 0007을 구현하고 전체 252개 회귀를 통과했다. 아래 과거 시점의 미구현 기록은 [현재 구현과 남은 범위](decision-identity-implementation.md)로 보완한다. 기존 원본·이벤트·release를 일괄 변경하지 않았다.
+
 2026-09-10. Step 2A의 로컬 persistence와 실제 단일 worker를 구현했다. 전체 corpus import, source adapter, 로그인 HTTP 흐름, AWS 운영 변경은 별도다.
 
 ## 선택과 경계

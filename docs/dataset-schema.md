@@ -1,6 +1,8 @@
 # 데이터 schema 설계 계약
 
-> **재판결과 업무키 — 2026-09-10 사용자 규칙:** 법원 명칭 + 사건번호 + 재판 종류가 특정 재판결과를 식별한다. 기존 CourtCaseKey(court, case_number)는 사건 단위로 유지하고, 별도의 세 요소 키를 출처 독립 canonical에 연결한다. 재판 종류 결측·상충은 명시적으로 보존하며 날짜를 필수 키에 추가하지 않는다. [identity 계약](case-identity.md) 참조. 세 요소 모델·정규화·DB 제약은 후속 구현이며 아래 기존 모델 구현 기록과 구분한다.
+**후속 구현 완료 — 2026-09-10:** DecisionKey·출처 독립 ID·Registry.register/find_decision·migration 0007을 구현하고 전체 252개 회귀를 통과했다. 아래 과거 시점의 미구현 기록은 [현재 구현과 남은 범위](decision-identity-implementation.md)로 보완한다. 기존 원본·이벤트·release를 일괄 변경하지 않았다.
+
+> **재판결과 업무키 — 2026-09-10 사용자 규칙:** 법원 명칭 + 사건번호 + 재판 종류가 특정 재판결과를 식별한다. 기존 CourtCaseKey(court, case_number)는 사건 단위로 유지하고, 별도의 세 요소 키를 출처 독립 canonical에 연결한다. 재판 종류 결측·상충은 명시적으로 보존하며 날짜를 필수 키에 추가하지 않는다. [identity 계약](case-identity.md) 참조. 세 요소 모델·정규화·DB 제약은 migration 0007과 함께 구현했다. 아래 과거 검증 기록과 현재 구현 범위를 구분한다.
 
 2026-09-10: backend/src/klegal_gold/domain/에 Pydantic 2 모델 초안과 schema 0.1.0을 구현했다. DB·실제 import·resolver는 미구현이다. legacy provenance와 개별 결정 문서 대표 단위는 후속으로 확정했다. 개발 중 0.1.0 bundle에 LegacyRow/LegacyCaseRecord/LegacyImportProvenance를 추가했으며 별도 운영 릴리스를 만든 것은 아니다. DB·전체 corpus import 완료를 뜻하지 않는다.
 

@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 from klegal_gold.domain.common import content_hash
 from klegal_gold.domain.legacy import LegacyCaseRecord, LegacyField, LegacyRow, LegacyStoredText
+from klegal_gold.identity.allocation import canonical_id_for_request
 from klegal_gold.ingestion.legacy import identity_conflicts, legacy_content_revision, map_legacy_row
 
 NOW = datetime(2026, 9, 10, tzinfo=UTC)
@@ -51,7 +52,7 @@ def test_preservation_and_unknown_history():
     original = row()
     result = map_legacy_row(original, imported_at=NOW)
     assert result.original == original
-    assert result.document_id_proposal == "scourt:2064767"
+    assert result.document_id_proposal == canonical_id_for_request(result.preservation_id)
     assert result.provenance.historical_raw_content_hash is None
     assert result.provenance.historical_retrieved_at is None
     assert result.identity_state == "LEGACY_OBSERVED"
@@ -87,7 +88,7 @@ def test_conflicting_or_invalid_date_is_not_silently_repaired(changes):
 def test_missing_ids_use_local_proposal_and_preserve_business_key(missing_id):
     result = map_legacy_row(row(gmeta_contId="empty", lmeta_serialno=missing_id), imported_at=NOW)
     assert result.observed_source_ids == ()
-    assert result.document_id_proposal == result.preservation_id
+    assert result.document_id_proposal == canonical_id_for_request(result.preservation_id)
     assert result.business_key.case_number == "2008재도11"
     assert result.original.fields[2].value == "empty"
 
@@ -97,7 +98,7 @@ def test_namespaces_and_whitespace_ids():
     assert len(set(result.observed_source_ids)) == 2
     dirty = map_legacy_row(row(gmeta_contId=" 123 "), imported_at=NOW)
     assert "NONCANONICAL_SOURCE_ID:gmeta_contId" in dirty.reasons
-    assert dirty.document_id_proposal == "law_go_kr:166330"
+    assert dirty.document_id_proposal == result.document_id_proposal
 
 
 def test_opaque_date_and_merged_docket_remain_preserved():
@@ -189,7 +190,9 @@ def test_observed_metadata_projection_is_preserved_and_not_full_import():
     records = [map_legacy_row(row_from_metadata_projection(v), imported_at=NOW) for v in observed]
     by_position = {r.original.locator.position: r for r in records}
     assert len(records) == 15
-    assert by_position[190].document_id_proposal == by_position[232].document_id_proposal
+    assert by_position[190].document_id_proposal != by_position[232].document_id_proposal
+    # Separate row proposals do not resolve duplicate legal identity.
+    assert by_position[190].business_key == by_position[232].business_key
     assert by_position[190].preservation_id != by_position[232].preservation_id
     assert by_position[325].business_key == by_position[952].business_key
     assert by_position[325].document_id_proposal != by_position[952].document_id_proposal

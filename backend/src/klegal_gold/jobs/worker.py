@@ -180,6 +180,18 @@ class Worker:
         if capture.snapshot.failed_pages:
             raise ValueError("INVENTORY_PARTIAL_FAILURE")
 
+    def _import_legacy(self, job: Job) -> None:
+        from klegal_gold.ingestion.legacy_import import LegacyImporter
+
+        def progress() -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        result = LegacyImporter(self.records).run(job, progress)
+        self.queue.heartbeat(job, {"result_manifest": result})
+
     def run_once(self) -> bool:
         if self.stop.is_set():
             return False
@@ -188,10 +200,14 @@ class Worker:
             return False
         try:
             if job.handler_version != (
-                "source-1" if job.kind.startswith("FETCH_") else "persistence-1"
+                "legacy-import-1"
+                if job.kind == "IMPORT_LEGACY_BUNDLE"
+                else ("source-1" if job.kind.startswith("FETCH_") else "persistence-1")
             ):
                 raise ValueError("UNSUPPORTED_HANDLER_VERSION")
-            if job.kind == "VERIFY_ARTIFACT":
+            if job.kind == "IMPORT_LEGACY_BUNDLE":
+                self._import_legacy(job)
+            elif job.kind == "VERIFY_ARTIFACT":
                 self._verify(job)
             elif job.kind == "REBUILD_PROJECTION":
                 self._rebuild(job)

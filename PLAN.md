@@ -1,23 +1,27 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**최신 구현:** 기존 DataFrame 재사용 FULL_ROW export·단일 worker importer·행별 격리/재개 ledger·migration 0008을 구현했다. 실제 15행×60컬럼 표본과 전체 281개 회귀 검증 완료. [현재 범위](docs/legacy-full-row-import.md). 89,130행 전체 실행·canonical 연결 확정은 후속이다.
+
+**최신 구현:** 재판결과 키·출처 독립 canonical 등록·legacy mapper 0.2.0·migration 0007 및 실제 PostgreSQL 회귀를 완료했다. [상세와 한계](docs/decision-identity-implementation.md). 다음은 FULL_ROW 보존 import와 표본 연결 검토다.
+
 ## 재판결과 식별 규칙 반영 — 2026-09-10
 
 - [x] 사용자 도메인 규칙인 **법원 명칭 + 사건번호 + 재판 종류 = 특정 재판결과의 업무 식별키**를 작업 규칙과 identity·schema·import 계약에 기록했다.
-- [ ] 사건 CourtCaseKey와 별도로 재판결과 세 요소 키를 모델링하고, 재판 종류의 원표기·정규화·결측·충돌 처리 및 독립 canonical 연결을 구현한다.
-- [ ] 실제 PostgreSQL 제약과 같은 사건의 판결/결정·중간판결 구별, 동일 재판결과의 복수 출처, 잘못된 metadata 충돌을 검증한다.
+- [x] 사건 CourtCaseKey와 별도로 DecisionKey를 구현하고 보수적 재판 종류·병합 번호 처리와 독립 canonical 등록을 연결했다.
+- [x] 실제 PostgreSQL 제약·동시 등록·판결/결정/중간판결·복수 출처·metadata 충돌·snapshot 복원을 검증했다.
 
-상세 정책은 [identity](docs/case-identity.md)를 따른다. 선고일은 대조 정보이며 필수 키 구성요소가 아니다. 이번 기록은 코드·DB 반영 완료를 뜻하지 않는다.
+상세 정책은 [identity](docs/case-identity.md)를 따른다. 선고일은 대조 정보이며 필수 키 구성요소가 아니다. 후속 구현 및 검증을 완료했다. [구현 계약](docs/decision-identity-implementation.md) 참조.
 
 ## 우선 반영할 설계 결정 — 출처 ID 안정성
 
 **2026-09-10 사용자 결정:** contId/serialno를 신규 canonical ID로 사용하지 않는다. 출처별 관찰·재조회 키와 내부 개별 결정 문서 ID를 분리한다. [정책](docs/case-identity.md), [실측 근거](docs/source-path-validation.md).
 
 - [x] 작업 규칙·identity·legacy import 계약에 기존 공식 ID 우선 정책의 대체 및 실측 한계를 기록한다.
-- [ ] 전체 corpus 등록 전에 독립 canonical ID 발급과 동일 import 재실행 시 ID 재사용을 구현한다.
-- [ ] legacy mapper의 source 기반 document_id_proposal을 새 정책에 맞추고 fixture·registry 호환성을 검증한다.
+- [x] 출처 독립 canonical 발급과 같은 보존 행/등록 요청 재실행 시 ID 재사용을 구현했다.
+- [x] legacy mapper 0.2.0의 source 독립 후보 생성, 과거 payload 읽기 및 registry 호환성을 검증했다.
 - [ ] 옛/새 출처 번호 후보의 문서 동일성 및 연결 revision을 검토한다. 기존 source ID·원본·release·검토 기록은 덮어쓰지 않는다.
 
-이번 변경은 문서 정책이며 ID 발급 코드·DB migration·registry 변경 완료를 뜻하지 않는다.
+후속 구현 완료: 252개 회귀 통과, metadata 표본 15행 확인, 로컬 migration 0007 적용. 전체 corpus 등록과 실제 후보 연결 검토는 남아 있다.
 
 
 > 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / Step 3 client·양 출처 상세 구현 / Step 3A 확대 검증·목록 보존 후속

@@ -205,6 +205,49 @@
       "title": "CourtCaseKey",
       "type": "object"
     },
+    "DecisionKey": {
+      "additionalProperties": false,
+      "description": "Court + docket + decision kind; date and source ID are not components.",
+      "properties": {
+        "case_number": {
+          "minLength": 1,
+          "title": "Case Number",
+          "type": "string"
+        },
+        "court": {
+          "minLength": 1,
+          "title": "Court",
+          "type": "string"
+        },
+        "decision_kind": {
+          "$ref": "#/$defs/DecisionKind"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "court",
+        "case_number",
+        "decision_kind"
+      ],
+      "title": "DecisionKey",
+      "type": "object"
+    },
+    "DecisionKind": {
+      "enum": [
+        "판결",
+        "결정",
+        "중간판결",
+        "명령",
+        "재결"
+      ],
+      "title": "DecisionKind",
+      "type": "string"
+    },
     "DocumentBlock": {
       "additionalProperties": false,
       "properties": {
@@ -2557,6 +2600,9 @@
     },
     {
       "$ref": "#/$defs/CourtCaseKey"
+    },
+    {
+      "$ref": "#/$defs/DecisionKey"
     },
     {
       "$ref": "#/$defs/IdentityResolution"

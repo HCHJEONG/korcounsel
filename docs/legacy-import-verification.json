@@ -1,0 +1,70 @@
+{
+  "verified_at": "2026-09-10T06:53:12.505817+00:00",
+  "input_strategy": "Reuse existing pickled DataFrame; no reconstruction from text files",
+  "pytest": {
+    "passed": 281,
+    "actual_postgres_integration": 56,
+    "upstream_warnings": 2
+  },
+  "analysis_export_tests": {
+    "passed": 1,
+    "pandas": "2.2.3",
+    "numpy": "1.26.4",
+    "runtime_dependencies_changed": false
+  },
+  "checks": {
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "mypy": "passed",
+    "source_files": 42,
+    "git_diff_check": "passed"
+  },
+  "sample": {
+    "verified_at": "2026-09-10T06:47:07.261413+00:00",
+    "manifest_hash": "6e6646f2e8ad4a6d8f4616e69c5c566c845d3775fdf83681c8df164b5d689fef",
+    "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+    "source_rows": 89130,
+    "selected_rows": 15,
+    "columns": 60,
+    "preserved_field_cells": 900,
+    "opaque_fields_referencing_archive": 15,
+    "string_fields": 722,
+    "body_string_fields": 30,
+    "quarantined": 0,
+    "records_after_two_runs": 15,
+    "ledger_after_two_runs": 30,
+    "exact_original_roundtrip": true,
+    "identities_registered": 0,
+    "scope": "SAMPLE",
+    "public_schema_modified": false
+  },
+  "compose": {
+    "job_id": "bfe60833-c410-4b62-9d03-65462f8b737d",
+    "status": "SUCCEEDED",
+    "attempts": 1,
+    "preserved": 15,
+    "quarantined": 0,
+    "result_manifest": "manifest:legacy-import-result:bfe60833-c410-4b62-9d03-65462f8b737d",
+    "exact_original_roundtrip": true,
+    "corpus_import_complete": false
+  },
+  "migration_applied": [
+    "0008_legacy_import.sql"
+  ],
+  "not_performed": [
+    "89130-row full export/import",
+    "canonical identity registration",
+    "live source collection",
+    "AWS changes"
+  ],
+  "code_sha256": {
+    "backend/src/klegal_gold/ingestion/legacy_bundle.py": "c4e7aad20276e871235e7a8158f024b02eb801ab437f7d35b463cc0adb2c8e5c",
+    "backend/src/klegal_gold/ingestion/legacy_import.py": "a17bd6f278ce3dc406d35f8db76f792447f4ce1fd4b9457bd75d2f892f57835c",
+    "backend/src/klegal_gold/jobs/queue.py": "1619937f30aad2435cbadb8ca0a230b01a5fc48882cb185775036f5d98a6e2a9",
+    "backend/src/klegal_gold/jobs/worker.py": "7876f8d05040c1aec8141b4eecbf49dbe2ca43d60d78d5c9467d3ae2ca483704",
+    "backend/src/klegal_gold/operations.py": "8ef6c8858d37ac00a86618a94351d270ee3b050fbcdf752f4482475cdaaed8e6",
+    "backend/migrations/0008_legacy_import.sql": "472e5b70b0bf027fe3791796e29ef38d039ff3aa9683bfb37fd120c3c3018d29",
+    "scripts/export_legacy_rows.py": "15b5250992a4d1b0d83ecea712d158587621ac460bf1f7682535c39095e3e0c2",
+    "backend/scripts/verify_legacy_import_sample.py": "a12cc67ec32b0f3c9e0a48168c881159dc3c7c0e92b3716db0058e5df654461d"
+  }
+}

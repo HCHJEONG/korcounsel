@@ -1,5 +1,9 @@
 # KorCounsel
 
+기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer를 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 행 파일로 export하고 단일 worker가 보존·격리·재개합니다. [실행 안내와 실제 표본 검증](docs/legacy-full-row-import.md)을 참고하세요.
+
+현재 재판결과 키(법원 명칭+사건번호+재판 종류), 출처 독립 canonical 등록, legacy mapper 0.2.0과 로컬 migration 0007을 구현했습니다. [사용 계약·검증·다음 단계](docs/decision-identity-implementation.md)를 참고하세요. 전체 corpus import와 자동 동일성 판정은 후속입니다.
+
 공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
 현재 **Step 1·Step 2 데이터 계약·Step 2A 로컬 저장/worker 검증 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. PostgreSQL migration, 기록 저장, 식별 연결 이력과 단일 worker가 동작합니다. 로그인·실제 판례 수집·자동 canonical 매칭·gold 생산은 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.

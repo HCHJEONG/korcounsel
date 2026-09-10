@@ -82,6 +82,16 @@ class Queue:
             3,
         )
 
+    def submit_legacy_import(self, request_key: str, manifest_hash: str) -> Job:
+        from pydantic import TypeAdapter
+
+        from klegal_gold.domain.common import Digest
+
+        TypeAdapter(Digest).validate_python(manifest_hash)
+        return self._submit(
+            request_key, "IMPORT_LEGACY_BUNDLE", {"manifest_hash": manifest_hash}, 3
+        )
+
     def submit_rebuild(self, request_key: str, *, max_attempts: int = 3) -> Job:
         return self._submit(request_key, "REBUILD_PROJECTION", {}, max_attempts)
 
@@ -123,7 +133,9 @@ class Queue:
                     kind,
                     Jsonb(payload),
                     max_attempts,
-                    "source-1" if kind.startswith("FETCH_") else "persistence-1",
+                    "legacy-import-1"
+                    if kind == "IMPORT_LEGACY_BUNDLE"
+                    else ("source-1" if kind.startswith("FETCH_") else "persistence-1"),
                 ),
             ).fetchone()
             assert result is not None

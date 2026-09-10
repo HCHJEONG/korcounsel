@@ -18,6 +18,7 @@ from .cases import CaseReference, LegalAuthority, LegalCase, RawLegalCase
 from .identity import (
     CanonicalCaseIdentity,
     CourtCaseKey,
+    DecisionKey,
     IdentityLinkEvent,
     IdentityResolution,
     SourceCaseIdentifier,
@@ -47,6 +48,7 @@ def domain_json_schema() -> dict[str, Any]:
         SourceCaseVersion,
         CanonicalCaseIdentity,
         CourtCaseKey,
+        DecisionKey,
         IdentityResolution,
         IdentityLinkEvent,
         InventorySnapshot,

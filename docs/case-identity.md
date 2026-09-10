@@ -17,11 +17,11 @@
 
 입력 metadata의 정확성과 이 제도적 식별 규칙은 구분한다. 재판 종류가 누락되거나 출처 간 값이 상충하면 완전한 재판결과 키를 확정하지 않고 결측·충돌로 보존한다. 세 값이 같지만 날짜·본문 등이 충돌하면 원자료와 연결 근거를 검토한다. 데이터 오류를 피하려고 날짜나 source ID를 임의로 키에 덧붙이거나, 상충하는 원자료를 자동 병합·삭제하지 않는다.
 
-**구현 경계:** 기존 CourtCaseKey는 사건 단위 계약으로 유지한다. 재판결과의 세 요소 키, 재판 종류 정규화, canonical 연결과 DB 제약·충돌 검증은 후속 구현이다. 이번에는 모델·DB·기존 데이터·검토 이력을 변경하지 않았다.
+**현재 구현:** CourtCaseKey를 유지하고 DecisionKey, 보수적 정규화, 독립 canonical 등록, migration 0007과 충돌 검증을 구현했다. 기존 데이터·검토 이력을 재번호하지 않았다. [상세 계약](decision-identity-implementation.md).
 
 ## 중요 결정: 출처 ID를 canonical ID로 사용하지 않는다 — 2026-09-10
 
-> **contId와 serialno의 영구 안정성을 전제하지 않는다. 신규 canonical ID는 출처 ID와 독립적으로 발급·유지한다.** 이는 기존의 공식 ID 우선 대표값 정책을 대체하는 사용자 결정이다. UUID 사용 여부나 구체적인 발급 형식은 아직 정하지 않았다.
+> **contId와 serialno의 영구 안정성을 전제하지 않는다. 신규 canonical ID는 출처 ID와 독립적으로 발급·유지한다.** 이는 기존의 공식 ID 우선 대표값 정책을 대체하는 사용자 결정이다. 현재 발급 형식은 kc:<SHA-256>이며 등록 request key를 사용하는 canonical-allocation-1 규칙으로 고정했다.
 
 실측에서는 기존 번호가 미조회되고 같은 사건의 다른 번호 후보가 발견됐다. 공식적인 번호 변경·재발급·삭제 후 재등록 여부와 전체 본문 동일성은 미확인이다. 따라서 “전체 ID가 변경됐다”거나 “동일 문서로 확정됐다”고 기록하지 않는다. [표본과 원본 증거](source-path-validation.md)를 따른다.
 
@@ -32,7 +32,7 @@
 - 새 source ID는 신규 출처 관찰이다. 새 판례로 자동 확정하지 않고 법원·전체 병합 번호·날짜·문서 종류·본문을 대조해 동일 문서 여부를 판단한다. 기존 번호와 원본을 보존하고 확인된 연결만 새 revision으로 추가한다.
 - 기존 발급값·release·검토 기록을 일괄 재번호하거나 덮어쓰지 않는다. 이미 확정된 내부 ID는 명시적인 이력 보존 전환 정책으로 다루며, 옛 source 값에서 유래했다는 이유로 현재 출처 번호와 동기화하지 않는다.
 
-**구현 상태:** 이번 변경은 정책 기록이다. 기존 legacy mapper의 source 기반 document_id_proposal은 과거 정책의 staging 출력이며 신규 canonical 확정에 사용하면 안 된다. 독립 ID 발급·재실행 재사용·기존 후보 호환성 검증은 전체 corpus 등록 전에 구현한다. 현재 registry나 보존 artifact를 변경하지 않았다.
+**현재 구현:** legacy mapper 0.2.0과 Registry.register는 출처 독립 ID를 사용한다. 같은 보존 행/등록 요청은 같은 ID를 재사용한다. 과거 source 기반 후보는 읽기 호환성을 유지하며 기존 artifact를 덮어쓰지 않는다. [발급·동시성·이력 계약](decision-identity-implementation.md).
 
 
 2026-09-10 사용자 추가 결정 반영. 기존 corpus 분석 후 canonical을 개별 결정 문서 단위로 확정했다. 신규 대표값 후보·기존 registry 재사용·merge/split 계약은 [legacy import 계약](legacy-import-contract.md)을 따른다. 아래 조사 전 원칙은 이 확정 정책과 함께 읽는다.

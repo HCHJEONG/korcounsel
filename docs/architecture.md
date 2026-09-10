@@ -1,6 +1,10 @@
 # 아키텍처 설계
 
-> **Identity 정책 개정 — 2026-09-10:** 신규 canonical은 출처 독립 내부 ID다. contId/serialno는 source 관찰·재조회 키이며 숫자나 namespace 조합을 canonical로 발급하지 않는다. 기존 연결·원본·release는 보존한다. [정책·실측·구현 경계](case-identity.md) 참조. legacy mapper의 과거 후보 발급 방식 수정은 전체 corpus 등록 전 선행 작업이다.
+**Legacy 보존 경계:** 분석용 기존 DataFrame → hash 고정 FULL_ROW bundle → 단일 worker → 원행 artifact/격리·행 ledger 순서다. 앱 runtime은 pickle·pandas를 사용하지 않는다. [구현·실행 계약](legacy-full-row-import.md).
+
+**후속 구현 완료 — 2026-09-10:** DecisionKey·출처 독립 ID·Registry.register/find_decision·migration 0007을 구현하고 전체 252개 회귀를 통과했다. 아래 과거 시점의 미구현 기록은 [현재 구현과 남은 범위](decision-identity-implementation.md)로 보완한다. 기존 원본·이벤트·release를 일괄 변경하지 않았다.
+
+> **Identity 정책 개정 — 2026-09-10:** 신규 canonical은 출처 독립 내부 ID다. contId/serialno는 source 관찰·재조회 키이며 숫자나 namespace 조합을 canonical로 발급하지 않는다. 기존 연결·원본·release는 보존한다. [정책·실측·구현 경계](case-identity.md) 참조. legacy mapper 0.2.0과 Registry.register의 출처 독립 발급을 구현했으며 전체 corpus 연결은 후속이다.
 
 
 2026-09-09 추가 지시 반영. 구현 전 계약이다. React 19/Vite/TypeScript, FastAPI, Python 3.12/uv, PostgreSQL과 기존 aws-bastion 운영 결정은 유지한다.

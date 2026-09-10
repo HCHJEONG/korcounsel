@@ -1,8 +1,10 @@
 # KorCounsel Agent Instructions
 
-> **재판결과 식별 규칙 — 2026-09-10 사용자 확정:** 법원 명칭 + 사건번호 + 재판 종류는 제도적으로 특정 재판결과를 식별하는 조합이다. 사건 키(법원+사건번호), 재판결과 키(세 요소), 독립 canonical ID, 출처 ID를 구분한다. 재판 종류의 원표기·법원 지원/지부·병합 사건번호를 보존하고 결측·충돌은 기록한다. 선고일이나 source ID를 임의로 키에 추가하지 않으며, 데이터 충돌을 자동 병합·삭제로 해소하지 않는다. docs/case-identity.md 참조. 모델·정규화·DB 제약 반영은 후속 구현이다.
+**FULL_ROW import 규칙 — 2026-09-10:** 기존 pickle의 DataFrame을 재사용하며 text 파일로 재구성하지 않는다. pandas/NumPy·allowlist unpickler는 분석용 export에만 두고 앱 worker에는 넣지 않는다. 해시 고정 bundle·전체 컬럼/position·원행·OPAQUE archive 참조·행별 격리/재개 ledger를 보존한다. 보존 성공을 canonical 등록·gold 완료로 취급하지 않는다. docs/legacy-full-row-import.md 참조.
 
-> **중요 identity 결정 — 2026-09-10:** contId/serialno는 영구 canonical ID가 아니라 출처별 관찰·재조회 키다. 기존 번호 미조회와 동일 사건의 다른 번호 후보를 실제 확인했으므로 신규 canonical은 출처와 독립적으로 발급한다. 번호 변경 원인·문서 동일성은 미확인이다. 새 번호만으로 신규 문서·동일 문서를 확정하지 않으며 기존 source ID·원본·연결 이력을 보존한다. docs/case-identity.md 및 docs/source-path-validation.md 참조. 과거 공식 ID 우선 후보 생성 코드는 전체 corpus 등록 전 수정·검증할 후속 항목이다.
+> **재판결과 식별 규칙 — 2026-09-10 사용자 확정:** 법원 명칭 + 사건번호 + 재판 종류는 제도적으로 특정 재판결과를 식별하는 조합이다. 사건 키(법원+사건번호), 재판결과 키(세 요소), 독립 canonical ID, 출처 ID를 구분한다. 재판 종류의 원표기·법원 지원/지부·병합 사건번호를 보존하고 결측·충돌은 기록한다. 선고일이나 source ID를 임의로 키에 추가하지 않으며, 데이터 충돌을 자동 병합·삭제로 해소하지 않는다. docs/case-identity.md 참조. 모델·정규화·DB 제약은 구현됐으며 docs/decision-identity-implementation.md의 범위와 한계를 따른다.
+
+> **중요 identity 결정 — 2026-09-10:** contId/serialno는 영구 canonical ID가 아니라 출처별 관찰·재조회 키다. 기존 번호 미조회와 동일 사건의 다른 번호 후보를 실제 확인했으므로 신규 canonical은 출처와 독립적으로 발급한다. 번호 변경 원인·문서 동일성은 미확인이다. 새 번호만으로 신규 문서·동일 문서를 확정하지 않으며 기존 source ID·원본·연결 이력을 보존한다. docs/case-identity.md 및 docs/source-path-validation.md 참조. legacy mapper 0.2.0과 Registry.register는 출처 독립 ID를 사용한다. 신규 발급은 register 경로를 따르고 과거 ID·이력은 보존한다.
 
 
 작업 전 루트 PLAN.md를 읽고 현재 범위·순서·완료 기준을 확인한다. UI 작업 전 DESIGN.md를 읽는다. README.md는 사용자 안내와 운영 진입점, PLAN.md는 실행 계획·상태, DESIGN.md는 UX 기준, 이 문서는 작업 규칙이다.

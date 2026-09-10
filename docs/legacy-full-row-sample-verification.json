@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-09-10T06:47:07.261413+00:00",
+  "manifest_hash": "6e6646f2e8ad4a6d8f4616e69c5c566c845d3775fdf83681c8df164b5d689fef",
+  "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+  "source_rows": 89130,
+  "selected_rows": 15,
+  "columns": 60,
+  "preserved_field_cells": 900,
+  "opaque_fields_referencing_archive": 15,
+  "string_fields": 722,
+  "body_string_fields": 30,
+  "quarantined": 0,
+  "records_after_two_runs": 15,
+  "ledger_after_two_runs": 30,
+  "exact_original_roundtrip": true,
+  "identities_registered": 0,
+  "scope": "SAMPLE",
+  "public_schema_modified": false
+}

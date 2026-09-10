@@ -1,0 +1,50 @@
+{
+  "verified_at": "2026-09-10T06:06:18.595703+00:00",
+  "scope": "local implementation and PostgreSQL verification; no corpus registration",
+  "pytest": {
+    "passed": 252,
+    "postgres_integration": 47,
+    "upstream_warnings": 2
+  },
+  "checks": {
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "mypy": "passed",
+    "source_files": 40,
+    "git_diff_check": "passed"
+  },
+  "legacy_sample": {
+    "metadata_rows": 15,
+    "saved_body_files": 0,
+    "report": "identity-legacy-sample-verification.json"
+  },
+  "compose": {
+    "build": "passed",
+    "migration_applied": [
+      "0007_decision_keys.sql"
+    ],
+    "healthy": [
+      "api",
+      "worker",
+      "postgres",
+      "web"
+    ],
+    "worker_heartbeat": "current",
+    "draining": false,
+    "running": 0
+  },
+  "not_performed": [
+    "full corpus import",
+    "live source requests",
+    "real old/new source identity confirmation",
+    "AWS changes"
+  ],
+  "code_sha256": {
+    "backend/src/klegal_gold/identity/allocation.py": "e8bffd8f2626da23f571d4445f81460111dcca1a000247d5607fde5add63fc66",
+    "backend/src/klegal_gold/normalize/decision.py": "aede57419879f42e20d02a7e819a2224081b5ff7ca5d3191b6a6e3933a9fff2f",
+    "backend/src/klegal_gold/domain/identity.py": "5177345b006ec638230058b8e35f11ff365b4d8cad084b2391afc1846740b446",
+    "backend/src/klegal_gold/db/registry.py": "c3a800259c41dc106c13e4f921b6a2d8bc27a04b20ab308348c510e551c08bbb",
+    "backend/src/klegal_gold/ingestion/legacy.py": "04a10177a83d674a25fcc48608b90b30911444ed74e7ea51b89df36ad179a7a5",
+    "backend/migrations/0007_decision_keys.sql": "af3eba5a5735e980deffc58c77bec05c8b5ffb473cee977c9906f138781ed699"
+  }
+}

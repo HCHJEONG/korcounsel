@@ -1,0 +1,10 @@
+{
+  "job_id": "bfe60833-c410-4b62-9d03-65462f8b737d",
+  "status": "SUCCEEDED",
+  "attempts": 1,
+  "preserved": 15,
+  "quarantined": 0,
+  "result_manifest": "manifest:legacy-import-result:bfe60833-c410-4b62-9d03-65462f8b737d",
+  "exact_original_roundtrip": true,
+  "corpus_import_complete": false
+}

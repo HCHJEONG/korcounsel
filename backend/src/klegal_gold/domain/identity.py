@@ -60,6 +60,32 @@ class CourtCaseKey(DomainModel):
     case_number: Text
 
 
+class DecisionKind(StrEnum):
+    JUDGMENT = "판결"
+    DECISION = "결정"
+    INTERLOCUTORY = "중간판결"
+    ORDER = "명령"
+    ADJUDICATION = "재결"
+
+
+class DecisionKey(DomainModel):
+    """Court + docket + decision kind; date and source ID are not components."""
+
+    court: Text
+    case_number: Text
+    decision_kind: DecisionKind
+
+    @model_validator(mode="after")
+    def canonical_spelling(self) -> Self:
+        import re
+
+        if self.court != self.court.strip() or not re.fullmatch(
+            r"[0-9]{2,4}[가-힣]+[0-9]+", self.case_number
+        ):
+            raise ValueError("UNNORMALIZED_DECISION_KEY")
+        return self
+
+
 class CanonicalCaseIdentity(DomainModel):
     # Canonical represents one decision document; business keys may be shared across documents.
     # Allocation/legacy proposals and frozen registry reuse: docs/case-identity.md.
