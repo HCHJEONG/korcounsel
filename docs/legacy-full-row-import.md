@@ -1,5 +1,7 @@
 # 기존 DataFrame FULL_ROW 보존 importer
 
+**전수 text 대조 후속:** 89,130행의 본문과 별도 파일 8,482개를 대조했다. 신규 미포함 판례로 확정한 자료는 없으며 ID 없는 기존 재결 6429행의 연결 검토가 필요하다. [상세 결과](legacy-text-coverage-audit.md).
+
 2026-09-10. 기존 pickle에 저장된 DataFrame을 재사용하는 export 도구와 단일 worker importer를 구현하고 실제 표본을 검증했다.
 
 ## 입력은 기존 DataFrame

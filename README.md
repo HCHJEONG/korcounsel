@@ -1,5 +1,7 @@
 # KorCounsel
 
+전체 import 전 [text 파일 포함 관계 점검](docs/legacy-text-coverage-audit.md)을 완료했습니다. 8,482개 파일을 대조했으며 2029039 재결의 기존 행 연결·종류 표기는 별도 검토 대상입니다.
+
 기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer를 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 행 파일로 export하고 단일 worker가 보존·격리·재개합니다. [실행 안내와 실제 표본 검증](docs/legacy-full-row-import.md)을 참고하세요.
 
 현재 재판결과 키(법원 명칭+사건번호+재판 종류), 출처 독립 canonical 등록, legacy mapper 0.2.0과 로컬 migration 0007을 구현했습니다. [사용 계약·검증·다음 단계](docs/decision-identity-implementation.md)를 참고하세요. 전체 corpus import와 자동 동일성 판정은 후속입니다.

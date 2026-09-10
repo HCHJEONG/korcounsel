@@ -1,0 +1,134 @@
+{
+  "checked_at": "2026-09-10T07:20:26.056258+00:00",
+  "method": "Exact UTF-8 field hashes over all rows and filename source-ID membership",
+  "snapshot": "/mnt/i/VSCodeBases/web2df/saved/20241126/df_glaw_corpus/df_glaw_corpus_fullest_gmeta_lmeta.pickle",
+  "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+  "rows": 89130,
+  "columns": 60,
+  "roots": [
+    "/mnt/i/VSCodeBases/web2df",
+    "/mnt/i/VSCodeBases/df2preproc"
+  ],
+  "files": 8482,
+  "status_counts": {
+    "SOURCE_IDS_NOT_IN_CORPUS": 2,
+    "LEGACY_NEWLINE_FIELD_MATCH": 7989,
+    "SOURCE_ID_LINK_CONTENT_DIFFERS": 491
+  },
+  "by_directory": {
+    "saved/20240723/glaw_updated_panre_txt": {
+      "SOURCE_IDS_NOT_IN_CORPUS": 1,
+      "LEGACY_NEWLINE_FIELD_MATCH": 83,
+      "SOURCE_ID_LINK_CONTENT_DIFFERS": 36
+    },
+    "saved/20240723/lawgo_jomunupdated_panre_txt": {
+      "LEGACY_NEWLINE_FIELD_MATCH": 7365
+    },
+    "saved/20241126/glaw_updated_panre_txt": {
+      "SOURCE_IDS_NOT_IN_CORPUS": 1,
+      "SOURCE_ID_LINK_CONTENT_DIFFERS": 455,
+      "LEGACY_NEWLINE_FIELD_MATCH": 85
+    },
+    "saved/20241126/lawgo_jomunupdated_panre_txt": {
+      "LEGACY_NEWLINE_FIELD_MATCH": 456
+    }
+  },
+  "unique_file_hashes": 8482,
+  "duplicate_hash_groups": 0,
+  "duplicate_file_copies_beyond_first": 0,
+  "corpus_rows_with_exact_file_content": 0,
+  "corpus_rows_with_filename_source_link": 8102,
+  "historical_locator_roots": [
+    {
+      "original": "C:\\casesscrapedwithjomunimg_nnn",
+      "corpus_rows": 86606,
+      "current_literal_path": "/mnt/c/casesscrapedwithjomunimg_nnn",
+      "exists": false
+    },
+    {
+      "original": "D:\\VSCodeProjects",
+      "corpus_rows": 1865,
+      "current_literal_path": "/mnt/d/VSCodeProjects",
+      "exists": false
+    }
+  ],
+  "scan_errors": [],
+  "skipped_symlink_directories": [],
+  "unmatched_files": [
+    {
+      "root": "/mnt/i/VSCodeBases/web2df",
+      "path": "saved/20240723/glaw_updated_panre_txt/2029039.txt",
+      "size_bytes": 281783,
+      "sha256": "03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+      "filename_source_ids": {
+        "scourt": "2029039"
+      },
+      "filename_row_hint": null,
+      "status": "SOURCE_IDS_NOT_IN_CORPUS",
+      "candidate_positions": [],
+      "exact_fields": [],
+      "newline_fields": [],
+      "newline_rules": "Python text-mode universal newlines; original bytes unchanged",
+      "empty_file": false,
+      "source_membership": {
+        "scourt": []
+      },
+      "diagnostic_prefix": "  중앙해양안전심판원 2008. 12. 4.자 중해심제2008-26호 재결  [예인선삼성T-5호·예인선삼호T-3호의피예인부선삼성1호·유조선허베이스피리트충돌로인한해양오염사건][미간행]       【전    문】  \r\n    \r\n【해양사고관련자】\r\n\r\n해양사고관련자 1 외 6인\r\n\r\n\r\n  \r\n    【주    문】     이 사건 충돌은 예인선 삼성T-5호, 예인선 삼호T-3호, 닻 작업선 삼성A-1호 및 부선 삼성1호로 구성된 예인선단 측이 예인항해 중 기상급변에 조기대처하지 못하고 기상악화로 조종이 거의 불가능할 정도로 예항능력을 상실하여 조종성능이 심각히 제한된 상태로 풍파에 떠밀리면서도 주위 선박들에게 경고하거나 비상 투묘 등의 안전조치를 취하지 아니한 채 무리한 항해를 계속함으로써 정박선 허베이 스피리트에 가까이 접근한 상태에서 삼성T-5호의 예인줄이 파단되면서 부선 삼성1호가 허베이 스피리트 쪽으로 떠밀려가 발생한 것이나, 허베이 스피리트 측이 선박통항이 잦은 곳에 정박중 당직태만과 안일한 대응으로 조기에 적극적인 피항동작을 취하지 아니한데다 충돌의 위험이 급박한 상황에서 주기관 사용준비 태만으로 주기관이 조종불능 상태가 되어 피항동작을 취하지 못한 것도 일인이 된다.    해양오염은 충돌로 인하여 허베이 스피리트의 화물탱크가 파공 되면서 화물유가 해상으로 유출되어 발생한 것이나, 오염이 확대된 것은 허베이 스피리트측이 충돌 후 부적절한 비상대응조치로 화물유 유출속도를 증가시키고 화물유 유출방지를 위한 조치를 소극적으로 이행하였기 때문이다.  해양사고관련자 1의 2급항해사 면허를 취소한다.  해양사고관련자 2의 3급항해사 업무를 12개월 정지한다.  해양사고관련자 3에 대하여 시정을 권고한다.  해양사고관련자 4 주식회사에 대하여 개선을 권고한다.  해양사고관련자 5 주식회사에 대하여 개선을 권고한다.  해양사고관련자 6에 대하여 시정을 명한다.  해양사고관련자 7에 대하여 시정을 명한다. \r\n\r\n【청구취지】\r\n 해양사고관련자 1, 해양사고관련자 2, 해양사고관련자 3, 해양사고관련자 4 주식회사 및 해양사고관련자 5 주식회사의 심판변론인 김대래와 해양사고관련자 6 및 해양사고관련자 7의 심판변론인 이진홍이 인해심 재결 특 제2008-23호의 재결에 불복,   해양사고의 조사 및 심판에 관한 법률 제58조  의 규정에 의거 제2심을 청구함 \r\n   관여조사관 김종의 \r\n\r\n    【이    유】   \r\n 1. 사    실   \r\n     본문내 포함된 표      선    명       삼성T-5호      삼호T-3호      삼성1호    허베이 스피리트(HEBEI SPIRIT)        선 적 항       거제시     부산       거제시     홍콩         선박소유자     삼성물산(주)       삼호아이앤디(주)       삼성물산(주)       허베이 스피리트 쉬핑 (HebeiSpirit Shipping Co. Limited)      선박운항자     해양사고관련자 5 주식회사       삼성건설 주식회사      해양사고관련자 5 주식회사       상동         선박관리자     해양사고관련자 4 주식회사       삼성건설 주식회사      해양사고관련자 4 주식회사       상동         총톤수     292톤      213톤      11,828톤       146,848톤        기관종류·출력     디젤기관 1,765kw 2기       디젤기관 1,323kw 2기       무동력 부선    디젤기관 20,594kw 1기           \r\n     본문내 포함된 표      해양사고관련자      해양사고관련자 1    해양사고관련자 2    해양사고관련자 3    해양사고관련자 4 주식회사    해양사고관련자 5 주식회사    해양사고관련자 6    해양사고관련자 7      직명    선장    선장    선두    선박 관리자     선박운항자      선장    1등항해사         면허의 종류       2급항해사(JP-D2-07-0001)    3급항해사(BS-D3-03-0005)    ？       ？       ？       ？       ？            \r\n 가. 사고일시 :  2007년 12월 7일 07시 06분경  \r\n 나. 사고장소 :  북위 36도 52분 16초·동경 126도 03분 02초    (태안군 원북면 신도타서 등대로부터 253도, 약 5마일 해상)  \r\n 다. 예인선단의 상세     1) 예인선단의 구성    이 건 사고의 예인선단은, 대형 기중기부선 삼성1호와 이 부선의 선미부 양현 쪽에 각각 하나씩의 예인줄을 연결하여 삼성1호를 역방향으로 끄는 2척의 예인선 삼성T-5호 및 예인선 삼호T-3호 그리고 부선의 선수부 중앙에 예인줄을 하나 연결한 채 뒤 따라 가면서 삼성1호의 진행방향을 보조적으로 조절하는 삼성1호의 닻 작업선(Anchor Boat) 삼성A-1호 등 모두 4척의 선박으로 구성되어 있다. ([그림.1]~[그림.5], [표.1])    삼성A-1호는 부선 삼",
+      "candidate_metadata": []
+    },
+    {
+      "root": "/mnt/i/VSCodeBases/web2df",
+      "path": "saved/20241126/glaw_updated_panre_txt/2029039.txt",
+      "size_bytes": 281784,
+      "sha256": "c4f4397433f4293953b0156ce6d713364f5bf4db0a2c36f9cb47bcb24b245ad0",
+      "filename_source_ids": {
+        "scourt": "2029039"
+      },
+      "filename_row_hint": null,
+      "status": "SOURCE_IDS_NOT_IN_CORPUS",
+      "candidate_positions": [],
+      "exact_fields": [],
+      "newline_fields": [],
+      "newline_rules": "Python text-mode universal newlines; original bytes unchanged",
+      "empty_file": false,
+      "source_membership": {
+        "scourt": []
+      },
+      "diagnostic_prefix": "  중앙해양안전심판원 2008. 12. 4. 자 중해심제2008-26호 재결  [예인선삼성T-5호·예인선삼호T-3호의피예인부선삼성1호·유조선허베이스피리트충돌로인한해양오염사건][미간행]       【전    문】  \r\n    \r\n【해양사고관련자】\r\n\r\n해양사고관련자 1 외 6인\r\n\r\n\r\n  \r\n    【주    문】     이 사건 충돌은 예인선 삼성T-5호, 예인선 삼호T-3호, 닻 작업선 삼성A-1호 및 부선 삼성1호로 구성된 예인선단 측이 예인항해 중 기상급변에 조기대처하지 못하고 기상악화로 조종이 거의 불가능할 정도로 예항능력을 상실하여 조종성능이 심각히 제한된 상태로 풍파에 떠밀리면서도 주위 선박들에게 경고하거나 비상 투묘 등의 안전조치를 취하지 아니한 채 무리한 항해를 계속함으로써 정박선 허베이 스피리트에 가까이 접근한 상태에서 삼성T-5호의 예인줄이 파단되면서 부선 삼성1호가 허베이 스피리트 쪽으로 떠밀려가 발생한 것이나, 허베이 스피리트 측이 선박통항이 잦은 곳에 정박중 당직태만과 안일한 대응으로 조기에 적극적인 피항동작을 취하지 아니한데다 충돌의 위험이 급박한 상황에서 주기관 사용준비 태만으로 주기관이 조종불능 상태가 되어 피항동작을 취하지 못한 것도 일인이 된다.    해양오염은 충돌로 인하여 허베이 스피리트의 화물탱크가 파공 되면서 화물유가 해상으로 유출되어 발생한 것이나, 오염이 확대된 것은 허베이 스피리트측이 충돌 후 부적절한 비상대응조치로 화물유 유출속도를 증가시키고 화물유 유출방지를 위한 조치를 소극적으로 이행하였기 때문이다.  해양사고관련자 1의 2급항해사 면허를 취소한다.  해양사고관련자 2의 3급항해사 업무를 12개월 정지한다.  해양사고관련자 3에 대하여 시정을 권고한다.  해양사고관련자 4 주식회사에 대하여 개선을 권고한다.  해양사고관련자 5 주식회사에 대하여 개선을 권고한다.  해양사고관련자 6에 대하여 시정을 명한다.  해양사고관련자 7에 대하여 시정을 명한다. \r\n\r\n【청구취지】\r\n 해양사고관련자 1, 해양사고관련자 2, 해양사고관련자 3, 해양사고관련자 4 주식회사 및 해양사고관련자 5 주식회사의 심판변론인 김대래와 해양사고관련자 6 및 해양사고관련자 7의 심판변론인 이진홍이 인해심 재결 특 제2008-23호의 재결에 불복,   해양사고의 조사 및 심판에 관한 법률 제58조  의 규정에 의거 제2심을 청구함 \r\n   관여조사관 김종의 \r\n\r\n    【이    유】   \r\n 1. 사    실   \r\n     본문내 포함된 표      선    명       삼성T-5호      삼호T-3호      삼성1호    허베이 스피리트(HEBEI SPIRIT)        선 적 항       거제시     부산       거제시     홍콩         선박소유자     삼성물산(주)       삼호아이앤디(주)       삼성물산(주)       허베이 스피리트 쉬핑 (HebeiSpirit Shipping Co. Limited)      선박운항자     해양사고관련자 5 주식회사       삼성건설 주식회사      해양사고관련자 5 주식회사       상동         선박관리자     해양사고관련자 4 주식회사       삼성건설 주식회사      해양사고관련자 4 주식회사       상동         총톤수     292톤      213톤      11,828톤       146,848톤        기관종류·출력     디젤기관 1,765kw 2기       디젤기관 1,323kw 2기       무동력 부선    디젤기관 20,594kw 1기           \r\n     본문내 포함된 표      해양사고관련자      해양사고관련자 1    해양사고관련자 2    해양사고관련자 3    해양사고관련자 4 주식회사    해양사고관련자 5 주식회사    해양사고관련자 6    해양사고관련자 7      직명    선장    선장    선두    선박 관리자     선박운항자      선장    1등항해사         면허의 종류       2급항해사(JP-D2-07-0001)    3급항해사(BS-D3-03-0005)    ？       ？       ？       ？       ？            \r\n 가. 사고일시 :  2007년 12월 7일 07시 06분경  \r\n 나. 사고장소 :  북위 36도 52분 16초·동경 126도 03분 02초    (태안군 원북면 신도타서 등대로부터 253도, 약 5마일 해상)  \r\n 다. 예인선단의 상세     1) 예인선단의 구성    이 건 사고의 예인선단은, 대형 기중기부선 삼성1호와 이 부선의 선미부 양현 쪽에 각각 하나씩의 예인줄을 연결하여 삼성1호를 역방향으로 끄는 2척의 예인선 삼성T-5호 및 예인선 삼호T-3호 그리고 부선의 선수부 중앙에 예인줄을 하나 연결한 채 뒤 따라 가면서 삼성1호의 진행방향을 보조적으로 조절하는 삼성1호의 닻 작업선(Anchor Boat) 삼성A-1호 등 모두 4척의 선박으로 구성되어 있다. ([그림.1]~[그림.5], [표.1])    삼성A-1호는 부선 ",
+      "candidate_metadata": []
+    }
+  ],
+  "limits": [
+    "Content difference is not a new case or missing legal text verdict.",
+    "Filename IDs are historical links, not permanent canonical IDs.",
+    "No filesystem-wide scan outside the listed roots.",
+    "No DB import, identity relink, source mutation or live retrieval."
+  ],
+  "inventory_path": "../data/legacy-audit/text-coverage-inventory.jsonl",
+  "inventory_sha256": "b46cda9a12b0a94e57c28fd27230596a7d87603ce0a06cfc6c443899d17131f7",
+  "central_maritime_metadata_candidates": [
+    {
+      "position": 6429,
+      "metadata": {
+        "court_name": "중앙해양안전심판원 ",
+        "case_no": "2008중해심26",
+        "case_full_no": "중앙해양안전심판원 2008. 12. 4.자 2008중해심26 기타 ",
+        "gmeta_contId": "empty",
+        "lmeta_serialno": "empty"
+      },
+      "html_characters": 200321,
+      "html_prefix": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<div><strong>중앙해양안전심판원 2008. 12. 4.자 2008중해심26 기타 [예인선삼성T-5호ㆍ예인선삼호T-3호의피예인부선삼성1호ㆍ유조선허베이스피리트충돌로인한해양오염사건]</strong><div class=\"page\"><span class=\"space\"/><p><strong id=\"Body\">【전    문】</strong></p>\n<span class=\"space\"/><p><strong id=\"Party2\" style=\"font-weight:normal;\">\n      【해양사고관련자】\n      \n        \n          해양사고관련자 1 외 6인\n        \n      \n    </strong></p>\n<span class=\"space\"/><p><strong id=\"OutCome\" style=\"font-weight:normal\">【주    문】</strong></p><p>  이 사건 ",
+      "image_tags": 34
+    }
+  ],
+  "newline_match_files": 7989,
+  "newline_content_source_assignment_conflicts": [],
+  "basic_variants_with_exact_enriched_counterpart": 491,
+  "basic_variants_without_exact_enriched_counterpart": [],
+  "verification": {
+    "audit_regression_tests": 9,
+    "ruff": "passed",
+    "git_diff_check": "passed",
+    "cached_inventory_crosschecks": "passed"
+  }
+}

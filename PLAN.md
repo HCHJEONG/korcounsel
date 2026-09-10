@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**전체 import 전 점검:** text 8,482개 중 7,989개는 newline 변환 후 저장값과 일치, 기본 본문 491개도 저장된 보강본에 대응한다. ID 미연결 2029039 두 파일은 기존 6429행과 동일 재결 후보다. 전체 import는 아직 실행하지 않았다. [점검 결과](docs/legacy-text-coverage-audit.md).
+
 **최신 구현:** 기존 DataFrame 재사용 FULL_ROW export·단일 worker importer·행별 격리/재개 ledger·migration 0008을 구현했다. 실제 15행×60컬럼 표본과 전체 281개 회귀 검증 완료. [현재 범위](docs/legacy-full-row-import.md). 89,130행 전체 실행·canonical 연결 확정은 후속이다.
 
 **최신 구현:** 재판결과 키·출처 독립 canonical 등록·legacy mapper 0.2.0·migration 0007 및 실제 PostgreSQL 회귀를 완료했다. [상세와 한계](docs/decision-identity-implementation.md). 다음은 FULL_ROW 보존 import와 표본 연결 검토다.

@@ -1,0 +1,44 @@
+{
+  "metadata_matches": [
+    {
+      "position": 6429,
+      "court_name": "중앙해양안전심판원 ",
+      "case_no": "2008중해심26",
+      "case_full_no": "중앙해양안전심판원 2008. 12. 4.자 2008중해심26 기타 ",
+      "gmeta_contId": null
+    }
+  ],
+  "missing_file_single_space_difference": true,
+  "sample_newline_comparisons": [
+    {
+      "position": 50000,
+      "file": "saved/20240723/lawgo_jomunupdated_panre_txt/50000-2173788-190023.txt",
+      "file_chars": 6187,
+      "stored_chars": 6110,
+      "crlf_count": 77,
+      "equal_after_universal_newlines": true,
+      "prefix_file": "'<?xml version=\"1.0\" encoding=\"utf-8\"?>\\r\\n<div><strong>대법원 1994. 8. 26. 선고 94도113 판결 [부정수표단속법위반][공1994.10.1.(977),2572]</s'",
+      "prefix_stored": "'<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<div><strong>대법원 1994. 8. 26. 선고 94도113 판결 [부정수표단속법위반][공1994.10.1.(977),2572]</st'"
+    },
+    {
+      "position": 89129,
+      "file": "saved/20241126/glaw_updated_panre_txt/3333834.txt",
+      "file_chars": 8147,
+      "stored_chars": 17528,
+      "crlf_count": 37,
+      "equal_after_universal_newlines": false,
+      "prefix_file": "'<div class=\"tit_area common\" id=\"bmunStart\"><h2>대법원 2024. 4. 4. 선고 2019도15742 판결</h2><p class=\"sub_title\">[특정경제범죄가중처벌등에관'",
+      "prefix_stored": "'<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<div><div class=\"tit_area common\" id=\"bmunStart\"><h2>대법원 2024. 4. 4. 선고 2019도1574'"
+    },
+    {
+      "position": 89129,
+      "file": "saved/20241126/lawgo_jomunupdated_panre_txt/89129-3333834-241689.txt",
+      "file_chars": 17674,
+      "stored_chars": 17528,
+      "crlf_count": 146,
+      "equal_after_universal_newlines": true,
+      "prefix_file": "'<?xml version=\"1.0\" encoding=\"utf-8\"?>\\r\\n<div><div class=\"tit_area common\" id=\"bmunStart\"><h2>대법원 2024. 4. 4. 선고 2019도157'",
+      "prefix_stored": "'<?xml version=\"1.0\" encoding=\"utf-8\"?>\\n<div><div class=\"tit_area common\" id=\"bmunStart\"><h2>대법원 2024. 4. 4. 선고 2019도1574'"
+    }
+  ]
+}
