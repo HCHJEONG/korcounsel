@@ -1,0 +1,2218 @@
+{
+  "$defs": {
+    "ArtifactType": {
+      "enum": [
+        "JSON",
+        "XML",
+        "HTML",
+        "PDF_TEXT",
+        "PDF_SCAN",
+        "PAGE_IMAGE",
+        "EMBEDDED_IMAGE",
+        "OTHER",
+        "UNKNOWN"
+      ],
+      "title": "ArtifactType",
+      "type": "string"
+    },
+    "CanonicalCaseIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_id": {
+          "minLength": 1,
+          "title": "Canonical Id",
+          "type": "string"
+        },
+        "court_case_keys": {
+          "items": {
+            "$ref": "#/$defs/CourtCaseKey"
+          },
+          "title": "Court Case Keys",
+          "type": "array"
+        },
+        "field_origins": {
+          "items": {
+            "$ref": "#/$defs/FieldOrigin"
+          },
+          "title": "Field Origins",
+          "type": "array"
+        },
+        "link_revision": {
+          "minimum": 1,
+          "title": "Link Revision",
+          "type": "integer"
+        },
+        "metadata": {
+          "$ref": "#/$defs/CaseMetadata"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_identifiers": {
+          "items": {
+            "$ref": "#/$defs/SourceCaseIdentifier"
+          },
+          "minItems": 1,
+          "title": "Source Identifiers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "canonical_id",
+        "link_revision",
+        "metadata",
+        "source_identifiers"
+      ],
+      "title": "CanonicalCaseIdentity",
+      "type": "object"
+    },
+    "CaseMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "case_numbers": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Case Numbers",
+          "type": "array"
+        },
+        "court": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Court"
+        },
+        "decision_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision Date"
+        },
+        "disposition": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Disposition"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        }
+      },
+      "title": "CaseMetadata",
+      "type": "object"
+    },
+    "CaseReference": {
+      "additionalProperties": false,
+      "properties": {
+        "citation_original": {
+          "minLength": 1,
+          "title": "Citation Original",
+          "type": "string"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextSpan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metadata": {
+          "$ref": "#/$defs/CaseMetadata"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation_original"
+      ],
+      "title": "CaseReference",
+      "type": "object"
+    },
+    "CourtCaseKey": {
+      "additionalProperties": false,
+      "description": "User-confirmed business key. Preserve branch and every merged docket alias.",
+      "properties": {
+        "case_number": {
+          "minLength": 1,
+          "title": "Case Number",
+          "type": "string"
+        },
+        "court": {
+          "minLength": 1,
+          "title": "Court",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "court",
+        "case_number"
+      ],
+      "title": "CourtCaseKey",
+      "type": "object"
+    },
+    "DocumentBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_reference_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Asset Reference Id"
+        },
+        "block_id": {
+          "minLength": 1,
+          "title": "Block Id",
+          "type": "string"
+        },
+        "document_order": {
+          "minimum": 0,
+          "title": "Document Order",
+          "type": "integer"
+        },
+        "kind": {
+          "pattern": "^(heading|paragraph|image|table|page_image|unknown)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "label_original": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Original"
+        },
+        "locator": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locator"
+        },
+        "numbering_path": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Numbering Path",
+          "type": "array"
+        },
+        "parent_artifact_id": {
+          "minLength": 1,
+          "title": "Parent Artifact Id",
+          "type": "string"
+        },
+        "parent_block_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Block Id"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "text_span": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextSpan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "block_id",
+        "parent_artifact_id",
+        "document_order",
+        "kind"
+      ],
+      "title": "DocumentBlock",
+      "type": "object"
+    },
+    "EditorialAvailability": {
+      "additionalProperties": false,
+      "properties": {
+        "full_text": {
+          "$ref": "#/$defs/FieldAvailability",
+          "default": "UNKNOWN"
+        },
+        "issues": {
+          "$ref": "#/$defs/FieldAvailability",
+          "default": "UNKNOWN"
+        },
+        "reasoning": {
+          "$ref": "#/$defs/FieldAvailability",
+          "default": "UNKNOWN"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "summaries": {
+          "$ref": "#/$defs/FieldAvailability",
+          "default": "UNKNOWN"
+        }
+      },
+      "title": "EditorialAvailability",
+      "type": "object"
+    },
+    "EvidenceSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(ISSUE|SUMMARY|REASONING|FULL_TEXT|AUTHORITY)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field",
+        "text",
+        "start",
+        "end",
+        "kind"
+      ],
+      "title": "EvidenceSpan",
+      "type": "object"
+    },
+    "FidelityAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_status": {
+          "default": "NOT_REQUESTED",
+          "pattern": "^(NOT_REQUESTED|COMPLETE|PARTIAL_FAILURE|FAILED)$",
+          "title": "Asset Status",
+          "type": "string"
+        },
+        "detection_scope": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detection Scope"
+        },
+        "detection_status": {
+          "default": "UNKNOWN",
+          "pattern": "^(COMPLETE|PARTIAL|UNKNOWN|FAILED)$",
+          "title": "Detection Status",
+          "type": "string"
+        },
+        "has_visual_assets": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Has Visual Assets"
+        },
+        "ocr_status": {
+          "default": "NOT_YET_PROCESSED",
+          "pattern": "^(NOT_YET_PROCESSED|NOT_REQUIRED|PROCESSED|FAILED)$",
+          "title": "Ocr Status",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reasons",
+          "type": "array"
+        },
+        "requires_ocr": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Requires Ocr"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "tier": {
+          "default": "UNKNOWN",
+          "pattern": "^(STRUCTURED|FULL_TEXT|SCAN|UNKNOWN)$",
+          "title": "Tier",
+          "type": "string"
+        },
+        "visual_asset_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visual Asset Count"
+        }
+      },
+      "title": "FidelityAssessment",
+      "type": "object"
+    },
+    "FieldAvailability": {
+      "enum": [
+        "PRESENT",
+        "ABSENT_IN_SOURCE",
+        "NOT_FETCHED",
+        "PARSE_FAILED",
+        "UNKNOWN"
+      ],
+      "title": "FieldAvailability",
+      "type": "string"
+    },
+    "FieldOrigin": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_field": {
+          "minLength": 1,
+          "title": "Source Field",
+          "type": "string"
+        },
+        "source_version": {
+          "$ref": "#/$defs/SourceCaseVersion"
+        }
+      },
+      "required": [
+        "field",
+        "source_version",
+        "artifact_id",
+        "source_field"
+      ],
+      "title": "FieldOrigin",
+      "type": "object"
+    },
+    "GoldAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "blockers": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Blockers",
+          "type": "array"
+        },
+        "identity_link_revision": {
+          "minimum": 1,
+          "title": "Identity Link Revision",
+          "type": "integer"
+        },
+        "issue_revision": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Issue Revision",
+          "type": "string"
+        },
+        "passed_checks": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Passed Checks",
+          "type": "array"
+        },
+        "policy_version": {
+          "minLength": 1,
+          "title": "Policy Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "default": "NOT_EVALUATED",
+          "enum": [
+            "NOT_EVALUATED",
+            "INELIGIBLE",
+            "ELIGIBLE"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue_revision",
+        "identity_link_revision",
+        "policy_version"
+      ],
+      "title": "GoldAssessment",
+      "type": "object"
+    },
+    "IdentityCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "$ref": "#/$defs/SourceCaseMetadata"
+        },
+        "reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Score",
+          "type": "number"
+        },
+        "signals": {
+          "items": {
+            "$ref": "#/$defs/IdentitySignal"
+          },
+          "minItems": 1,
+          "title": "Signals",
+          "type": "array"
+        }
+      },
+      "required": [
+        "metadata",
+        "score",
+        "signals",
+        "reasons"
+      ],
+      "title": "IdentityCandidate",
+      "type": "object"
+    },
+    "IdentityLinkEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "actor": {
+          "minLength": 1,
+          "title": "Actor",
+          "type": "string"
+        },
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "operation": {
+          "pattern": "^(CREATE|MERGE|SPLIT|RELINK)$",
+          "title": "Operation",
+          "type": "string"
+        },
+        "previous": {
+          "items": {
+            "$ref": "#/$defs/CanonicalCaseIdentity"
+          },
+          "title": "Previous",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "resulting": {
+          "items": {
+            "$ref": "#/$defs/CanonicalCaseIdentity"
+          },
+          "minItems": 1,
+          "title": "Resulting",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "operation",
+        "resulting",
+        "recorded_at",
+        "actor",
+        "reason"
+      ],
+      "title": "IdentityLinkEvent",
+      "type": "object"
+    },
+    "IdentityResolution": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/IdentityCandidate"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "left": {
+          "$ref": "#/$defs/SourceCaseMetadata"
+        },
+        "reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "resolver_version": {
+          "minLength": 1,
+          "title": "Resolver Version",
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "selected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceCaseIdentifier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "status": {
+          "$ref": "#/$defs/IdentityStatus"
+        }
+      },
+      "required": [
+        "left",
+        "status",
+        "reasons",
+        "resolver_version",
+        "run_id"
+      ],
+      "title": "IdentityResolution",
+      "type": "object"
+    },
+    "IdentitySignal": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "outcome": {
+          "pattern": "^(MATCH|MISMATCH|MISSING)$",
+          "title": "Outcome",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "outcome",
+        "reason"
+      ],
+      "title": "IdentitySignal",
+      "type": "object"
+    },
+    "IdentityStatus": {
+      "enum": [
+        "EXACT",
+        "HIGH_CONFIDENCE",
+        "AMBIGUOUS",
+        "UNMATCHED",
+        "CONFLICT"
+      ],
+      "title": "IdentityStatus",
+      "type": "string"
+    },
+    "InventoryEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Metadata Hash",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "metadata_hash"
+      ],
+      "title": "InventoryEntry",
+      "type": "object"
+    },
+    "InventorySnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "collector_version": {
+          "minLength": 1,
+          "title": "Collector Version",
+          "type": "string"
+        },
+        "completeness": {
+          "pattern": "^(COMPLETE|PARTIAL|UNKNOWN)$",
+          "title": "Completeness",
+          "type": "string"
+        },
+        "completeness_basis": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completeness Basis"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/InventoryEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        },
+        "failed_pages": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Failed Pages",
+          "type": "array"
+        },
+        "finished_at": {
+          "format": "date-time",
+          "title": "Finished At",
+          "type": "string"
+        },
+        "hash_rules_version": {
+          "minLength": 1,
+          "title": "Hash Rules Version",
+          "type": "string"
+        },
+        "metadata_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Metadata Hash",
+          "type": "string"
+        },
+        "observed_unique_count": {
+          "minimum": 0,
+          "title": "Observed Unique Count",
+          "type": "integer"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "scope_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scope Hash",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "minLength": 1,
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSystem"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "total_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Count"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "source",
+        "retrieved_at",
+        "started_at",
+        "finished_at",
+        "total_count",
+        "observed_unique_count",
+        "metadata_hash",
+        "scope",
+        "scope_hash",
+        "collector_version",
+        "hash_rules_version",
+        "completeness"
+      ],
+      "title": "InventorySnapshot",
+      "type": "object"
+    },
+    "LegalAuthority": {
+      "additionalProperties": false,
+      "properties": {
+        "article": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Article"
+        },
+        "case_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CaseReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "citation_original": {
+          "minLength": 1,
+          "title": "Citation Original",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^(STATUTE|CASE|OTHER)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "pattern": "^(CASE|ISSUE)$",
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_span": {
+          "$ref": "#/$defs/TextSpan"
+        },
+        "statute_name": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Statute Name"
+        }
+      },
+      "required": [
+        "kind",
+        "citation_original",
+        "scope",
+        "source_span"
+      ],
+      "title": "LegalAuthority",
+      "type": "object"
+    },
+    "LegalCase": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/SourceArtifact"
+          },
+          "minItems": 1,
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "authorities": {
+          "items": {
+            "$ref": "#/$defs/LegalAuthority"
+          },
+          "title": "Authorities",
+          "type": "array"
+        },
+        "blocks": {
+          "items": {
+            "$ref": "#/$defs/DocumentBlock"
+          },
+          "title": "Blocks",
+          "type": "array"
+        },
+        "fidelity": {
+          "$ref": "#/$defs/FidelityAssessment"
+        },
+        "field_availability": {
+          "$ref": "#/$defs/EditorialAvailability"
+        },
+        "field_origins": {
+          "items": {
+            "$ref": "#/$defs/FieldOrigin"
+          },
+          "title": "Field Origins",
+          "type": "array"
+        },
+        "full_text": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Full Text"
+        },
+        "identity": {
+          "$ref": "#/$defs/CanonicalCaseIdentity"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/StructuredText"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "metadata": {
+          "$ref": "#/$defs/CaseMetadata"
+        },
+        "provenance": {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "title": "Provenance",
+          "type": "array"
+        },
+        "reasoning": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reasoning"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_versions": {
+          "items": {
+            "$ref": "#/$defs/SourceCaseVersion"
+          },
+          "minItems": 1,
+          "title": "Source Versions",
+          "type": "array"
+        },
+        "summaries": {
+          "items": {
+            "$ref": "#/$defs/StructuredText"
+          },
+          "title": "Summaries",
+          "type": "array"
+        },
+        "visual_assets": {
+          "items": {
+            "$ref": "#/$defs/VisualAssetReference"
+          },
+          "title": "Visual Assets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "source_versions",
+        "metadata",
+        "artifacts",
+        "provenance"
+      ],
+      "title": "LegalCase",
+      "type": "object"
+    },
+    "LegalIssueUnit": {
+      "additionalProperties": false,
+      "properties": {
+        "alignment_status": {
+          "enum": [
+            "aligned",
+            "ambiguous",
+            "unmatched"
+          ],
+          "title": "Alignment Status",
+          "type": "string"
+        },
+        "answer_normalized": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answer Normalized"
+        },
+        "answer_original": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answer Original"
+        },
+        "authorities": {
+          "items": {
+            "$ref": "#/$defs/LegalAuthority"
+          },
+          "title": "Authorities",
+          "type": "array"
+        },
+        "canonical_id": {
+          "minLength": 1,
+          "title": "Canonical Id",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceSpan"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "gold": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GoldAssessment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "identity_link_revision": {
+          "minimum": 1,
+          "title": "Identity Link Revision",
+          "type": "integer"
+        },
+        "identity_status": {
+          "$ref": "#/$defs/IdentityStatus"
+        },
+        "issue_normalized": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issue Normalized"
+        },
+        "issue_original": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issue Original"
+        },
+        "issue_revision": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Issue Revision"
+        },
+        "provenance": {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "title": "Provenance",
+          "type": "array"
+        },
+        "quality_status": {
+          "default": "needs_review",
+          "enum": [
+            "passed",
+            "needs_review",
+            "failed"
+          ],
+          "title": "Quality Status",
+          "type": "string"
+        },
+        "reason_codes": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Reason Codes",
+          "type": "array"
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewDecision"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rules_version": {
+          "minLength": 1,
+          "title": "Rules Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_versions": {
+          "items": {
+            "$ref": "#/$defs/SourceCaseVersion"
+          },
+          "minItems": 1,
+          "title": "Source Versions",
+          "type": "array"
+        },
+        "visual_evidence": {
+          "items": {
+            "$ref": "#/$defs/VisualEvidenceReference"
+          },
+          "title": "Visual Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "canonical_id",
+        "identity_link_revision",
+        "source_versions",
+        "alignment_status",
+        "identity_status",
+        "rules_version",
+        "provenance"
+      ],
+      "title": "LegalIssueUnit",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_version": {
+          "minLength": 1,
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "decoder_version": {
+          "minLength": 1,
+          "title": "Decoder Version",
+          "type": "string"
+        },
+        "exclusion_reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exclusion Reasons",
+          "type": "array"
+        },
+        "normalizer_version": {
+          "minLength": 1,
+          "title": "Normalizer Version",
+          "type": "string"
+        },
+        "parser_version": {
+          "minLength": 1,
+          "title": "Parser Version",
+          "type": "string"
+        },
+        "raw_artifact_id": {
+          "minLength": 1,
+          "title": "Raw Artifact Id",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_url": {
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "source_version": {
+          "$ref": "#/$defs/SourceCaseVersion"
+        },
+        "text_extractor_version": {
+          "minLength": 1,
+          "title": "Text Extractor Version",
+          "type": "string"
+        },
+        "transformation_rules": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Transformation Rules",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_version",
+        "raw_artifact_id",
+        "source_url",
+        "retrieved_at",
+        "decoder_version",
+        "text_extractor_version",
+        "parser_version",
+        "normalizer_version",
+        "dataset_version",
+        "run_id"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "RawLegalCase": {
+      "additionalProperties": false,
+      "properties": {
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "raw_artifact": {
+          "$ref": "#/$defs/SourceArtifact"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_version": {
+          "$ref": "#/$defs/SourceCaseVersion"
+        }
+      },
+      "required": [
+        "source_version",
+        "raw_artifact",
+        "provenance"
+      ],
+      "title": "RawLegalCase",
+      "type": "object"
+    },
+    "ReviewDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "identity_link_revision": {
+          "minimum": 1,
+          "title": "Identity Link Revision",
+          "type": "integer"
+        },
+        "issue_revision": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Issue Revision",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "reviewer": {
+          "minLength": 1,
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_versions": {
+          "items": {
+            "$ref": "#/$defs/SourceCaseVersion"
+          },
+          "minItems": 1,
+          "title": "Source Versions",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "approved",
+            "rejected",
+            "deferred"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue_revision",
+        "identity_link_revision",
+        "source_versions",
+        "status",
+        "reviewer",
+        "recorded_at",
+        "reason"
+      ],
+      "title": "ReviewDecision",
+      "type": "object"
+    },
+    "SourceArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "artifact_type": {
+          "$ref": "#/$defs/ArtifactType"
+        },
+        "classification_basis": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Classification Basis"
+        },
+        "document_order": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Document Order"
+        },
+        "file_size": {
+          "minimum": 0,
+          "title": "File Size",
+          "type": "integer"
+        },
+        "mime_type": {
+          "minLength": 1,
+          "title": "Mime Type",
+          "type": "string"
+        },
+        "parent_artifact_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Artifact Id"
+        },
+        "representation": {
+          "pattern": "^(RESPONSE_BYTES|ASSET_BYTES|DOM_SNAPSHOT|EXTRACTED_TEXT|DERIVED)$",
+          "title": "Representation",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_url": {
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "source_version": {
+          "$ref": "#/$defs/SourceCaseVersion"
+        },
+        "storage_path": {
+          "minLength": 1,
+          "title": "Storage Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "source_version",
+        "artifact_type",
+        "representation",
+        "source_url",
+        "retrieved_at",
+        "mime_type",
+        "sha256",
+        "file_size",
+        "storage_path"
+      ],
+      "title": "SourceArtifact",
+      "type": "object"
+    },
+    "SourceCaseIdentifier": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceSystem"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "source_id"
+      ],
+      "title": "SourceCaseIdentifier",
+      "type": "object"
+    },
+    "SourceCaseMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "identifier": {
+          "$ref": "#/$defs/SourceCaseIdentifier"
+        },
+        "metadata_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Metadata Hash",
+          "type": "string"
+        },
+        "normalized": {
+          "$ref": "#/$defs/CaseMetadata"
+        },
+        "normalizer_version": {
+          "minLength": 1,
+          "title": "Normalizer Version",
+          "type": "string"
+        },
+        "raw_case_numbers": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Case Numbers"
+        },
+        "raw_court": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Court"
+        },
+        "raw_date": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Date"
+        },
+        "raw_disposition": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Disposition"
+        },
+        "raw_title": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raw Title"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identifier",
+        "metadata_hash",
+        "normalized",
+        "normalizer_version"
+      ],
+      "title": "SourceCaseMetadata",
+      "type": "object"
+    },
+    "SourceCaseVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "identifier": {
+          "$ref": "#/$defs/SourceCaseIdentifier"
+        },
+        "raw_content_hash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Raw Content Hash",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identifier",
+        "raw_content_hash"
+      ],
+      "title": "SourceCaseVersion",
+      "type": "object"
+    },
+    "SourceSystem": {
+      "enum": [
+        "scourt",
+        "law_go_kr",
+        "lawnb",
+        "legacy_import"
+      ],
+      "title": "SourceSystem",
+      "type": "string"
+    },
+    "SourceText": {
+      "additionalProperties": false,
+      "description": "Exact decoded/extracted artifact field, loaded by a trusted storage adapter.",
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_version": {
+          "$ref": "#/$defs/SourceCaseVersion"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "text_extractor_version": {
+          "minLength": 1,
+          "title": "Text Extractor Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field",
+        "source_version",
+        "text_extractor_version",
+        "text"
+      ],
+      "title": "SourceText",
+      "type": "object"
+    },
+    "StructuredText": {
+      "additionalProperties": false,
+      "properties": {
+        "label_original": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label Original"
+        },
+        "numbering_path": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Numbering Path",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_span": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TextSpan"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "StructuredText",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "field": {
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field",
+        "text",
+        "start",
+        "end"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    },
+    "VisualAssetReference": {
+      "additionalProperties": false,
+      "properties": {
+        "acquired_artifact_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Acquired Artifact Id"
+        },
+        "acquisition_state": {
+          "default": "NOT_REQUESTED",
+          "pattern": "^(NOT_REQUESTED|PENDING|ACQUIRED|FAILED)$",
+          "title": "Acquisition State",
+          "type": "string"
+        },
+        "after_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "After Text"
+        },
+        "alt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alt"
+        },
+        "before_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Before Text"
+        },
+        "document_order": {
+          "minimum": 0,
+          "title": "Document Order",
+          "type": "integer"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Reason"
+        },
+        "kind": {
+          "pattern": "^(IMAGE|PDF|TABLE|OTHER|UNKNOWN)$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "locator": {
+          "minLength": 1,
+          "title": "Locator",
+          "type": "string"
+        },
+        "original_src": {
+          "minLength": 1,
+          "title": "Original Src",
+          "type": "string"
+        },
+        "parent_artifact_id": {
+          "minLength": 1,
+          "title": "Parent Artifact Id",
+          "type": "string"
+        },
+        "reference_id": {
+          "minLength": 1,
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "resolved_url": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resolved Url"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_page": {
+          "minLength": 1,
+          "title": "Source Page",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference_id",
+        "kind",
+        "parent_artifact_id",
+        "original_src",
+        "source_page",
+        "locator",
+        "document_order"
+      ],
+      "title": "VisualAssetReference",
+      "type": "object"
+    },
+    "VisualEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Id"
+        },
+        "block_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Block Id"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        },
+        "reference_id": {
+          "minLength": 1,
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1.0",
+          "default": "0.1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference_id"
+      ],
+      "title": "VisualEvidenceReference",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/LegalCase"
+    },
+    {
+      "$ref": "#/$defs/RawLegalCase"
+    },
+    {
+      "$ref": "#/$defs/LegalIssueUnit"
+    },
+    {
+      "$ref": "#/$defs/CaseReference"
+    },
+    {
+      "$ref": "#/$defs/LegalAuthority"
+    },
+    {
+      "$ref": "#/$defs/EvidenceSpan"
+    },
+    {
+      "$ref": "#/$defs/Provenance"
+    },
+    {
+      "$ref": "#/$defs/SourceCaseIdentifier"
+    },
+    {
+      "$ref": "#/$defs/SourceCaseMetadata"
+    },
+    {
+      "$ref": "#/$defs/SourceCaseVersion"
+    },
+    {
+      "$ref": "#/$defs/CanonicalCaseIdentity"
+    },
+    {
+      "$ref": "#/$defs/CourtCaseKey"
+    },
+    {
+      "$ref": "#/$defs/IdentityResolution"
+    },
+    {
+      "$ref": "#/$defs/IdentityLinkEvent"
+    },
+    {
+      "$ref": "#/$defs/InventorySnapshot"
+    },
+    {
+      "$ref": "#/$defs/SourceArtifact"
+    },
+    {
+      "$ref": "#/$defs/VisualAssetReference"
+    },
+    {
+      "$ref": "#/$defs/VisualEvidenceReference"
+    },
+    {
+      "$ref": "#/$defs/DocumentBlock"
+    },
+    {
+      "$ref": "#/$defs/FidelityAssessment"
+    },
+    {
+      "$ref": "#/$defs/SourceText"
+    },
+    {
+      "$ref": "#/$defs/ReviewDecision"
+    },
+    {
+      "$ref": "#/$defs/GoldAssessment"
+    }
+  ],
+  "title": "KorCounsel domain contracts 0.1.0"
+}

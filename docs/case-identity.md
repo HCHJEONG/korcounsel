@@ -1,38 +1,54 @@
-# Canonical 판례 identity 계약
+# 판례 식별과 기존 corpus 계승 계약
 
-2026-09-09 추가 지시 반영. 구현 전 설계이며 클래스·DB·resolver는 아직 없다. [레거시 조사](legacy-case-identity-and-assets.md), [schema](dataset-schema.md)를 함께 따른다.
+2026-09-10 사용자 추가 결정 반영. Step 2 모델은 구현 초안이며 canonical ID 발급 정책은 기존 corpus의 실제 식별자 분석에 앞서 확정하지 않는다.
 
-## 네 종류의 식별자
+## 기존 자료가 출발점
 
-| 대상 | 키 / 의미 |
+기존 약 9만 건을 신규 수집으로 대체하지 않는다. 기존 판례·공식 ID·출처 연결·원문 표현·행 참조를 보존해 초기 corpus로 가져오고 이후 신규/변경분을 확장한다. 원래 사용한 대표 ID가 확인되면 그 ID를 우선 계승한다. 새로운 UUID로 일괄 재번호를 부여하는 정책은 채택하지 않았다.
+
+canonical_id는 모델에서 opaque 문자열이다. 기존 정부 ID를 대표값으로 사용하거나 그 값을 namespace와 함께 유지할 수 있다. canonical의 논리적 역할과 source별 ID의 역할을 구분한다는 원칙은 **반드시 다른 난수 값을 발급해야 한다는 뜻이 아니다**. scourt와 law_go_kr에서 숫자가 같다고 같은 source ID로 취급하지 않는다.
+
+## 네 식별 축
+
+| 대상 | 계약 |
 | --- | --- |
-| SourceCaseIdentifier | `(source, source_id)`. scourt contId와 law_go_kr serialno는 서로 다른 namespace이며 opaque string |
-| SourceCaseVersion | source 식별자 + raw_content_hash. 동일 ID의 수정된 원문은 새 버전 |
-| CanonicalCaseIdentity | 한 법적 판례를 묶는 독립 canonical_id. source ID·사건번호·본문 hash 자체로 대체하지 않음 |
-| LegalIssueUnit revision | 실제 사용한 source version·필드/위치·규칙 버전으로 식별. canonical 연결 변경과 내용 revision은 구분 |
+| CourtCaseKey | **법원명 + 사건번호**. 사용자가 확인한 고유 업무 식별키. 정부 ID 없는 LawnB 보유 판례도 등록·대조 가능 |
+| source 식별자 | scourt contId, law_go_kr 판례일련번호, 존재하는 LawnB 자체 ID를 각각 원래 namespace에서 보존 |
+| canonical_id | registry에서 대표 판례를 가리키는 안정적인 값. 기존 대표/공식 ID 활용을 우선 조사하며 발급 정책은 분석 후 결정 |
+| 내용/연결 revision | source bytes hash, issue content revision, identity link revision을 각각 보존. 등록키·내용 변경·연결 정정을 혼동하지 않음 |
 
-CanonicalCaseIdentity에는 court, decision_date, case_numbers 전체, source_identifiers 및 연결 결정 revision을 둔다. 법원 지원·지부, 판결/결정/명령 등 disposition 차이를 후보 비교에 유지한다. 같은 사건번호라도 다른 날짜·결정이면 자동 병합하지 않는다. source별 원 metadata와 정규화값은 모두 보존한다.
+정부 ID가 없다는 이유로 레거시 행을 버리거나 가짜 정부 ID를 만들지 않는다. 기존 행은 snapshot 파일 hash + 원래 index/position으로도 추적한다. 이는 원자료의 행 locator이며 법원명+사건번호 업무키나 법적 판례 identity 자체를 대신하지 않는다.
 
-canonical ID 생성 알고리즘은 Step 2의 설계 결정 대상으로 남긴다. 검토 기준은 source 추가·metadata 정정에도 안정성, 재실행/동시 생성 시 멱등성, 영속 registry snapshot 기반 재현성, merge/split 이력과 과거 링크 보존이다. mutable metadata hash 또는 첫 수집 source ID를 그대로 쓰는 방식은 채택하지 않는다. 하나의 source만 있는 정상 판례도 독립 canonical identity를 가질 수 있고 cross-source 상태는 UNMATCHED일 수 있다.
+## 법원명 + 사건번호 업무키
 
-## Resolver와 상태
+이 조합을 canonical과 함께 사용할 고유키로 유지한다. 드물게 발견된 과거 수작업 오류는 명시적 충돌/예외 기록으로 관리하고, 그러한 예외 때문에 조합의 고유성을 일반적으로 포기하지 않는다. 이 원칙은 2026-09-10 사용자의 도메인 지식에 따른 프로젝트 결정이다.
 
-`CaseIdentityResolver.resolve(left: SourceCaseMetadata, candidates: Iterable[SourceCaseMetadata]) -> IdentityResolution`을 독립 subsystem으로 둔다. 후보 생성과 확정 판단을 분리하고 입력 순서를 바꿔도 결과가 같아야 한다.
+- 법원 지원·지부를 보존한다. alias 정규화 규칙과 원문을 함께 기록한다.
+- 전체 병합 사건번호를 보존하고 각 사건번호를 해당 법원과 결합한 key alias로 연결한다. 첫 번호만 남기지 않는다.
+- 선고일·판결/결정·내용 hash는 키에 무조건 추가할 구성요소가 아니라 출처 대조·오류 발견·버전 구별에 사용하는 정보다.
+- 같은 업무키에 여러 원자료 행이 있으면 출처별 중복 representation인지, 연결/입력 오류인지 확인한다. 중복 행 수를 곧바로 제도상 고유성 예외 수로 세지 않는다.
+- 충돌은 두 자료를 보존하고 사유·검토 결과를 남긴다. silent overwrite, first-hit merge, 일괄 drop_duplicates를 사용하지 않는다.
+- 정상 key의 unique 제약과 예외 승인 이력/alias 설계는 Step 2A에서 실제 PostgreSQL로 구현한다.
 
-| 상태 | 판정 계약 |
-| --- | --- |
-| EXACT | 완전한 사건번호 집합·검증된 법원·날짜 및 필요한 disposition의 강한 신호가 유일하게 일치하고 충돌 없음 |
-| HIGH_CONFIDENCE | 병합 번호 부분 겹침 등 완전 equality는 아니나 명시적 강한 규칙을 만족한 유일 후보. 자동 연결 허용 규칙을 별도로 버전 관리 |
-| AMBIGUOUS | 복수 타당 후보, 부족한 신호 또는 약한 유사도만 있음. 자동 확정하지 않음 |
-| UNMATCHED | 충분한 후보 없음. source record를 보존하고 이후 재매칭 가능 |
-| CONFLICT | 기존 확정 연결 또는 핵심 metadata 사이 명시적 모순. 자동 덮어쓰기 금지 |
+LawnB 판례 등록을 위한 식별 계약은 포함한다. 이 결정이 LawnB 신규 crawler 실행이나 자료 재배포 허용을 뜻하지는 않는다.
 
-결과에는 candidate IDs/versions, status, score, field별 MATCH/MISMATCH/MISSING 신호, reason codes, rule/resolver version, 실행 참조를 기록한다. 점수는 결정론적 규칙 점수이며 확률 97%처럼 표현하지 않는다. 숫자 가중치·threshold는 fixture 검증을 거쳐 Step 5A에서 고정한다. 점수가 높아도 충돌·복수 후보·불충분한 필수 신호를 덮어쓰지 못한다. 제목 fuzzy similarity만으로 확정하지 않는다.
+## 출처 간 연결 결과
 
-첫 사건번호는 후보 검색의 단서로만 사용한다. 전체 병합 번호, 정확한 토큰 경계, 법원 계층과 날짜를 확인한다. 약칭 alias는 근거 있는 명시적 표로 버전 관리하고 지원을 상위 법원으로 뭉개지 않는다. 결측 날짜는 추측하거나 미래 날짜로 채우지 않는다.
+`IdentityResolution`은 EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT, 후보 metadata hash, MATCH/MISMATCH/MISSING 신호, 규칙 점수·사유·resolver version·run_id를 저장한다. 점수는 확률이 아니다. 모델 검증은 결과의 형태·모순을 검사하며 실제 후보 생성/매칭 알고리즘은 Step 5A다.
 
-## 연결과 정정의 provenance
+현재 초안의 EXACT는 완전한 metadata와 유일 후보를 확인하는 보수적 출처 연결 상태다. 이 조건을 법원명+사건번호 업무키의 고유성 요건으로 확대하지 않는다. 날짜 결측 때문에 업무키 자체를 무효로 만들지 않는다. HIGH_CONFIDENCE 규칙·threshold는 아직 고정하지 않았다.
 
-source record를 합쳐 덮어쓰지 않는다. canonical은 versioned link를 모으며 각 필드의 origin을 유지한다. 서로 다른 source의 요지·이유를 사용하면 각각의 artifact·field를 명시하고 연결 결정 revision을 고정한다. 이미지 누락을 다른 source의 이미지로 보충하는 경우에도 같은 canonical이라는 이유만으로 위치를 추정하지 않는다.
+기존 `gmeta_contId↔lmeta_serialno` 연결은 버리지 않고 LEGACY 관찰로 가져온다. 과거 느슨한 매칭을 새 resolver의 EXACT로 자동 승격하지 않는다. 연결 신뢰도 확인이 끝나지 않았어도 source-local 원자료를 보존·조회할 수 있어야 한다.
 
-merge/split/relink는 이전 결정을 보존하는 새 revision으로 남긴다. 이전 dataset과 검토 기록의 source/identity snapshot을 바꾸지 않는다. Phase 1은 결과·사유 조회, 사람의 연결 수정은 Phase 1.5의 별도 기록 작업이다. PostgreSQL에는 source key의 유일성, 유효한 연결 revision과 동시 생성 방지 제약을 구현한다.
+## 재현과 정정
+
+원자료 import manifest는 입력 파일 checksum, 원래 index/position, 기존 source IDs·업무키·대표값, import rules version 및 충돌 보고서를 고정한다. 같은 입력을 재실행하면 기존 행/ID를 재사용하도록 한다. 새로운 수집과 최초 legacy import는 별도 작업이다.
+
+merge/split/relink는 새 연결 revision과 사유로 기록하며 기존 release·검토는 이전 snapshot을 계속 참조한다. issue revision은 실제 source version·evidence 위치·원/정규화 내용·규칙 버전의 SHA-256이며 canonical 재연결이나 run_id 변경만으로 바뀌지 않는다. 사람의 검토는 issue revision과 link revision에 모두 묶어 과거 승인을 자동 승계하지 않는다.
+
+
+## 전수/표본 조사에서 확인한 문서 단위
+
+[조사 보고서](legacy-corpus-bootstrap.md)를 기준으로 대표 ID 정책을 확정한다. 최종 corpus 60컬럼에 canonical_id 컬럼은 없고 gmeta_contId/lmeta_serialno 및 행 index가 있다. 공식 ID를 대표로 활용할 근거는 있으나 공식 ID 하나가 항상 corpus 행 하나와 일대일인 것은 아니다.
+
+법원명+사건번호의 업무키 고유성은 유지한다. 다만 저장된 scourt/law_go_kr metadata 양쪽에서 대법원 2008재도11의 2011-01-20 판결과 2010-10-29 결정이 각각 다른 ID로 확인됐다. 서울고등법원 2001나60578도 판결/중간판결 자료가 있다. **사건 업무키와 그 사건의 개별 판결·결정 문서 identity를 구분**해야 원자료를 지울 필요가 없다. 여러 문서가 한 업무키에 속하는 경우를 수작업 키 오류로 분류하지 않는다. canonical을 어느 단위의 대표값으로 사용할지, 사건→결정 문서→source representation 연결을 import 설계에서 확정한다. 이 결정 전에는 모든 문서 행에 court+docket UNIQUE를 직접 걸지 않는다.

@@ -76,7 +76,7 @@ pandas는 도메인 계약과 중간 저장의 필수 의존성에서 제거한�
 
 `_03:623,638`, `_04:510–568`, `df2preproc:385–436` 등은 corpus/summary 전체를 pickle로 저장·로드한다. 대규모 전체 적재, 클래스·패키지 버전 결합, 부분 실패 복구 및 안전한 교환 형식 부재가 문제다. 이번 분석에서는 pickle을 열지 않았다. 새 기본 형식은 원본 JSON/XML 바이트, 버전 있는 중간 artifact와 JSONL/Parquet이며 기존 pickle 일괄 import는 별도 미래 작업이다.
 
-`_03:498,500`의 행별 DataFrame.append, 표시 인용문 기반 join/dedup, summary 행별 전체 원문 중복, 빈 문자열·None·숫자·미래 날짜가 섞인 결측 표현을 버린다. `_08`은 module-level pickle 읽기와 case_full_no 연결을 사용한다. `util_df_standard_case:149–155`의 법원+사건번호 dedup은 선고일·문서 버전 구분이 없다. 도메인 객체, stable ID, explicit missing/error, 원문 artifact 참조로 대체한다.
+`_03:498,500`의 행별 DataFrame.append, 표시 인용문 기반 join/dedup, summary 행별 전체 원문 중복, 빈 문자열·None·숫자·미래 날짜가 섞인 결측 표현을 버린다. `_08`은 module-level pickle 읽기와 case_full_no 연결을 사용한다. `util_df_standard_case:149–155`의 법원+사건번호 조합은 고유 업무키로 계승한다. 다만 source 표현·내용 버전·드문 입력 오류를 확인 없이 drop_duplicates로 삭제하는 처리는 계승하지 않는다. 도메인 객체, stable ID, explicit missing/error, 원문 artifact 참조로 대체한다.
 
 ## 6. 취약 regex와 Python 호환성
 
@@ -105,6 +105,11 @@ web2df Dockerfile은 `python:3.8.19-bullseye`이며 루트에 없는 requirement
 
 초기 Step 0은 `_05/_06`의 복합 identity 매칭·이미지 보존 책임을 충분히 다루지 못했다. [추가 조사 보고서](legacy-case-identity-and-assets.md)가 이를 보완한다. 첫 사건번호 사용에는 병합 표기 대응과 뒤 숫자 prefix 오탐 보호라는 의도가 있었으며 새 resolver에서 전체 번호·유일 후보 검증으로 계승한다.
 
-`gmeta_contId`와 `lmeta_serialno`는 source ID이고 canonical identity가 아니다. source+ID+hash는 원본 버전의 키로 유지하되 canonical 연결 revision을 별도로 둔다. `_02`의 ID 집합 비교를 inventory subsystem으로 계승한다. 모든 판례의 editorial 구조를 전제하지 않고 Detect/Preserve Reference를 초기 범위에 넣는다.
+`gmeta_contId`와 `lmeta_serialno`는 source namespace를 유지한다. canonical의 논리적 역할과 구분하되, 2026-09-10 결정에 따라 기존 공식 ID를 대표 canonical 값으로 활용할 수 있다. source+ID+hash는 원본 버전의 키로 유지하되 canonical 연결 revision을 별도로 둔다. `_02`의 ID 집합 비교를 inventory subsystem으로 계승한다. 모든 판례의 editorial 구조를 전제하지 않고 Detect/Preserve Reference를 초기 범위에 넣는다.
 
 새 회귀 범위는 [추가 fixture](../backend/tests/fixtures/legacy/identity-fidelity-cases.json)에 있다. 원래 23건은 보존하며 추가 30건은 합성 계약 사례다. 저장 자료 8,482개 조사 수치는 고유 판례 수가 아니며 실제 관찰과 미검증 표본을 추가 보고서에서 구분한다.
+
+
+## Bootstrap 우선으로 실행 순서 보완
+
+2026-09-10: 기존 자료를 단순 참고 fixture로만 취급하지 않고 초기 corpus로 가져온다. 공식 ID와 법원명+사건번호 키, 원래 row locator, 기존 원문/추출/보강 필드를 유지한다. 데이터 분포 확인 후 import mapper·충돌 보고서·원본 보존 정책을 정하고, import 재실행의 멱등성을 검증한 뒤 신규 취득을 이어간다. 전체 재수집은 초기화 절차가 아니다.

@@ -39,3 +39,12 @@ Playwright/Selenium 선택은 Python 3.12·uv, headless 안정성, download/popu
 case ingestion=SUCCESS, visual acquisition=PARTIAL_FAILURE, OCR=NOT_YET_PROCESSED를 함께 표현할 수 있다. 이미지 한 건 실패로 판례 전체를 폐기하지 않는다. 반대로 시각자료가 중요한 evidence인데 확보되지 않은 issue를 complete gold로 표시하지 않는다. gold eligibility는 identity·text evidence·필요 visual evidence·fidelity 상태를 별도로 평가하고 부족하면 후보로 남긴다.
 
 취득 URL은 허용 source·scheme/redirect를 검증하고 SSRF·경로 탈출·무제한 다운로드를 막는다. 보존 HTML을 실행하거나 임의 remote image를 검수 UI에서 자동 로드하지 않는다. raw와 reference는 유지하되 인증된 viewer에는 안전한 파생 표현을 제공한다. 이 보존 정책은 원문·DB와 함께 백업/복구해야 한다.
+
+
+## Legacy bootstrap 관찰
+
+최종 corpus 89,130행 모두 저장 HTML 문자열·추출 문자열이 있으나 이것이 원문 완전성을 보증하지 않는다. 판시사항/요지 부재와 숫자 0 sentinel이 실제 존재하며 parser 부재/실패 여부를 mapper에서 구분해야 한다. 보강된 HTML, lnfd 표식이 있는 추출 필드, 실제 HTTP 원본 bytes를 같은 representation으로 취급하지 않는다. 표본 img 태그에는 장식이 포함될 수 있고 외부 image URL의 현재 취득 가능 여부는 확인하지 않았다. 기존 자료를 보존한 후 탐지·fidelity 검증을 덧붙인다.
+
+## 이미지 주소와 조문 보강
+
+scourt 상대 src를 scourt 절대주소로 보완한 실제 전후 표본과 lawgo jtable 삽입을 [전략 보고서](legacy-enrichment-and-incremental.md)에 기록했다. 이는 이미지 binary 다운로드나 전체 fidelity 검증이 아니다. 기본 HTML·조문 source artifact·보강 HTML을 분리하고 원래 src/base/해석 URL과 위치를 보존한다.

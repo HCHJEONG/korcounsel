@@ -1,0 +1,1461 @@
+{
+  "method": "Full local metadata projection; dates are diagnostic extracted values, not corrected operational values.",
+  "rows": 89130,
+  "duplicate_business_key_groups": {
+    "same_trimmed_citation": 247,
+    "different_citation_dates": 46,
+    "same_citation_date": 74
+  },
+  "examples": {
+    "same_trimmed_citation": [
+      [
+        {
+          "position": 190,
+          "court_name": "서울동부지방법원",
+          "case_no": "2010고정2761",
+          "case_full_no": "서울동부지방법원 2011. 2. 10. 선고 2010고정2761 판결 ",
+          "gmeta_contId": "1984981",
+          "gmeta_saNo": "2010고정2761",
+          "gmeta_bubNm": "서울동부지방법원",
+          "gmeta_sngoDay": "20110210",
+          "lmeta_serialno": "230257",
+          "lmeta_saNo": "2010고정2761",
+          "lmeta_bubNm": "서울동부지방법원",
+          "lmeta_sngoDay": "2011.02.10"
+        },
+        {
+          "position": 232,
+          "court_name": "서울동부지방법원",
+          "case_no": "2010고정2761",
+          "case_full_no": "서울동부지방법원 2011. 2. 10. 선고 2010고정2761 판결 ",
+          "gmeta_contId": "1984981",
+          "gmeta_saNo": "2010고정2761",
+          "gmeta_bubNm": "서울동부지방법원",
+          "gmeta_sngoDay": "20110210",
+          "lmeta_serialno": "230257",
+          "lmeta_saNo": "2010고정2761",
+          "lmeta_bubNm": "서울동부지방법원",
+          "lmeta_sngoDay": "2011.02.10"
+        },
+        {
+          "position": 86671,
+          "court_name": "서울동부지방법원",
+          "case_no": "2010고정2761",
+          "case_full_no": " 서울동부지방법원 2011. 2. 10. 선고 2010고정2761 판결",
+          "gmeta_contId": "2123108",
+          "gmeta_saNo": "2010고정2761",
+          "gmeta_bubNm": "서울동부지방법원",
+          "gmeta_sngoDay": "20110210",
+          "lmeta_serialno": "230257",
+          "lmeta_saNo": "2010고정2761",
+          "lmeta_bubNm": "서울동부지방법원",
+          "lmeta_sngoDay": "2011.02.10"
+        }
+      ],
+      [
+        {
+          "position": 1480,
+          "court_name": "서울고등법원",
+          "case_no": "2009누33982",
+          "case_full_no": "서울고등법원 2010. 8. 19. 선고 2009누33982 판결 ",
+          "gmeta_contId": "2123100",
+          "gmeta_saNo": "2009누33982",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100819",
+          "lmeta_serialno": "230247",
+          "lmeta_saNo": "2009누33982",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.08.19"
+        },
+        {
+          "position": 1493,
+          "court_name": "서울고등법원",
+          "case_no": "2009누33982",
+          "case_full_no": "서울고등법원 2010. 8. 19. 선고 2009누33982 판결 ",
+          "gmeta_contId": "2123100",
+          "gmeta_saNo": "2009누33982",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100819",
+          "lmeta_serialno": "230247",
+          "lmeta_saNo": "2009누33982",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.08.19"
+        },
+        {
+          "position": 86611,
+          "court_name": "서울고등법원",
+          "case_no": "2009누33982",
+          "case_full_no": " 서울고등법원 2010. 8. 19. 선고 2009누33982 판결",
+          "gmeta_contId": "1984966",
+          "gmeta_saNo": "2009누33982",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100819",
+          "lmeta_serialno": "230247",
+          "lmeta_saNo": "2009누33982",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.08.19"
+        }
+      ],
+      [
+        {
+          "position": 2115,
+          "court_name": "서울고등법원",
+          "case_no": "2009누25394",
+          "case_full_no": "서울고등법원 2010. 5. 27. 선고 2009누25394 판결 ",
+          "gmeta_contId": "1984970",
+          "gmeta_saNo": "2009누25394",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100527",
+          "lmeta_serialno": "230251",
+          "lmeta_saNo": "2009누25394",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.05.27"
+        },
+        {
+          "position": 2118,
+          "court_name": "서울고등법원",
+          "case_no": "2009누25394",
+          "case_full_no": "서울고등법원 2010. 5. 27. 선고 2009누25394 판결 ",
+          "gmeta_contId": "1984970",
+          "gmeta_saNo": "2009누25394",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100527",
+          "lmeta_serialno": "230251",
+          "lmeta_saNo": "2009누25394",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.05.27"
+        },
+        {
+          "position": 86669,
+          "court_name": "서울고등법원",
+          "case_no": "2009누25394",
+          "case_full_no": " 서울고등법원 2010. 5. 27. 선고 2009누25394 판결",
+          "gmeta_contId": "2123102",
+          "gmeta_saNo": "2009누25394",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100527",
+          "lmeta_serialno": "230251",
+          "lmeta_saNo": "2009누25394",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.05.27"
+        }
+      ],
+      [
+        {
+          "position": 2805,
+          "court_name": "부산고등법원",
+          "case_no": "2009누5718",
+          "case_full_no": "부산고등법원 2010. 2. 12. 선고 2009누5718 판결 ",
+          "gmeta_contId": "1984965",
+          "gmeta_saNo": "2009누5718",
+          "gmeta_bubNm": "부산고등법원",
+          "gmeta_sngoDay": "20100212",
+          "lmeta_serialno": "230397",
+          "lmeta_saNo": "2009누5718",
+          "lmeta_bubNm": "부산고등법원",
+          "lmeta_sngoDay": "2010.02.12"
+        },
+        {
+          "position": 2808,
+          "court_name": "부산고등법원",
+          "case_no": "2009누5718",
+          "case_full_no": "부산고등법원 2010. 2. 12. 선고 2009누5718 판결 ",
+          "gmeta_contId": "1984965",
+          "gmeta_saNo": "2009누5718",
+          "gmeta_bubNm": "부산고등법원",
+          "gmeta_sngoDay": "20100212",
+          "lmeta_serialno": "230397",
+          "lmeta_saNo": "2009누5718",
+          "lmeta_bubNm": "부산고등법원",
+          "lmeta_sngoDay": "2010.02.12"
+        },
+        {
+          "position": 86668,
+          "court_name": "부산고등법원",
+          "case_no": "2009누5718",
+          "case_full_no": " 부산고등법원 2010. 2. 12. 선고 2009누5718 판결",
+          "gmeta_contId": "2123099",
+          "gmeta_saNo": "2009누5718",
+          "gmeta_bubNm": "부산고등법원",
+          "gmeta_sngoDay": "20100212",
+          "lmeta_serialno": "230397",
+          "lmeta_saNo": "2009누5718",
+          "lmeta_bubNm": "부산고등법원",
+          "lmeta_sngoDay": "2010.02.12"
+        }
+      ],
+      [
+        {
+          "position": 2917,
+          "court_name": "수원지방법원",
+          "case_no": "2008가단105863",
+          "case_full_no": "수원지방법원 2010. 2. 11. 선고 2008가단105863 판결 ",
+          "gmeta_contId": "2123106",
+          "gmeta_saNo": "2008가단105863",
+          "gmeta_bubNm": "수원지방법원",
+          "gmeta_sngoDay": "20100211",
+          "lmeta_serialno": "230275",
+          "lmeta_saNo": "2008가단105863",
+          "lmeta_bubNm": "수원지방법원",
+          "lmeta_sngoDay": "2010.02.11"
+        },
+        {
+          "position": 2918,
+          "court_name": "수원지방법원",
+          "case_no": "2008가단105863",
+          "case_full_no": "수원지방법원 2010. 2. 11. 선고 2008가단105863 판결 ",
+          "gmeta_contId": "2123106",
+          "gmeta_saNo": "2008가단105863",
+          "gmeta_bubNm": "수원지방법원",
+          "gmeta_sngoDay": "20100211",
+          "lmeta_serialno": "230275",
+          "lmeta_saNo": "2008가단105863",
+          "lmeta_bubNm": "수원지방법원",
+          "lmeta_sngoDay": "2010.02.11"
+        },
+        {
+          "position": 86613,
+          "court_name": "수원지방법원",
+          "case_no": "2008가단105863",
+          "case_full_no": " 수원지방법원 2010. 2. 11. 선고 2008가단105863 판결",
+          "gmeta_contId": "1984977",
+          "gmeta_saNo": "2008가단105863",
+          "gmeta_bubNm": "수원지방법원",
+          "gmeta_sngoDay": "20100211",
+          "lmeta_serialno": "230275",
+          "lmeta_saNo": "2008가단105863",
+          "lmeta_bubNm": "수원지방법원",
+          "lmeta_sngoDay": "2010.02.11"
+        }
+      ],
+      [
+        {
+          "position": 3455,
+          "court_name": "서울고등법원",
+          "case_no": "2009누12671",
+          "case_full_no": "서울고등법원 2009. 12. 8. 선고 2009누12671 판결 ",
+          "gmeta_contId": "2123101",
+          "gmeta_saNo": "2009누12671",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20091208",
+          "lmeta_serialno": "230249",
+          "lmeta_saNo": "2009누12671",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2009.12.08"
+        },
+        {
+          "position": 3456,
+          "court_name": "서울고등법원",
+          "case_no": "2009누12671",
+          "case_full_no": "서울고등법원 2009. 12. 8. 선고 2009누12671 판결 ",
+          "gmeta_contId": "2123101",
+          "gmeta_saNo": "2009누12671",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20091208",
+          "lmeta_serialno": "230249",
+          "lmeta_saNo": "2009누12671",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2009.12.08"
+        },
+        {
+          "position": 86612,
+          "court_name": "서울고등법원",
+          "case_no": "2009누12671",
+          "case_full_no": " 서울고등법원 2009. 12. 8. 선고 2009누12671 판결",
+          "gmeta_contId": "1984968",
+          "gmeta_saNo": "2009누12671",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20091208",
+          "lmeta_serialno": "230249",
+          "lmeta_saNo": "2009누12671",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2009.12.08"
+        }
+      ],
+      [
+        {
+          "position": 3782,
+          "court_name": "춘천지방법원",
+          "case_no": "2007구합632",
+          "case_full_no": "춘천지방법원 2009. 10. 29. 선고 2007구합632 판결 ",
+          "gmeta_contId": "1986216",
+          "gmeta_saNo": "2007구합632",
+          "gmeta_bubNm": "춘천지방법원",
+          "gmeta_sngoDay": "20091029",
+          "lmeta_serialno": "230377",
+          "lmeta_saNo": "2007구합632",
+          "lmeta_bubNm": "춘천지방법원",
+          "lmeta_sngoDay": "2009.10.29"
+        },
+        {
+          "position": 3788,
+          "court_name": "춘천지방법원",
+          "case_no": "2007구합632",
+          "case_full_no": "춘천지방법원 2009. 10. 29. 선고 2007구합632 판결 ",
+          "gmeta_contId": "1986216",
+          "gmeta_saNo": "2007구합632",
+          "gmeta_bubNm": "춘천지방법원",
+          "gmeta_sngoDay": "20091029",
+          "lmeta_serialno": "230377",
+          "lmeta_saNo": "2007구합632",
+          "lmeta_bubNm": "춘천지방법원",
+          "lmeta_sngoDay": "2009.10.29"
+        },
+        {
+          "position": 86675,
+          "court_name": "춘천지방법원",
+          "case_no": "2007구합632",
+          "case_full_no": " 춘천지방법원 2009. 10. 29. 선고 2007구합632 판결",
+          "gmeta_contId": "2138718",
+          "gmeta_saNo": "2007구합632",
+          "gmeta_bubNm": "춘천지방법원",
+          "gmeta_sngoDay": "20091029",
+          "lmeta_serialno": "230377",
+          "lmeta_saNo": "2007구합632",
+          "lmeta_bubNm": "춘천지방법원",
+          "lmeta_sngoDay": "2009.10.29"
+        }
+      ],
+      [
+        {
+          "position": 4861,
+          "court_name": "대법원",
+          "case_no": "2020도9994",
+          "case_full_no": "대법원 2020. 12. 30. 선고 2020도9994 판결 ",
+          "gmeta_contId": "3248726",
+          "gmeta_saNo": "2020도9994",
+          "gmeta_bubNm": "대법원",
+          "gmeta_sngoDay": "20201230",
+          "lmeta_serialno": "235909",
+          "lmeta_saNo": "2020도9994",
+          "lmeta_bubNm": "대법원",
+          "lmeta_sngoDay": "2020.12.30"
+        },
+        {
+          "position": 4872,
+          "court_name": "대법원",
+          "case_no": "2020도9994",
+          "case_full_no": "대법원 2020. 12. 30. 선고 2020도9994 판결 ",
+          "gmeta_contId": "3248726",
+          "gmeta_saNo": "2020도9994",
+          "gmeta_bubNm": "대법원",
+          "gmeta_sngoDay": "20201230",
+          "lmeta_serialno": "235909",
+          "lmeta_saNo": "2020도9994",
+          "lmeta_bubNm": "대법원",
+          "lmeta_sngoDay": "2020.12.30"
+        }
+      ]
+    ],
+    "different_citation_dates": [
+      [
+        {
+          "position": 325,
+          "court_name": "대법원",
+          "case_no": "2008재도11",
+          "case_full_no": "대법원 2011. 1. 20. 선고 2008재도11 전원합의체 판결 ★ ",
+          "gmeta_contId": "2064767",
+          "gmeta_saNo": "2008재도11",
+          "gmeta_bubNm": "대법원",
+          "gmeta_sngoDay": "20110120",
+          "lmeta_serialno": "166330",
+          "lmeta_saNo": "2008재도11",
+          "lmeta_bubNm": "대법원",
+          "lmeta_sngoDay": "2011.01.20"
+        },
+        {
+          "position": 952,
+          "court_name": "대법원",
+          "case_no": "2008재도11",
+          "case_full_no": "대법원 2010. 10. 29.자 2008재도11 전원합의체 결정 ★ ",
+          "gmeta_contId": "2063727",
+          "gmeta_saNo": "2008재도11",
+          "gmeta_bubNm": "대법원",
+          "gmeta_sngoDay": "20101029",
+          "lmeta_serialno": "224141",
+          "lmeta_saNo": "2008재도11",
+          "lmeta_bubNm": "대법원",
+          "lmeta_sngoDay": "2010.10.29"
+        }
+      ],
+      [
+        {
+          "position": 331,
+          "court_name": "춘천지방법원영월지원",
+          "case_no": "2010고합50",
+          "case_full_no": "춘천지방법원영월지원 2011. 1. 20. 선고 2010고합50 판결 ",
+          "gmeta_contId": "2035511",
+          "gmeta_saNo": "2010고합50",
+          "gmeta_bubNm": "춘천지방법원영월지원",
+          "gmeta_sngoDay": "20110120",
+          "lmeta_serialno": "221321",
+          "lmeta_saNo": "2010고합50",
+          "lmeta_bubNm": "춘천지방법원영월지원",
+          "lmeta_sngoDay": "2011.01.20"
+        },
+        {
+          "position": 338,
+          "court_name": "춘천지방법원영월지원",
+          "case_no": "2010고합50",
+          "case_full_no": "춘천지방법원영월지원 2011. 1. 21.자 2010고합50 결정 ",
+          "gmeta_contId": "2035518",
+          "gmeta_saNo": "2010고합50",
+          "gmeta_bubNm": "춘천지방법원영월지원",
+          "gmeta_sngoDay": "20110121",
+          "lmeta_serialno": "224143",
+          "lmeta_saNo": "2010고합50",
+          "lmeta_bubNm": "춘천지방법원영월지원",
+          "lmeta_sngoDay": "2011.01.21"
+        }
+      ],
+      [
+        {
+          "position": 1643,
+          "court_name": "인천지방법원",
+          "case_no": "2009가합3360",
+          "case_full_no": "인천지방법원 2010. 7. 22.자 2009가합3360 결정 ",
+          "gmeta_contId": "2035533",
+          "gmeta_saNo": "2009가합3360",
+          "gmeta_bubNm": "인천지방법원",
+          "gmeta_sngoDay": "20100722",
+          "lmeta_serialno": "224135",
+          "lmeta_saNo": "2009가합3360",
+          "lmeta_bubNm": "인천지방법원",
+          "lmeta_sngoDay": "2010.07.22"
+        },
+        {
+          "position": 1792,
+          "court_name": "인천지방법원",
+          "case_no": "2009가합3360",
+          "case_full_no": "인천지방법원 2010. 7. 7. 선고 2009가합3360 판결 ",
+          "gmeta_contId": "2036698",
+          "gmeta_saNo": "2009가합3360",
+          "gmeta_bubNm": "인천지방법원",
+          "gmeta_sngoDay": "20100707",
+          "lmeta_serialno": "221375",
+          "lmeta_saNo": "2009가합3360",
+          "lmeta_bubNm": "인천지방법원",
+          "lmeta_sngoDay": "2010.07.07"
+        }
+      ],
+      [
+        {
+          "position": 1884,
+          "court_name": "서울고등법원",
+          "case_no": "2001나60578",
+          "case_full_no": "서울고등법원 2010. 6. 23. 선고 2001나60578 판결 ",
+          "gmeta_contId": "2036595",
+          "gmeta_saNo": "2001나60578",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20100623",
+          "lmeta_serialno": "159795",
+          "lmeta_saNo": "2001나60578",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2010.06.23"
+        },
+        {
+          "position": 8499,
+          "court_name": "서울고등법원",
+          "case_no": "2001나60578",
+          "case_full_no": "서울고등법원 2008. 2. 19. 선고 2001나60578 판결 ",
+          "gmeta_contId": "2036768",
+          "gmeta_saNo": "2001나60578",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20080219",
+          "lmeta_serialno": "224121",
+          "lmeta_saNo": "2001나60578",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2008.02.19"
+        }
+      ],
+      [
+        {
+          "position": 2157,
+          "court_name": "서울중앙지방법원",
+          "case_no": "2009가단413471",
+          "case_full_no": "서울중앙지방법원 2010. 5. 14.자 2009가단413471 결정 ",
+          "gmeta_contId": "2036094",
+          "gmeta_saNo": "2009가단413471",
+          "gmeta_bubNm": "서울중앙지방법원",
+          "gmeta_sngoDay": "20100514",
+          "lmeta_serialno": "160964",
+          "lmeta_saNo": "2009가단413471",
+          "lmeta_bubNm": "서울중앙지방법원",
+          "lmeta_sngoDay": "2010.05.14"
+        },
+        {
+          "position": 2391,
+          "court_name": "서울중앙지방법원",
+          "case_no": "2009가단413471",
+          "case_full_no": "서울중앙지방법원 2010. 4. 29. 선고 2009가단413471 판결 ",
+          "gmeta_contId": "2029480",
+          "gmeta_saNo": "2009가단413471",
+          "gmeta_bubNm": "서울중앙지방법원",
+          "gmeta_sngoDay": "20100429",
+          "lmeta_serialno": "224133",
+          "lmeta_saNo": "2009가단413471",
+          "lmeta_bubNm": "서울중앙지방법원",
+          "lmeta_sngoDay": "2010.04.29"
+        }
+      ],
+      [
+        {
+          "position": 2811,
+          "court_name": "의정부지방법원",
+          "case_no": "2007나10840",
+          "case_full_no": "의정부지방법원 2010. 2. 12.자 2007나10840 결정 ",
+          "gmeta_contId": "2034865",
+          "gmeta_saNo": "2007나10840",
+          "gmeta_bubNm": "의정부지방법원",
+          "gmeta_sngoDay": "20100212",
+          "lmeta_serialno": "154376",
+          "lmeta_saNo": "2007나10840",
+          "lmeta_bubNm": "의정부지방법원",
+          "lmeta_sngoDay": "2010.02.12"
+        },
+        {
+          "position": 6213,
+          "court_name": "의정부지방법원 ",
+          "case_no": "2007나10840",
+          "case_full_no": "의정부지방법원 2009. 1. 7. 선고 2007나10840 판결 ",
+          "gmeta_contId": null,
+          "gmeta_saNo": null,
+          "gmeta_bubNm": null,
+          "gmeta_sngoDay": null,
+          "lmeta_serialno": "224125",
+          "lmeta_saNo": "2007나10840",
+          "lmeta_bubNm": "의정부지방법원",
+          "lmeta_sngoDay": "2009.01.07"
+        },
+        {
+          "position": 86623,
+          "court_name": "의정부지방법원",
+          "case_no": "2007나10840",
+          "case_full_no": " 의정부지방법원 2010. 1. 7. 선고 2007나10840 판결",
+          "gmeta_contId": "2036396",
+          "gmeta_saNo": "2007나10840",
+          "gmeta_bubNm": "의정부지방법원",
+          "gmeta_sngoDay": "20100107",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 3339,
+          "court_name": "서울고등법원",
+          "case_no": "2009나19873",
+          "case_full_no": "서울고등법원 2009. 12. 22. 선고 2009나19873 판결 ",
+          "gmeta_contId": "2036250",
+          "gmeta_saNo": "2009나19873",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20091222",
+          "lmeta_serialno": "186716",
+          "lmeta_saNo": "2009나19873",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2009.12.22"
+        },
+        {
+          "position": 3357,
+          "court_name": "서울고등법원",
+          "case_no": "2009나19873",
+          "case_full_no": "서울고등법원 2009. 12. 16. 선고 2009나19873 판결 ",
+          "gmeta_contId": "2035064",
+          "gmeta_saNo": "2009나19873",
+          "gmeta_bubNm": "서울고등법원",
+          "gmeta_sngoDay": "20091216",
+          "lmeta_serialno": "224131",
+          "lmeta_saNo": "2009나19873",
+          "lmeta_bubNm": "서울고등법원",
+          "lmeta_sngoDay": "2009.12.16"
+        }
+      ],
+      [
+        {
+          "position": 3937,
+          "court_name": "서울행정법원",
+          "case_no": "2007구합21945",
+          "case_full_no": "서울행정법원 2009. 10. 9. 선고 2007구합21945 판결 ",
+          "gmeta_contId": "1984526",
+          "gmeta_saNo": "2007구합21945",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20091009",
+          "lmeta_serialno": "210025",
+          "lmeta_saNo": "2007구합21945",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2009.10.09"
+        },
+        {
+          "position": 8804,
+          "court_name": "서울행정법원",
+          "case_no": "2007구합21945",
+          "case_full_no": "서울행정법원 2007. 12. 28.자 2007구합21945 결정 ",
+          "gmeta_contId": "1978832",
+          "gmeta_saNo": "2007구합21945",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20071228",
+          "lmeta_serialno": "224117",
+          "lmeta_saNo": "2007구합21945",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2007.12.28"
+        }
+      ]
+    ],
+    "same_citation_date": [
+      [
+        {
+          "position": 5751,
+          "court_name": "수원고등법원",
+          "case_no": "2020나13522",
+          "case_full_no": "수원고등법원 2020. 12. 3. 선고 2020나13522 판결 ",
+          "gmeta_contId": "3248744",
+          "gmeta_saNo": "2020나13522",
+          "gmeta_bubNm": "수원고등법원",
+          "gmeta_sngoDay": "20201203",
+          "lmeta_serialno": "230339",
+          "lmeta_saNo": "2020나13522",
+          "lmeta_bubNm": "수원고등법원",
+          "lmeta_sngoDay": "2020.12.03"
+        },
+        {
+          "position": 5960,
+          "court_name": "수원고등법원",
+          "case_no": "2020나13522",
+          "case_full_no": "수원고등법원 2020. 12. 3. 선고 2020나13522 판결 ",
+          "gmeta_contId": "3248744",
+          "gmeta_saNo": "2020나13522",
+          "gmeta_bubNm": "수원고등법원",
+          "gmeta_sngoDay": "20201203",
+          "lmeta_serialno": "230339",
+          "lmeta_saNo": "2020나13522",
+          "lmeta_bubNm": "수원고등법원",
+          "lmeta_sngoDay": "2020.12.03"
+        },
+        {
+          "position": 86698,
+          "court_name": "수원고등법원",
+          "case_no": "2020나13522",
+          "case_full_no": " 수원고법 2020. 12. 3. 선고 2020나13522 판결 ",
+          "gmeta_contId": "3258826",
+          "gmeta_saNo": "2020나13522",
+          "gmeta_bubNm": "수원고등법원",
+          "gmeta_sngoDay": "20201203",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 5976,
+          "court_name": "울산지방법원",
+          "case_no": "2020고합250",
+          "case_full_no": "울산지방법원 2020. 11. 27. 선고 2020고합250 판결 ",
+          "gmeta_contId": "3248741",
+          "gmeta_saNo": "2020고합250",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201127",
+          "lmeta_serialno": "230335",
+          "lmeta_saNo": "2020고합250",
+          "lmeta_bubNm": "울산지방법원",
+          "lmeta_sngoDay": "2020.11.27"
+        },
+        {
+          "position": 5977,
+          "court_name": "울산지방법원",
+          "case_no": "2020고합250",
+          "case_full_no": "울산지방법원 2020. 11. 27. 선고 2020고합250 판결 ",
+          "gmeta_contId": "3248741",
+          "gmeta_saNo": "2020고합250",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201127",
+          "lmeta_serialno": "230335",
+          "lmeta_saNo": "2020고합250",
+          "lmeta_bubNm": "울산지방법원",
+          "lmeta_sngoDay": "2020.11.27"
+        },
+        {
+          "position": 86696,
+          "court_name": "울산지방법원",
+          "case_no": "2020고합250",
+          "case_full_no": " 울산지법 2020. 11. 27. 선고 2020고합250 판결 ",
+          "gmeta_contId": "3258822",
+          "gmeta_saNo": "2020고합250",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201127",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 6408,
+          "court_name": "울산지방법원",
+          "case_no": "2019구합7465",
+          "case_full_no": "울산지방법원 2020. 11. 19. 선고 2019구합7465 판결 ",
+          "gmeta_contId": "3258823",
+          "gmeta_saNo": "2019구합7465",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201119",
+          "lmeta_serialno": "230465",
+          "lmeta_saNo": "2019구합7465",
+          "lmeta_bubNm": "울산지방법원",
+          "lmeta_sngoDay": "2020.11.19"
+        },
+        {
+          "position": 6409,
+          "court_name": "울산지방법원",
+          "case_no": "2019구합7465",
+          "case_full_no": "울산지방법원 2020. 11. 19. 선고 2019구합7465 판결 ",
+          "gmeta_contId": "3258823",
+          "gmeta_saNo": "2019구합7465",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201119",
+          "lmeta_serialno": "230465",
+          "lmeta_saNo": "2019구합7465",
+          "lmeta_bubNm": "울산지방법원",
+          "lmeta_sngoDay": "2020.11.19"
+        },
+        {
+          "position": 86693,
+          "court_name": "울산지방법원",
+          "case_no": "2019구합7465",
+          "case_full_no": " 울산지법 2020. 11. 19. 선고 2019구합7465 판결 ",
+          "gmeta_contId": "3248739",
+          "gmeta_saNo": "2019구합7465",
+          "gmeta_bubNm": "울산지방법원",
+          "gmeta_sngoDay": "20201119",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 7311,
+          "court_name": "전주지방법원",
+          "case_no": "2017가합2297",
+          "case_full_no": "전주지방법원 2020. 10. 29. 선고 2017가합2297 판결 ",
+          "gmeta_contId": "3248743",
+          "gmeta_saNo": "2017가합2297",
+          "gmeta_bubNm": "전주지방법원",
+          "gmeta_sngoDay": "20201029",
+          "lmeta_serialno": "230337",
+          "lmeta_saNo": "2017가합2297",
+          "lmeta_bubNm": "전주지방법원",
+          "lmeta_sngoDay": "2020.10.29"
+        },
+        {
+          "position": 7521,
+          "court_name": "전주지방법원",
+          "case_no": "2017가합2297",
+          "case_full_no": "전주지방법원 2020. 10. 29. 선고 2017가합2297 판결 ",
+          "gmeta_contId": "3248743",
+          "gmeta_saNo": "2017가합2297",
+          "gmeta_bubNm": "전주지방법원",
+          "gmeta_sngoDay": "20201029",
+          "lmeta_serialno": "230337",
+          "lmeta_saNo": "2017가합2297",
+          "lmeta_bubNm": "전주지방법원",
+          "lmeta_sngoDay": "2020.10.29"
+        },
+        {
+          "position": 86699,
+          "court_name": "전주지방법원",
+          "case_no": "2017가합2297",
+          "case_full_no": " 전주지법 2020. 10. 29. 선고 2017가합2297 판결 ",
+          "gmeta_contId": "3258827",
+          "gmeta_saNo": "2017가합2297",
+          "gmeta_bubNm": "전주지방법원",
+          "gmeta_sngoDay": "20201029",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 8183,
+          "court_name": "창원지방법원",
+          "case_no": "2020고정111",
+          "case_full_no": "창원지방법원 2020. 10. 6. 선고 2020고정111 판결 ",
+          "gmeta_contId": "3258761",
+          "gmeta_saNo": "2020고정111",
+          "gmeta_bubNm": "창원지방법원",
+          "gmeta_sngoDay": "20201006",
+          "lmeta_serialno": "230345",
+          "lmeta_saNo": "2020고정111",
+          "lmeta_bubNm": "창원지방법원",
+          "lmeta_sngoDay": "2020.10.06"
+        },
+        {
+          "position": 8184,
+          "court_name": "창원지방법원",
+          "case_no": "2020고정111",
+          "case_full_no": "창원지방법원 2020. 10. 6. 선고 2020고정111 판결 ",
+          "gmeta_contId": "3258761",
+          "gmeta_saNo": "2020고정111",
+          "gmeta_bubNm": "창원지방법원",
+          "gmeta_sngoDay": "20201006",
+          "lmeta_serialno": "230345",
+          "lmeta_saNo": "2020고정111",
+          "lmeta_bubNm": "창원지방법원",
+          "lmeta_sngoDay": "2020.10.06"
+        },
+        {
+          "position": 86691,
+          "court_name": "창원지방법원",
+          "case_no": "2020고정111",
+          "case_full_no": " 창원지법 2020. 10. 6. 선고 2020고정111 판결 ",
+          "gmeta_contId": "3247474",
+          "gmeta_saNo": "2020고정111",
+          "gmeta_bubNm": "창원지방법원",
+          "gmeta_sngoDay": "20201006",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 8840,
+          "court_name": "서울행정법원",
+          "case_no": "2017구합84082",
+          "case_full_no": "서울행정법원 2020. 9. 11. 선고 2017구합84082 판결 ",
+          "gmeta_contId": "3258824",
+          "gmeta_saNo": "2017구합84082",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200911",
+          "lmeta_serialno": "230331",
+          "lmeta_saNo": "2017구합84082",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2020.09.11"
+        },
+        {
+          "position": 8852,
+          "court_name": "서울행정법원",
+          "case_no": "2017구합84082",
+          "case_full_no": "서울행정법원 2020. 9. 11. 선고 2017구합84082 판결 ",
+          "gmeta_contId": "3258824",
+          "gmeta_saNo": "2017구합84082",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200911",
+          "lmeta_serialno": "230331",
+          "lmeta_saNo": "2017구합84082",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2020.09.11"
+        },
+        {
+          "position": 86692,
+          "court_name": "서울행정법원",
+          "case_no": "2017구합84082",
+          "case_full_no": " 서울행법 2020. 9. 11. 선고 2017구합84082 판결 ",
+          "gmeta_contId": "3248738",
+          "gmeta_saNo": "2017구합84082",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200911",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 8844,
+          "court_name": "제주지방법원",
+          "case_no": "2020구합5267",
+          "case_full_no": "제주지방법원 2020. 9. 8. 선고 2020구합5267 판결 ",
+          "gmeta_contId": "3258763",
+          "gmeta_saNo": "2020구합5267",
+          "gmeta_bubNm": "제주지방법원",
+          "gmeta_sngoDay": "20200908",
+          "lmeta_serialno": "230451",
+          "lmeta_saNo": "2020구합5267",
+          "lmeta_bubNm": "제주지방법원",
+          "lmeta_sngoDay": "2020.09.08"
+        },
+        {
+          "position": 8845,
+          "court_name": "제주지방법원",
+          "case_no": "2020구합5267",
+          "case_full_no": "제주지방법원 2020. 9. 8. 선고 2020구합5267 판결 ",
+          "gmeta_contId": "3258763",
+          "gmeta_saNo": "2020구합5267",
+          "gmeta_bubNm": "제주지방법원",
+          "gmeta_sngoDay": "20200908",
+          "lmeta_serialno": "230451",
+          "lmeta_saNo": "2020구합5267",
+          "lmeta_bubNm": "제주지방법원",
+          "lmeta_sngoDay": "2020.09.08"
+        },
+        {
+          "position": 86688,
+          "court_name": "제주지방법원",
+          "case_no": "2020구합5267",
+          "case_full_no": " 제주지법 2020. 9. 8. 선고 2020구합5267 판결 ",
+          "gmeta_contId": "3247456",
+          "gmeta_saNo": "2020구합5267",
+          "gmeta_bubNm": "제주지방법원",
+          "gmeta_sngoDay": "20200908",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ],
+      [
+        {
+          "position": 8854,
+          "court_name": "서울행정법원",
+          "case_no": "2019구합80176",
+          "case_full_no": "서울행정법원 2020. 9. 10. 선고 2019구합80176 판결 ",
+          "gmeta_contId": "3258762",
+          "gmeta_saNo": "2019구합80176",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200910",
+          "lmeta_serialno": "230347",
+          "lmeta_saNo": "2019구합80176",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2020.09.10"
+        },
+        {
+          "position": 8855,
+          "court_name": "서울행정법원",
+          "case_no": "2019구합80176",
+          "case_full_no": "서울행정법원 2020. 9. 10. 선고 2019구합80176 판결 ",
+          "gmeta_contId": "3258762",
+          "gmeta_saNo": "2019구합80176",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200910",
+          "lmeta_serialno": "230347",
+          "lmeta_saNo": "2019구합80176",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2020.09.10"
+        },
+        {
+          "position": 8856,
+          "court_name": "서울행정법원",
+          "case_no": "2019구합80176",
+          "case_full_no": "서울행정법원 2020. 9. 10. 선고 2019구합80176 판결 ",
+          "gmeta_contId": "3258762",
+          "gmeta_saNo": "2019구합80176",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200910",
+          "lmeta_serialno": "230347",
+          "lmeta_saNo": "2019구합80176",
+          "lmeta_bubNm": "서울행정법원",
+          "lmeta_sngoDay": "2020.09.10"
+        },
+        {
+          "position": 86694,
+          "court_name": "서울행정법원",
+          "case_no": "2019구합80176",
+          "case_full_no": " 서울행법 2020. 9. 10. 선고 2019구합80176 판결 ",
+          "gmeta_contId": "3248745",
+          "gmeta_saNo": "2019구합80176",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200910",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        },
+        {
+          "position": 86697,
+          "court_name": "서울행정법원",
+          "case_no": "2019구합80176",
+          "case_full_no": " 서울행법 2020. 9. 10. 선고 2019구합80176 판결 ",
+          "gmeta_contId": "3258825",
+          "gmeta_saNo": "2019구합80176",
+          "gmeta_bubNm": "서울행정법원",
+          "gmeta_sngoDay": "20200910",
+          "lmeta_serialno": null,
+          "lmeta_saNo": null,
+          "lmeta_bubNm": null,
+          "lmeta_sngoDay": null
+        }
+      ]
+    ]
+  },
+  "stored_source_date_comparison": {
+    "same_source_dates": 87957,
+    "missing_source_date": 1173
+  },
+  "no_government_id_examples": [
+    {
+      "position": 421,
+      "court_name": "춘천지방법원 ",
+      "case_no": "2020고정253",
+      "case_full_no": "춘천지방법원 2021. 5. 27. 선고 2020고정253 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 422,
+      "court_name": "인천지방법원 ",
+      "case_no": "2020가소562472",
+      "case_full_no": "인천지방법원 2021. 5. 26. 선고 2020가소562472 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 432,
+      "court_name": "서울행정법원 ",
+      "case_no": "2020구단63743",
+      "case_full_no": "서울행정법원 2021. 5. 27. 선고 2020구단63743 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 437,
+      "court_name": "대구고등법원 ",
+      "case_no": "2020나22118",
+      "case_full_no": "대구고등법원 2021. 5. 26. 선고 2020나22118 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 438,
+      "court_name": "대구고등법원 ",
+      "case_no": "2020나24305",
+      "case_full_no": "대구고등법원 2021. 5. 26. 선고 2020나24305 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 643,
+      "court_name": "대전지방법원 ",
+      "case_no": "2019구합387",
+      "case_full_no": "대전지방법원 2021. 5. 12. 선고 2019구합387 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 654,
+      "court_name": "서울서부지방법원 ",
+      "case_no": "2021카합50252",
+      "case_full_no": "서울서부지방법원 2021. 5. 13.자 2021카합50252 결정 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 656,
+      "court_name": "대구고등법원 ",
+      "case_no": "2020나22033",
+      "case_full_no": "대구고등법원 2021. 5. 12. 선고 2020나22033 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 658,
+      "court_name": "서울행정법원 ",
+      "case_no": "2020구단54442",
+      "case_full_no": "서울행정법원 2021. 5. 12. 선고 2020구단54442 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 1523,
+      "court_name": "대구고등법원 ",
+      "case_no": "2020노580",
+      "case_full_no": "대구고등법원 2021. 4. 29. 선고 2020노580 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 1755,
+      "court_name": "부산지방법원 ",
+      "case_no": "2021노396",
+      "case_full_no": "부산지방법원 2021. 4. 16. 선고 2021노396 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    },
+    {
+      "position": 1970,
+      "court_name": "부산지방법원 ",
+      "case_no": "2021고단557",
+      "case_full_no": "부산지방법원 2021. 4. 7. 선고 2021고단557 판결 ",
+      "gmeta_contId": null,
+      "gmeta_saNo": null,
+      "gmeta_bubNm": null,
+      "gmeta_sngoDay": null,
+      "lmeta_serialno": null,
+      "lmeta_saNo": null,
+      "lmeta_bubNm": null,
+      "lmeta_sngoDay": null
+    }
+  ],
+  "catalogs": {
+    "law_go_kr": {
+      "path": "/mnt/i/VSCodeBases/web2df/saved/20241126/lawgo_panre_metadata/lawgo_panre_metadata_list.pickle",
+      "sha256": "f29358365bab96e02aaf19a22e67501a121f46bddd69bce5b6027192f7e2c308",
+      "rows": 87658,
+      "unique_ids": 87658,
+      "duplicate_ids": 0,
+      "corpus_rows_found_by_id": 87795,
+      "corpus_rows_with_id_not_in_catalog": 208,
+      "note": "Historical catalog membership only; not current source completeness or deletion evidence.",
+      "targeted_matches": [
+        {
+          "position": 325,
+          "catalog_matches": [
+            {
+              "판례일련번호": "166330",
+              "법원명": "대법원",
+              "사건번호": "2008재도11",
+              "선고일자": "2011.01.20",
+              "판결유형": "전원합의체 판결"
+            }
+          ]
+        },
+        {
+          "position": 952,
+          "catalog_matches": [
+            {
+              "판례일련번호": "224141",
+              "법원명": "대법원",
+              "사건번호": "2008재도11",
+              "선고일자": "2010.10.29",
+              "판결유형": "전원합의체 결정"
+            }
+          ]
+        },
+        {
+          "position": 331,
+          "catalog_matches": [
+            {
+              "판례일련번호": "221321",
+              "법원명": "춘천지방법원영월지원",
+              "사건번호": "2010고합50",
+              "선고일자": "2011.01.20",
+              "판결유형": "판결"
+            }
+          ]
+        },
+        {
+          "position": 338,
+          "catalog_matches": [
+            {
+              "판례일련번호": "224143",
+              "법원명": "춘천지방법원영월지원",
+              "사건번호": "2010고합50",
+              "선고일자": "2011.01.21",
+              "판결유형": "결정"
+            }
+          ]
+        },
+        {
+          "position": 1884,
+          "catalog_matches": [
+            {
+              "판례일련번호": "159795",
+              "법원명": "서울고등법원",
+              "사건번호": "2001나60578",
+              "선고일자": "2010.06.23",
+              "판결유형": "판결"
+            }
+          ]
+        },
+        {
+          "position": 8499,
+          "catalog_matches": [
+            {
+              "판례일련번호": "224121",
+              "법원명": "서울고등법원",
+              "사건번호": "2001나60578",
+              "선고일자": "2008.02.19",
+              "판결유형": "중간판결"
+            }
+          ]
+        },
+        {
+          "position": 2811,
+          "catalog_matches": [
+            {
+              "판례일련번호": "154376",
+              "법원명": "의정부지방법원",
+              "사건번호": "2007나10840",
+              "선고일자": "2010.02.12",
+              "판결유형": "결정"
+            }
+          ]
+        },
+        {
+          "position": 6213,
+          "catalog_matches": [
+            {
+              "판례일련번호": "224125",
+              "법원명": "의정부지방법원",
+              "사건번호": "2007나10840",
+              "선고일자": "2009.01.07",
+              "판결유형": "판결"
+            }
+          ]
+        },
+        {
+          "position": 86623,
+          "catalog_matches": []
+        },
+        {
+          "position": 190,
+          "catalog_matches": [
+            {
+              "판례일련번호": "230257",
+              "법원명": "서울동부지방법원",
+              "사건번호": "2010고정2761",
+              "선고일자": "2011.02.10",
+              "판결유형": "판결"
+            }
+          ]
+        },
+        {
+          "position": 232,
+          "catalog_matches": [
+            {
+              "판례일련번호": "230257",
+              "법원명": "서울동부지방법원",
+              "사건번호": "2010고정2761",
+              "선고일자": "2011.02.10",
+              "판결유형": "판결"
+            }
+          ]
+        },
+        {
+          "position": 86671,
+          "catalog_matches": [
+            {
+              "판례일련번호": "230257",
+              "법원명": "서울동부지방법원",
+              "사건번호": "2010고정2761",
+              "선고일자": "2011.02.10",
+              "판결유형": "판결"
+            }
+          ]
+        }
+      ]
+    },
+    "scourt": {
+      "path": "/mnt/i/VSCodeBases/web2df/saved/20241126/glaw_panre_metadata/glaw_panre_metadata_list.pickle",
+      "sha256": "e43434593e7cf06106f0ff86b9339300fe730921741b7c99def55e0b5c2592a8",
+      "rows": 88493,
+      "unique_ids": 88493,
+      "duplicate_ids": 0,
+      "corpus_rows_found_by_id": 88560,
+      "corpus_rows_with_id_not_in_catalog": 116,
+      "note": "Historical catalog membership only; not current source completeness or deletion evidence.",
+      "targeted_matches": [
+        {
+          "position": 325,
+          "catalog_matches": [
+            {
+              "contId": "2064767",
+              "bubNm": "대법원",
+              "saNo": "2008재도11",
+              "sngoDay": "20110120",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 952,
+          "catalog_matches": [
+            {
+              "contId": "2063727",
+              "bubNm": "대법원",
+              "saNo": "2008재도11",
+              "sngoDay": "20101029",
+              "panTypeNm": "결정"
+            }
+          ]
+        },
+        {
+          "position": 331,
+          "catalog_matches": [
+            {
+              "contId": "2035511",
+              "bubNm": "춘천지방법원영월지원",
+              "saNo": "2010고합50",
+              "sngoDay": "20110120",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 338,
+          "catalog_matches": [
+            {
+              "contId": "2035518",
+              "bubNm": "춘천지방법원영월지원",
+              "saNo": "2010고합50",
+              "sngoDay": "20110121",
+              "panTypeNm": "결정"
+            }
+          ]
+        },
+        {
+          "position": 1884,
+          "catalog_matches": [
+            {
+              "contId": "2036595",
+              "bubNm": "서울고등법원",
+              "saNo": "2001나60578",
+              "sngoDay": "20100623",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 8499,
+          "catalog_matches": [
+            {
+              "contId": "2036768",
+              "bubNm": "서울고등법원",
+              "saNo": "2001나60578",
+              "sngoDay": "20080219",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 2811,
+          "catalog_matches": [
+            {
+              "contId": "2034865",
+              "bubNm": "의정부지방법원",
+              "saNo": "2007나10840",
+              "sngoDay": "20100212",
+              "panTypeNm": "결정"
+            }
+          ]
+        },
+        {
+          "position": 6213,
+          "catalog_matches": []
+        },
+        {
+          "position": 86623,
+          "catalog_matches": [
+            {
+              "contId": "2036396",
+              "bubNm": "의정부지방법원",
+              "saNo": "2007나10840",
+              "sngoDay": "20100107",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 190,
+          "catalog_matches": [
+            {
+              "contId": "1984981",
+              "bubNm": "서울동부지방법원",
+              "saNo": "2010고정2761",
+              "sngoDay": "20110210",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 232,
+          "catalog_matches": [
+            {
+              "contId": "1984981",
+              "bubNm": "서울동부지방법원",
+              "saNo": "2010고정2761",
+              "sngoDay": "20110210",
+              "panTypeNm": "판결"
+            }
+          ]
+        },
+        {
+          "position": 86671,
+          "catalog_matches": [
+            {
+              "contId": "2123108",
+              "bubNm": "서울동부지방법원",
+              "saNo": "2010고정2761",
+              "sngoDay": "20110210",
+              "panTypeNm": "판결"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

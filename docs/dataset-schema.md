@@ -1,6 +1,6 @@
 # 데이터 schema 설계 계약
 
-2026-09-09 작성. Pydantic/DB schema 구현 전이며 구체적 serialization schema version은 Step 2에서 고정한다. 이 문서의 모델명은 계약 대상이다.
+2026-09-10: backend/src/klegal_gold/domain/에 Pydantic 2 모델 초안과 schema 0.1.0을 구현했다. DB·실제 import·resolver는 미구현이다. 기존 corpus 조사에 따른 legacy provenance 및 사건/개별 결정 문서의 대표 단위 확정이 남아 있으므로 아직 운영 import 계약 완료로 취급하지 않는다.
 
 | 모델 | 주요 필드·불변식 |
 | --- | --- |
@@ -15,7 +15,7 @@
 | LegalIssueUnit | identity link revision 및 source versions, 원/정규화 issue/answer, evidence/authority, alignment·quality·review·eligibility |
 | EvidenceSpan / VisualEvidenceReference | 텍스트 evidence는 artifact+field+code point [start,end)+text; 시각 evidence는 artifact/reference/block/page를 별도 참조 |
 
-배열 기본값은 Pydantic 구현에서 default_factory를 사용한다. 빈 issues/summaries 및 null reasoning은 유효한 LegalCase다. 단, 잘못된 타입·깨진 provenance를 결측 허용으로 숨기지 않는다. 스캔은 text가 없어도 관찰된 artifact/identity/provenance를 가진 정상 record가 될 수 있다.
+모델은 frozen이며 컬렉션은 tuple + default_factory로 보존한다. JSON에서는 배열로 직렬화한다. 빈 issues/summaries 및 null reasoning은 유효한 LegalCase다. 단, 잘못된 타입·깨진 provenance를 결측 허용으로 숨기지 않는다. 스캔은 text가 없어도 관찰된 artifact/identity/provenance를 가진 정상 record가 될 수 있다.
 
 LegalCase 저장 검증과 LegalIssueUnit gold 검증을 분리한다. editorial 데이터가 없으면 0 issue units일 수 있다. 부분 요지만 있으면 보존하고 추측해서 issue를 만들지 않는다. 구조화 source는 seed/evaluation 후보이며 자동으로 gold는 아니다.
 
@@ -26,3 +26,22 @@ Source quality tier는 processing class, has_visual_assets/visual_asset_count/re
 JSONL/Parquet에 enum/null/중첩 배열을 일관되게 직렬화하고 round-trip을 검증한다. manifest에는 case/issue/asset 건수를 별도 표기하고 no-editorial-data·identity·fidelity·부분 실패 분포와 포함 정책을 기록한다. raw source URL의 비밀 parameter는 export하지 않는다.
 
 PostgreSQL에는 source key unique, canonical registry/link revision, snapshot/ledger, artifact 참조·asset 상태, 사용자·작업·검토와 projection을 둔다. registry/link history는 단순 재수집으로 덮어쓸 수 없는 운영 기록이다. asset binary·raw·dataset은 파일로 유지하고 DB와 함께 복구 가능해야 한다.
+
+
+## 구현된 계약과 적용 범위
+
+- [JSON Schema 0.1.0](schemas/domain-0.1.0.json)은 HTTP OpenAPI와 별개다. backend에서 `uv run python scripts/export_domain_schema.py`로 재생성하며 snapshot 일치 테스트가 있다.
+- SourceCaseIdentifier의 source namespace는 scourt/law_go_kr/lawnb/legacy_import다. 이는 수집 adapter 구현 여부를 뜻하지 않는다. 숫자 ID는 adapter가 의미를 확인한 후 명시적으로 문자열로 변환하며 domain은 숫자 타입을 암묵적으로 받지 않는다.
+- Canonical ID는 opaque 문자열이다. UUID만 허용하지 않는다. **CourtCaseKey(court, case_number)**를 별도로 보존하며 업무키와 개별 판결/결정 문서의 관계는 [identity](case-identity.md)를 따른다.
+- 날짜는 ISO 날짜, 취득 시각은 timezone-aware 입력을 UTC로 저장한다. 숫자 timestamp와 naive datetime, 숫자/blank 사건번호 및 알려지지 않은 필드는 거부한다. 기존 decision_date의 parser 객체는 날짜로 들어갈 수 없다.
+- acquired artifact는 hash·MIME·크기·상대 storage key를 갖는다. RESPONSE_BYTES는 raw hash와 일치해야 한다. ASSET_BYTES/DOM_SNAPSHOT/EXTRACTED_TEXT/DERIVED는 부모 artifact를 참조한다. storage key는 DATA_DIR 아래 상대키이며 최종 경로·symlink·원자성 검증은 storage adapter 책임이다.
+- reference는 acquired artifact ID가 없으면 취득 완료가 아니다. PDF_SCAN/PDF_TEXT에는 실제 분류 근거를 기록한다. nullable visual/ocr 상태를 0/false로 채우지 않는다.
+- LegalCase는 field availability와 실제 필드의 유무, source provenance·artifact·block 참조 및 순환 여부를 검사한다. 본문 없는 scan 및 editorial 결측도 보존할 수 있다.
+- TextSpan은 code point [start,end) 및 길이를 검사한다. `verify()`가 실제 source text 일치를 검사하며 `validate_issue_evidence()`는 SourceText의 artifact·field·source version·extractor version도 대조한다. 파일 내용 hash 검증과 법적 의미 판정은 별도다.
+- issue_revision은 모델에서 재계산하며 제공된 값이 다르면 거부한다. 동일 입력 내용·evidence 순서·규칙에는 동일 SHA-256이다. canonical ID/link revision, run_id·dataset_version·취득 시각·검토 상태는 content revision 입력에서 제외한다.
+- ReviewDecision과 GoldAssessment는 정확한 issue/link revision을 고정한다. 변경 후 과거 승인·평가를 자동 승계하지 않는다. 자동 quality passed와 human approved는 서로 다른 상태다.
+- GoldAssessment는 schema/alignment/evidence/provenance/duplicate/identity/fidelity의 체크 이력을 요구하는 결과 저장 계약이다. 모델 생성이나 체크 이름 기입만으로 실제 검증을 수행한 것이 아니다. 운영에서는 Step 9 검증기만 결과를 생성해야 한다. 현재 gold export나 전체 적합성 판정은 구현하지 않았다.
+
+주요 모델 오류 코드는 INVALID_TEXT_SPAN, EVIDENCE_OUT_OF_RANGE, EVIDENCE_TEXT_MISMATCH, EVIDENCE_SOURCE_VERSION_MISMATCH, RAW_PROVENANCE_MISMATCH, FIELD_AVAILABILITY_MISMATCH, INSUFFICIENT_EXACT_METADATA, NON_UNIQUE_EXACT_CANDIDATE, UNPROVEN_COMPLETE_INVENTORY, STALE_REVIEW, STALE_GOLD_ASSESSMENT다. Pydantic의 scalar type/enum 오류와 구분한다. 원자료를 삭제하지 않고 후속 validation report에 사유를 기록하는 계약이다.
+
+JSON/model round-trip과 합성 회귀를 검증했다. Parquet·실제 import·full gold validation·DB unique/transaction은 후속 단계이며 현재 통과로 표시하지 않는다.

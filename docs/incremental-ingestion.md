@@ -30,3 +30,16 @@ availability는 ACTIVE/SOURCE_MISSING/WITHDRAWN/UNKNOWN으로 별도 관리한�
 scourt metadata snapshot → 이전 snapshot 비교 → 신규 contId 및 실패 재시도 식별 → 신규 본문 취득 → law_go_kr 후보 매칭 → canonical 연결/미연결 출력 → 별도 refresh에서 hash 변경 검증까지 실제 증거를 남긴다. law_go_kr도 같은 inventory protocol을 사용한다. scourt live 수집 방식·조건이 미확인인 동안 fixture 기반 완료와 live 미완료를 구분한다.
 
 회귀 검증에는 오래전에 선고했으나 새로 등록된 판례, duplicate IDs, 문자열/숫자 ID 입력 정규화, 부분 snapshot, 범위 변경, 같은 ID 본문 변경, 상세 실패 후 재개, source disappearance·복귀를 포함한다. 17시 종료 준비에서는 page 완료·fetch ledger를 checkpoint로 저장하고 부분 inventory를 COMPLETE로 승격하지 않는다.
+
+
+## 기존 89,130행과 연결
+
+최초 실행은 빈 DB에서 source 전체를 다시 수집하는 흐름이 아니다. 기존 snapshot의 공식 ID·원문/추출 필드·업무키·내용 버전을 import ledger에 등록하고, 이 기준으로 신규/미완료/refresh만 취득한다. 기존 metadata catalog는 2024년 보존 범위이며 현재 전체 목록이라고 가정하지 않는다. catalog에서 보이지 않는 기존 ID를 삭제하지 않는다. bootstrap import와 live inventory 수집의 완료 상태를 분리한다.
+
+## 내용 보강도 증분으로 처리
+
+[레거시 계승 전략](legacy-enrichment-and-incremental.md)에 따라 scourt 신규 본문, 미연결 lawgo 대조, 항목별 미완료 조문 보강을 각각 큐에 둔다. 기존 완료 본문·보강은 재사용한다. 본문·연결·조문/규칙 버전 변화 시 영향받는 보강만 재평가하고 이전 결과를 유지한다. 레거시에 구현된 신규 기준은 contId 차집합이며 serialno는 연결·보강 접근키였다. lawgo 변화 기반 재대조와 영속 ledger는 새 구현에서 보완한다.
+
+## 선등록·후보강의 범위
+
+2026-09-10 사용자 확정: scourt 본문을 기본 검증 후 먼저 등록하고 lawgo 대기/미연결 보강은 별도 작업으로 처리한다. 제공자가 연결한 조문 정보만 추가하며, 인용을 앱이 해석하여 법령 API로 직접 보강하지 않는다. 목록 변화·대기 기간에 따른 제한된 재시도로 미완료를 추적한다. 현행 사이트 구조 검증 전 과거 crawler를 대량 실행하지 않는다.

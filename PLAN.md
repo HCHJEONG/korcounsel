@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: Step 1 기반 구축 완료 / 도메인·업무 기능은 후속 단계
+> 상태: Step 1 완료 / Step 2 계약 초안 및 기존 corpus 식별자 전수·표본 분석 완료 / ID·legacy import 계약 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 최신 작업: 2026-09-10 폴더 경계·단일 README 반영 및 Step 1 구현. AWS와 실제 판례 source 수집은 변경하지 않았다.
+> 최신 작업: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
 
 ## 1. 목적과 성공 기준
 
@@ -25,7 +25,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 ## 2. 현재 상태와 작업 범위
 
-- 현재 프로젝트는 Step 1 scaffold를 구현했다. 인증·도메인 모델·수집·영속 worker는 아직 없다.
+- 현재 프로젝트는 Step 1 scaffold를 구현했다. 도메인 모델은 Step 2 초안이며 인증·수집·영속 worker는 아직 없다.
 - 배포 이름은 `korean-legal-gold`, Python 패키지는 `klegal_gold`, CLI는 `klegal`을 잠정 사용한다. 현재 폴더나 Git 저장소 이름은 자동 변경하지 않는다.
 - 사용자가 안내한 레거시 저장소 탐색 기준 경로는 **`I:\VSCodeBases`**다.
 - 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 실제 두 레포의 경로와 관련 코드를 확인했으며 docs의 두 레거시 조사 문서에 근거를 기록했다.
@@ -92,7 +92,7 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - 원본 버전은 `source_system + source_document_id + raw_content_hash`로 식별한다. 같은 내용은 재사용하고 변경된 내용은 새 버전으로 보존한다.
 - 재다운로드 생략과 원문 변경을 확인하기 위한 refresh를 구분한다. 서버에 요청하지 않고 내용 변경 여부를 알 수 있다고 가정하지 않는다.
 - 처리 키에는 입력 hash, parser/normalizer/schema 버전과 관련 설정을 포함한다. 규칙이 바뀌면 필요한 단계부터 재처리한다.
-- source key, source content version, 독립 canonical ID와 쟁점 revision을 구분한다. canonical ID 생성 알고리즘은 Step 2에서 안정성·재현성·merge/split을 검토해 결정하며 source ID 자체를 쓰지 않는다. 쟁점 revision은 실제 source version·위치·규칙에 기반한다.
+- source key, source content version, 독립 canonical ID와 쟁점 revision을 구분한다. canonical ID 정책은 기존 약 9만 건의 대표/정부 ID 사용을 먼저 조사하고 안정성·재현성·merge/split을 검토해 결정한다. 기존 공식 ID 활용을 배제하거나 UUID를 강제하지 않는다. 법원명+사건번호는 별도 고유 업무키다. 쟁점 revision은 실제 source version·위치·규칙에 기반한다.
 - 실행마다 `run_id`를 부여하고 dataset release의 `dataset_version`과 구분한다. 실행 이력에는 입력 snapshot, 설정, 단계별 상태·건수·오류를 기록한다. manifest에는 dataset/schema/parser/normalizer 버전, 고정된 입력 목록·hash, 코드 버전, 설정, 건수와 출력 checksum을 기록한다.
 - 같은 입력 snapshot·코드·설정에서는 record ID·내용·순서가 같아야 한다. 실행 시각 등 run metadata는 재현성 비교에서 분리한다.
 - private repository를 전제로 `.env`, 인증정보, 대규모 raw/artifact는 commit하지 않는다. 요청 로그와 manifest에도 credential을 넣지 않는다.
@@ -162,13 +162,26 @@ data/                 # runtime 데이터, Git 제외
 
 2026-09-10 검증: uv locked sync, Python lint/format/mypy, PostgreSQL 연결 포함 pytest 10건, 프런트 타입/lint/build, desktop/mobile E2E 6건, Compose 이미지 빌드·기동을 확인했다. 기존 합성 53건은 backend/tests/fixtures로 이동했으며 신규 domain 회귀 테스트가 실행된 것은 아니다. 테스트 라이브러리의 upstream deprecation warning 2건은 남아 있다.
 
+### Step 1B — 기존 corpus bootstrap 조사 (Step 2 ID 확정의 선행 조건)
+
+- [x] 최종 pickle 실제 행·컬럼·공식 ID 분포·중복·출처 연결을 전수 조사하고 CSV와 교차 확인한다.
+- [x] 법원명+사건번호 업무키의 coverage·중복 representation·충돌을 분리하고 결측·타입·이미지·editorial 층화 표본을 읽는다.
+- [x] 기존 ID·원문·행 locator 보존 및 재실행 가능한 초기 import, 이후 delta/refresh 계획을 기록한다.
+- [ ] 공식 ID를 대표값으로 계승할지 기존 별도 ID가 있는지 확인한 뒤 canonical 정책을 확정한다. 단순히 새 UUID를 부여하지 않는다.
+
+이 단계는 기존 89,130건을 신규 수집으로 대체하는 작업이 아니다. LawnB 등 정부 ID 없는 자료에도 법원명+사건번호 업무키를 사용하며 극소수 역사적 오류는 예외 이력으로 다룬다.
+
+2026-09-10 조사 기록: 최종 corpus 89,130행·60컬럼, 층화 195행, 두 metadata catalog와 대표 12행 대조 완료. [조사 보고서](docs/legacy-corpus-bootstrap.md)에 ID 재사용·다문서 관계·날짜 객체·bootstrap 계획을 기록했다. canonical 발급/대표 단위 및 legacy provenance 계약 확정은 다음 작업이다.
+
 ### Step 2 — Domain model과 데이터 계약
 
-- [ ] Pydantic LegalCase/LegalIssueUnit/LegalAuthority/EvidenceSpan/Provenance와 SourceCaseIdentifier/CanonicalCaseIdentity/IdentityResolution/InventorySnapshot/SourceArtifact/VisualAssetReference/DocumentBlock을 정의한다.
+- [x] Pydantic LegalCase/LegalIssueUnit/LegalAuthority/EvidenceSpan/Provenance와 SourceCaseIdentifier/CanonicalCaseIdentity/IdentityResolution/InventorySnapshot/SourceArtifact/VisualAssetReference/DocumentBlock을 정의한다.
 - [ ] canonical ID 생성·registry 재현·merge/split 정책을 검토해 기록하고 nullable editorial/full_text·field availability·fidelity 상태를 구현한다.
-- [ ] `CaseReference`, `RawLegalCase`와 구조 파싱용 번호·계층·원문 위치 정보를 정의한다.
+- [x] `CaseReference`, `RawLegalCase`와 구조 파싱용 번호·계층·원문 위치 정보를 정의한다.
 - [ ] 사건번호, 법원, 날짜, 사건명, 판시사항, 요지, 이유, 인용, URL, 원본 hash의 타입과 결측 정책을 정한다.
 - [ ] ID 생성, provenance, offset, alignment/quality 상태, 오류 코드, gold 포함 기준과 schema 버전을 문서화한다.
+
+현재: 일반 domain schema 0.1.0 초안, CourtCaseKey·공식/legacy namespace·opaque canonical ID·Unicode evidence·revision 검증을 구현했다. Python 84건 통과. legacy origin/과거 provenance 결측과 개별 결정 문서의 대표 단위가 미완료이므로 Step 2 전체 완료는 아니다.
 
 완료 기준: 유효·결측·잘못된 타입·offset 사례를 구분하고 직렬화 round-trip 테스트를 통과한다. `docs/dataset-schema.md`, `docs/provenance.md`에 계약이 기록된다.
 
@@ -193,9 +206,10 @@ data/                 # runtime 데이터, Git 제외
 
 완료 기준: credential 없는 테스트가 통과하며 실제 인증 설정이 있으면 소량의 API 응답을 검증한다. live 미실행은 명시한다.
 
-### Step 3A — scourt acquisition 전략 검증
+### Step 3A — scourt·lawgo 현행 취득/보강 경로 검증
 
-- [ ] 실제 source 조건·세션·DOM·popup·iframe·원문/asset 경로를 확인하고 공식 API→HTTP→세션 보조→browser 전략을 비교한다.
+- [ ] 양쪽 사이트의 현행 endpoint·응답 schema·세션·DOM·popup·iframe·조문 링크·원문/asset 경로를 확인한다. 수년 전 selector·URL·형식의 호환성을 가정하지 않고 제공 정보 보존 범위에서 HTTP/세션/browser 전략을 비교한다.
+- [ ] 기존 ID의 대표 표본으로 본문·조문·이미지 참조를 대조하고 구조 변경/빈 추출/오류 페이지 탐지 fixture를 만든다. 미검증 adapter의 대량 수집·보강을 시작하지 않는다.
 - [ ] browser가 필요하면 Python 3.12/uv·headless·download/popup/iframe·network/DOM·Windows/Linux·testability로 Selenium/Playwright를 비교해 결정한다.
 - [ ] scourt metadata snapshot·contId 본문 취득 adapter를 구현하고 소량 live와 offline fixture를 구분해 검증한다.
 
@@ -231,6 +245,16 @@ data/                 # runtime 데이터, Git 제외
 - [ ] 복수 후보·약한 fuzzy·결측·모순을 자동 확정하지 않고 canonical link revision과 source별 provenance를 보존한다.
 
 완료 기준: scourt snapshot→신규 contId 취득→lawgo 후보 매칭→독립 canonical 생성·source IDs 유지→confidence/reason 및 미연결 출력이 가능하다. source 추가·relink에도 과거 dataset/검토가 바뀌지 않음을 검증한다.
+
+### Step 5B — scourt 본문·lawgo 조문 보강 계승
+
+- [ ] 기존 보강 HTML/jtable·두 공식 ID·미확인 provenance를 보존 import한다.
+- [ ] scourt 기본 본문과 lawgo가 해당 판례에 제공한 조문 연결을 보존하고 조문 artifact·보강 결과를 별도 저장한다. 독자적인 인용 해석→법령 API 직접 보강은 제외하며 법령 버전 미확인을 숨기지 않는다.
+- [ ] 기본 검증된 scourt 판례를 먼저 등록하고 lawgo 보강을 비동기로 추가한다. 대기·부분 완료·실패를 분리하고 미보강 판례도 정상 보존한다.
+- [ ] 이미지 original src/base/해석 URL을 보존한다. 경로 보완과 실제 binary 취득을 구분한다.
+- [ ] 원문·연결·조문/규칙 version별 항목 ledger를 두고 신규/미완료만 처리한다. 부분 실패·재시작·원문 변경 후 보강 재평가를 검증한다.
+
+근거·완료 기준: docs/legacy-enrichment-and-incremental.md. 기존 contId 차집합과 lawgo 보강 재개를 계승하며 HTML 덮어쓰기·success 문자열·행번호 단독 반영은 교체한다. 기존 Step 3의 API client 개발은 기술 검증 순서로 유지하며 corpus를 lawgo 단일 출처로 재구축하지 않는다.
 
 ### Step 6 — 판례 구조 파싱
 

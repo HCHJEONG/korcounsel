@@ -29,7 +29,7 @@ LegalIssueUnit candidates → validate → gold / reports
 | sources | API/HTTP/browser 실제 취득. transport·session은 core 밖 |
 | documents | artifact 분류, ordered block, text 추출 기준 |
 | assets | 탐지·reference manifest; 후속 binary 취득 |
-| enrichment | 후속 조문 링크 보강. source 원문과 별도 파생 결과 |
+| enrichment | 초기 확장 조문 내용 보강. source 원문과 별도 파생 결과 |
 | storage / db | 불변 파일·manifest / identity registry·작업·사용자·조회 projection·review |
 | jobs / pipeline | 영속 작업 실행 / CLI·웹 공용 유스케이스 |
 | web / frontend | 인증 API / 읽기·작업·상태 UX. 독자적 matching·gold 정책 없음 |
@@ -50,3 +50,18 @@ identity 연결, 원문 취득, asset 취득, OCR, issue alignment, 자동 검�
 Step 1은 공개 법률 데이터가 없는 개발용 상태 화면, /api/health liveness, CLI version/check-config/check-db, explicit env 및 PostgreSQL SELECT 1 검증을 제공한다. health 성공은 DB·worker 준비 완료가 아니다. 실제 queue·worker는 Step 2A다. 현재 worker Compose 서비스는 tools profile에서 일회성 DB 연결을 확인한다.
 
 API·worker 이미지는 backend/를 build context로, 프런트 이미지는 루트를 context로 사용한다. 루트 .dockerignore는 backend·data·.fordeploy·secret을 제외하며 Nginx 설정은 Compose의 읽기 전용 mount로 전달한다. 실제 이미지 취득·TLS·운영 배포는 후속이다. DB와 판례 데이터는 각각 named volume을 사용하고 `down -v`를 일반 종료 절차에 사용하지 않는다.
+
+
+## 기존 corpus bootstrap 우선 — 2026-09-10
+
+legacy archive → 읽기 전용 전수/표본 audit → ID/업무키·결정 문서/출처 표현 구분 → 보존 import + mapping manifest → inventory delta/refresh 순서로 확장한다. UUID 발급은 선결정하지 않는다. 공식 ID가 없는 자료는 법원명+사건번호 업무키와 legacy locator를 유지한다. 일회성 분석용 pandas/NumPy는 runtime dependency가 아니다.
+
+Step 2 domain 초안은 backend/src/klegal_gold/domain/에 있으며 실제 import mapper/DB registry는 아직 없다. [bootstrap 조사](legacy-corpus-bootstrap.md)의 결측·문서 단위·과거 provenance 문제를 해결하고 계약을 고정한 뒤 Step 2A migration을 진행한다.
+
+## 기본 본문과 보강 역할
+
+scourt 기본 본문, lawgo metadata/조문 보강, 기존 corpus baseline을 계승한다. enrichment는 초기 확장 Step 5B에서 ledger와 출처별 artifact를 연결한다. 원본·조문·보강 결과는 각각 보존하며 실제 이미지 취득은 별도다. [검증한 레거시 전략](legacy-enrichment-and-incremental.md)을 따른다.
+
+## 수집 속도와 보강 범위
+
+scourt 기본 검증·등록은 lawgo 보강 완료를 기다리지 않는다. 정부 제공 판례/조문 연결만 출처별로 결합하며 독자적인 인용 해석 기반 직접 법령 보강은 채택하지 않는다. 양쪽 HTML·세션·내부 endpoint의 현행 호환성은 Step 3A에서 검증하며 과거 구현을 현재 작동 계약으로 간주하지 않는다.

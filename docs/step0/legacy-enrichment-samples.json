@@ -1,0 +1,52 @@
+[
+  {
+    "file": "lawgo_jomunupdated_panre_txt/19539-empty-77567.txt",
+    "sha256": "088b3753880771498d7945f7c82c16e261d812ec77498b7ddd5fd6a0b95d3e4c",
+    "image_src": [],
+    "jtable_attributes": 12,
+    "jtable_with_table_html": 12,
+    "jtable_failure_values": []
+  },
+  {
+    "file": "lawgo_jomunupdated_panre_txt/88590-3328392-240889.txt",
+    "sha256": "ae2cd1335d90f1dbae034bdec46c81a9e903ec8ff8951ab91a56ef92e6b3a270",
+    "image_src": [
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png"
+    ],
+    "jtable_attributes": 11,
+    "jtable_with_table_html": 11,
+    "jtable_failure_values": []
+  },
+  {
+    "file": "lawgo_jomunupdated_panre_txt/88591-3328393-240891.txt",
+    "sha256": "66db0b4ee2f57ac22b5c25fb64b02774b9c27fae9a518affd480ad5ae3f10213",
+    "image_src": [
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+      "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png"
+    ],
+    "jtable_attributes": 12,
+    "jtable_with_table_html": 12,
+    "jtable_failure_values": []
+  },
+  {
+    "file": "glaw_updated_panre_txt/3328392.txt",
+    "sha256": "09f2209307d74589e423023e47331df3c980c9f765a851ba848917ed98bc5f8b",
+    "image_src": [
+      "/wsjodocs/images/contents/alert_img_01.png",
+      "/wsjodocs/images/contents/alert_img_01.png",
+      "/wsjodocs/images/contents/alert_img_01.png",
+      "/wsjodocs/images/contents/alert_img_01.png"
+    ],
+    "jtable_attributes": 0,
+    "jtable_with_table_html": 0,
+    "jtable_failure_values": []
+  }
+]

@@ -13,3 +13,18 @@
 - source/identity/artifact 변경 시 이전 사람 승인을 자동 승계하지 않는다. review는 정확한 issue revision과 evidence를 참조한다.
 
 공개 manifest에는 비밀값이 있는 URL·env·session을 넣지 않는다. 원본이 credential을 포함하면 격리된 저장 정책과 redacted 파생본을 분리하며 변조된 raw를 원본이라고 보고하지 않는다. 최초 Step 0 smoke의 저장 범위 예외는 [API 메모](law-open-api-contract.md)에 남아 있다.
+
+
+## 기존 corpus의 provenance — 2026-09-10
+
+최종 pickle의 snapshot SHA-256, 원래 행 index/position, 필드명과 기존 공식 ID를 유지한다. 분석 projection은 원본의 대체물이 아니며 snapshot hash에 연결한다. `folder_file_name`의 과거 절대경로는 원래 locator로 보존하되 현재 파일 존재·원래 취득시각을 증명하지 않는다.
+
+`case_txt_scraped_with_tags`도 레거시 조문/이미지 보강을 거친 저장 문자열일 수 있다. 이를 과거 서버의 원본 HTTP bytes로 다시 이름 붙이지 않는다. 기존 필드 그대로 보존한 legacy artifact와 새 API response artifact를 구분하고, 이번 import 시각을 역사적 수집 시각으로 기록하지 않는다. 역사적 raw hash가 없으면 없는 것으로 유지한다. 0/empty/parser 객체 등 원래 값은 원 archive에 남기고 mapper의 변환/결측 사유를 별도로 남긴다.
+
+현재 domain 0.1.0의 일반 source Provenance는 과거 취득시각·URL·raw hash를 아는 흐름의 초안이다. legacy artifact origin/unknown acquisition을 표현하는 import 계약을 완성하기 전, 기존 89,130행을 이 schema에 맞추려고 가짜 값을 채우지 않는다. 이 보완은 Step 2 완료의 선행 조건이다.
+
+새 issue content revision은 내용·출처 버전·evidence·규칙으로 계산하며 run/release metadata를 제외한다. registry/link revision은 별도로 고정한다. 자동 검증과 사람의 검토는 둘 다 정확한 issue 및 link revision을 참조한다.
+
+## 출처를 결합한 보강 결과
+
+기존 corpus는 scourt 기본 본문에 lawgo 조문 표를 붙인 보강 표현을 포함한다. import에서 이 가치를 보존하며 출처·취득/법령 버전 미확인을 함께 기록한다. 이후 보강은 scourt 부모 artifact/hash·원래 조문 링크/위치, lawgo 판례일련번호·조문 artifact/version 및 보강 규칙을 연결한다. base 원문과 보강 결과를 덮어 합치지 않는다. 세부 사항은 [계승 전략](legacy-enrichment-and-incremental.md)을 따른다.

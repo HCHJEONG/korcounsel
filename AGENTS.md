@@ -50,7 +50,7 @@
 - web2df와 df2preproc는 I:\VSCodeBases 아래에서 실제 루트를 확인한 뒤 읽는다. 해당 경로를 앱 런타임 필수값으로 hard-code하지 않는다.
 - 레거시 분석과 docs/migration-from-legacy.md 작성 후 구현한다. legacy field 의미, 재사용/수정/폐기 규칙, 경로·pickle·DataFrame 결합·취약 regex·호환성을 기록한다.
 - 발견한 버그와 edge case를 회귀 fixture로 만든다. 참조 저장소를 수정하거나 새 프로젝트에서 import하지 않는다.
-- 첫 source는 국가법령정보 공동활용 OPEN API이며 scourt snapshot/identity/fidelity adapter를 확장 초기 단계에서 구현한다. 실제 명세·인증·pagination·응답·호출 제한·이용 조건을 공식 문서로 확인한다.
+- 기본 corpus는 scourt 본문과 lawgo 보강을 계승한다. 국가법령정보 공동활용 OPEN API client의 초기 개발과 scourt snapshot/identity/fidelity adapter 검증을 진행한다. 실제 명세·인증·pagination·응답·호출 제한·이용 조건을 공식 문서로 확인한다.
 - timeout, 제한된 retry/backoff, API 오류와 부분 수집을 명시적으로 처리한다. API credential을 코드·로그·URL 출력에 노출하지 않는다.
 - 공개 자료라는 이유로 재배포 조건을 추정하지 않는다. 출처·수집 정보·사용 범위를 기록한다.
 
@@ -166,9 +166,9 @@
 ## 추가 identity·incremental·fidelity 지침
 
 - 구현 전 docs/legacy-case-identity-and-assets.md와 architecture.md, case-identity.md, incremental-ingestion.md, source-fidelity.md, dataset-schema.md, provenance.md를 읽는다. 추가 지시가 기존 단일-source/text 전제보다 우선한다.
-- contId와 serialno는 별도 namespace의 source IDs다. canonical ID와 source version·issue revision을 분리한다. canonical 생성법은 Step 2에서 결정한다.
+- contId와 serialno는 별도 namespace의 source IDs다. canonical ID와 source version·issue revision을 분리한다. canonical_id를 UUID로 강제하지 않는다. 기존 약 9만 건의 실제 대표/정부 ID를 조사해 우선 계승하고, 발급 정책은 조사 후 결정한다.
 - identity/는 후보·전체 번호·법원/지원·날짜·disposition·점수/사유를 다룬다. 첫 후보·substring·fuzzy 점수만으로 확정하지 않는다. EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT와 연결 revision을 보존한다.
-- ingestion/는 inventory·delta·fetch ledger·refresh, documents/는 artifact/blocks, assets/는 탐지·참조/후속 취득, enrichment/는 후속 조문 보강을 담당한다. shared metadata normalization을 중복 작성하지 않는다.
+- ingestion/는 inventory·delta·fetch ledger·refresh, documents/는 artifact/blocks, assets/는 탐지·참조/후속 취득, enrichment/는 초기 확장 Step 5B의 조문 보강을 담당한다. shared metadata normalization을 중복 작성하지 않는다.
 - snapshot은 범위·완전성·per-ID metadata hash를 보존한다. 선고일만으로 신규를 판단하거나 부분 목록에서 삭제를 추정하지 않는다. UNCHANGED metadata는 unchanged body 보장이 아니다. 상세 실패 ID도 재시도한다.
 - issues/summaries 빈 배열·reasoning/full_text null은 정상 LegalCase에서 허용한다. field 부재와 취득/parse 실패를 구분하고 없는 editorial 내용을 생성하지 않는다.
 - fidelity tier는 처리 분류다. has_visual_assets/count/requires_ocr의 UNKNOWN을 false/0으로 덮지 않는다. img 부재·PDF URL만으로 원문 완전성이나 scan 여부를 단정하지 않는다.
@@ -187,3 +187,30 @@
 - Python 품질 명령은 backend/에서 uv로 실행하고 프런트 명령은 루트에서 pnpm으로 실행한다. Python fixture는 backend/tests/fixtures, 브라우저 테스트는 tests/e2e에 둔다.
 - Compose와 Nginx를 채택했다. 현재 Compose는 로컬 HTTP 검증용이며 외부 포트를 loopback에만 바인딩한다. TLS·운영 secret·배포 자동화는 Step 11B다.
 - Step 1 worker 서비스는 tools profile의 일회성 DB 연결 점검이다. 영속 queue/실제 worker 구현으로 간주하지 않는다. 상시 실행은 Step 2A에서 구현한다.
+
+
+## 기존 corpus 우선 계승 — 2026-09-10 사용자 결정
+
+- 기존 약 9만 건을 bootstrap corpus로 활용하고 이후 신규·변경분을 확장한다. ID 정책보다 실제 저장본의 전수 프로파일·층화 표본 분석을 먼저 수행한다. 전체 재수집·일괄 재번호를 기본안으로 삼지 않는다.
+- **법원명 + 사건번호는 고유 업무 식별키**이며 canonical ID 및 출처 ID와 함께 유지한다. 정부 ID 없는 LawnB 보유 판례 등록에도 사용한다. 지원·지부와 모든 병합 사건번호를 보존한다.
+- 극히 드문 과거 수작업 오류는 충돌/예외 이력으로 관리한다. 여러 source representation을 고유성 예외로 오인하거나, 조합의 고유성을 포기하거나, 임의 삭제·병합하지 않는다.
+- 기존 공식 ID가 대표 ID 역할을 했다면 그대로 활용할 수 있다. canonical과 source의 논리적 역할 분리가 반드시 새로운 UUID를 요구하지 않는다.
+- legacy row locator(snapshot hash + 원래 index/position), 기존 필드·sentinel·추출 원문을 보존한다. 저장 문자열을 과거 HTTP 응답 원본 바이트라고 부르거나 과거 수집 시각·hash를 만들어 채우지 않는다.
+- LawnB의 기존 자료 식별/등록 계약과 새로운 LawnB 수집은 별개다. 분석용 pandas/NumPy는 별도 일회성 런타임으로 사용하며 앱 domain/runtime 의존성으로 추가하지 않는다.
+
+- 실제 보존 공식 metadata에 한 법원명+사건번호 아래 판결·결정/중간판결의 여러 문서가 존재한다. 사건 업무키와 개별 결정 문서·source representation을 구분한다. 업무키 고유성을 없애거나 문서들을 강제 병합하지 않으며, 정상 다문서 관계를 수작업 오류 예외로 세지 않는다.
+
+## 본문 보강·증분 전략 계승 — 2026-09-10
+
+- 기존 scourt 기본 본문 + scourt 이미지 참조 주소 보완 + lawgo 조문 내용 보강을 계승한다. 기존 89,130행과 확보한 보강 HTML·두 공식 ID를 초기 자산으로 가져온다. 상세 계약은 docs/legacy-enrichment-and-incremental.md를 따른다.
+- 이미지 URL 해석과 binary 취득은 별개다. 원래 src와 base·resolved URL을 보존한다. 조문 링크가 있다는 사실과 조문 상세 내용이 보존됐다는 사실도 구분한다.
+- 신규 scourt contId 차집합, 기존 lawgo 연결, 미완료 보강만 처리하는 전략을 계승하되 항목별 ledger·hash/규칙 version·재시도를 구현한다. HTML success 표시는 전체 보강 성공 근거로 쓰지 않는다.
+- 보강 HTML을 raw로 덮어쓰지 않고 부모 원문과 조문 artifact·출처·버전·위치에 연결한다. 과거 법령 버전 미확인을 최신 법령으로 조용히 대체하지 않는다.
+
+
+## 보강 범위 제한과 현행 호환성 — 2026-09-10 사용자 확정
+
+- 확실한 인용도 앱이 독자 해석하여 법령 API로 직접 보강하지 않는다. 법원·법제처가 해당 판례에 제공한 정보·연결의 합을 보존하는 범위를 지켜 기존/신규 자료의 일관성을 유지한다.
+- scourt 본문 확보·기본 검증 후 먼저 등록하고 lawgo 보강은 별도 대기/부분 완료/실패 상태로 처리한다. 미보강 자체를 판례 실패로 만들지 않는다.
+- 수년 전 HTML/내부 endpoint/세션/popup/iframe/이미지 경로가 현재도 같다고 가정하지 않는다. scourt와 lawgo 양쪽 취득·보강 경로의 현행 표본 검증을 대량 작업의 선행 조건으로 둔다.
+- API HTTP 200만으로 browser/HTML 보강 성공을 주장하지 않는다. selector 부재·빈 추출·오류 페이지를 source 필드 부재로 덮지 않고 구조 변경 의심/실패로 기록한다. 상세 기준은 docs/legacy-enrichment-and-incremental.md를 따른다.

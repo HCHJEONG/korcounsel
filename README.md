@@ -2,7 +2,7 @@
 
 공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
-현재 **Step 1 기반 구축 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
+현재 **Step 1 완료, Step 2 데이터 계약 초안·기존 corpus 전수/표본 분석 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
 
 ## 폴더 원칙
 
@@ -102,7 +102,7 @@ uv run pytest
 KLEGAL_TEST_DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_dev' uv run pytest --cov=klegal_gold
 ```
 
-Step 1 검증: pytest 10건, desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건은 미래 도메인 테스트의 입력 계약이며 현재 pytest 개수에 포함되지 않습니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
+최신 Python 검증: pytest 84건(로컬 PostgreSQL 포함), ruff·mypy 통과. Step 1 당시 UI 검증: desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건 중 optional editorial 3종을 domain 테스트에 연결했습니다. 전체 parser/resolver 검증을 완료했다는 뜻은 아닙니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
 
 ## 설계·조사 문서
 
@@ -114,6 +114,8 @@ Step 1 검증: pytest 10건, desktop/mobile E2E 6건, 타입·lint·빌드·Comp
 | [architecture](docs/architecture.md) | 계층·폴더 경계 |
 | [dataset schema](docs/dataset-schema.md) | 모델·결측·gold 계약 |
 | [provenance](docs/provenance.md) | 원본·버전·evidence |
+| [보강·증분 계승](docs/legacy-enrichment-and-incremental.md) | scourt 본문·이미지 주소·lawgo 조문 보강 및 미완료 재개 |
+| [기존 corpus 조사](docs/legacy-corpus-bootstrap.md) | 89,130행·195행 층화 표본, 공식 ID·업무키 및 bootstrap 계획 |
 | [identity](docs/case-identity.md) | source/canonical 식별과 연결 이력 |
 | [incremental ingestion](docs/incremental-ingestion.md) | inventory·delta·refresh·재개 |
 | [source fidelity](docs/source-fidelity.md) | 이미지·scan 탐지와 보존 단계 |
@@ -128,4 +130,4 @@ Step 0의 네 API 요청 기록과 소스·표본 해시는 docs/step0/에 보�
 
 운영 대상은 기존 aws-bastion 한 대이며 micro→호환 small, 필요 시 medium을 검토합니다. korcounsel.com에서 인증된 소수 사용자가 접근하고 같은 EC2에 API·worker·PostgreSQL·정적 웹을 둡니다. 월~금 한국 시간 10시 기동, 17시 작업 접수 중단·checkpoint 후 중지를 구현할 예정입니다. 평일 공휴일은 운영하며 주말은 자동 시작하지 않습니다.
 
-source ID와 canonical identity를 분리하고 원본·변경·연결 근거를 보존합니다. 판시사항·요지가 없거나 scan만 있어도 정상 판례로 수용합니다. gold에는 확실한 연결과 유효 evidence가 있는 쟁점만 포함하며 자동 검증과 사람 승인을 구분합니다. 이미지 탐지·참조 보존 뒤 취득·위치 복원·OCR를 순차 확장합니다. LLM·학습·GPU·OCR 해석은 초기 범위 밖입니다.
+기존 약 9만 건을 초기 corpus로 계승하고 신규·변경분을 확장합니다. 기존 공식 ID를 보존하며 canonical ID를 새 UUID로 강제하지 않습니다. **법원명+사건번호**를 고유 업무키로 함께 유지하여 정부 ID 없는 LawnB 보유 판례에도 사용합니다. source ID·내용 버전·연결 revision의 역할과 원본 근거를 보존합니다. 판시사항·요지가 없거나 scan만 있어도 정상 판례로 수용합니다. gold에는 확실한 연결과 유효 evidence가 있는 쟁점만 포함하며 자동 검증과 사람 승인을 구분합니다. 이미지 탐지·참조 보존 뒤 취득·위치 복원·OCR를 순차 확장합니다. LLM·학습·GPU·OCR 해석은 초기 범위 밖입니다.
