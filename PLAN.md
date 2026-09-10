@@ -2,6 +2,8 @@
 
 **전체 import 전 점검:** text 8,482개 중 7,989개는 newline 변환 후 저장값과 일치, 기본 본문 491개도 저장된 보강본에 대응한다. ID 미연결 2029039 두 파일은 기존 6429행과 동일 재결 후보다. 전체 import는 아직 실행하지 않았다. [점검 결과](docs/legacy-text-coverage-audit.md).
 
+**전수 저장 매체 결정:** 원본 pickle은 역사적 Python object graph 보존본으로 유지하고, Parquet은 60컬럼 전수의 이식 가능한 snapshot, PostgreSQL은 검색 projection·registry·job·검토 이력에 사용한다. Node는 제한적인 Parquet 점검에 사용할 수 있으나 React가 대형 파일을 직접 읽지는 않는다. 실제 schema·OPAQUE 표현·Python/Node round-trip을 표본 검증한 뒤 전수 변환한다. [설계와 판단 근거](docs/legacy-full-row-import.md#저장-매체-결정-pickle-parquet-postgresql).
+
 **최신 구현:** 기존 DataFrame 재사용 FULL_ROW export·단일 worker importer·행별 격리/재개 ledger·migration 0008을 구현했다. 실제 15행×60컬럼 표본과 전체 281개 회귀 검증 완료. [현재 범위](docs/legacy-full-row-import.md). 89,130행 전체 실행·canonical 연결 확정은 후속이다.
 
 **최신 구현:** 재판결과 키·출처 독립 canonical 등록·legacy mapper 0.2.0·migration 0007 및 실제 PostgreSQL 회귀를 완료했다. [상세와 한계](docs/decision-identity-implementation.md). 다음은 FULL_ROW 보존 import와 표본 연결 검토다.
@@ -207,7 +209,7 @@ data/                 # runtime 데이터, Git 제외
 - [x] 사건번호, 법원, 날짜, 사건명, 판시사항, 요지, 이유, 인용, URL, 원본 hash의 타입과 결측 정책을 정한다.
 - [x] ID 생성, provenance, offset, alignment/quality 상태, 오류 코드, gold 포함 기준과 schema 버전을 문서화한다.
 
-현재: 개발 중 domain schema 0.1.0에 legacy 보존 계약을 추가했다. canonical은 개별 결정 문서 단위이며 기존 registry 우선 재사용·공식 ID 우선 후보 정책을 기록했다. LegacyCaseRecord는 과거 HTTP provenance를 강제하지 않는 별도 staging이다. 실제 metadata 15행·저장 HTML 4개와 JSONL/재실행을 검증했다. 전체 corpus import, legacy→LegalCase/Issue 구조화, DB registry 트랜잭션 및 Parquet은 후속이다. Step 2 완료는 계약·표본 검증 범위이며 운영 import 완료가 아니다. 상세: docs/legacy-import-contract.md.
+현재: 개발 중 domain schema 0.1.0에 legacy 보존 계약을 추가했다. canonical은 개별 결정 문서 단위이며 기존 registry 우선 재사용·공식 ID 우선 후보 정책을 기록했다. LegacyCaseRecord는 과거 HTTP provenance를 강제하지 않는 별도 staging이다. 실제 metadata 15행·저장 HTML 4개와 JSONL/재실행을 검증했다. 전체 corpus import와 legacy→LegalCase/Issue 구조화는 후속이다. DB registry 트랜잭션은 구현·검증했으며 Parquet은 저장 역할과 검증 순서를 확정했지만 exporter는 아직 구현하지 않았다. Step 2 완료는 계약·표본 검증 범위이며 운영 import 완료가 아니다. 상세: docs/legacy-import-contract.md, docs/legacy-full-row-import.md.
 
 완료 기준: 유효·결측·잘못된 타입·offset 사례를 구분하고 직렬화 round-trip 테스트를 통과한다. `docs/dataset-schema.md`, `docs/provenance.md`에 계약이 기록된다.
 

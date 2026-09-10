@@ -1,6 +1,6 @@
 # 아키텍처 설계
 
-**Legacy 보존 경계:** 분석용 기존 DataFrame → hash 고정 FULL_ROW bundle → 단일 worker → 원행 artifact/격리·행 ledger 순서다. 앱 runtime은 pickle·pandas를 사용하지 않는다. [구현·실행 계약](legacy-full-row-import.md).
+**Legacy 보존 경계:** 원본 pickle은 역사적 Python object graph 보존본, 후속 Parquet은 전체 컬럼의 이식 가능한 snapshot, PostgreSQL은 검색 projection·registry·운영 이력이다. 현재 구현 흐름은 분석용 기존 DataFrame → hash 고정 행별 FULL_ROW bundle → 단일 worker → 원행 artifact/격리·행 ledger 순서이며, Parquet 표본 schema와 교차 runtime 검증 후 전수 흐름을 확정한다. 앱 runtime은 pickle·pandas를 사용하지 않고 React는 대형 Parquet을 직접 읽지 않는다. [구현·실행·저장 매체 계약](legacy-full-row-import.md).
 
 **후속 구현 완료 — 2026-09-10:** DecisionKey·출처 독립 ID·Registry.register/find_decision·migration 0007을 구현하고 전체 252개 회귀를 통과했다. 아래 과거 시점의 미구현 기록은 [현재 구현과 남은 범위](decision-identity-implementation.md)로 보완한다. 기존 원본·이벤트·release를 일괄 변경하지 않았다.
 
