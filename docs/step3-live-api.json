@@ -1,0 +1,210 @@
+{
+  "observed_at": "2026-09-10T03:23:34.538497+00:00",
+  "observations": [
+    {
+      "source": "law_go_kr",
+      "id": "195490",
+      "format": "JSON",
+      "status": "SUCCESS",
+      "hash": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "fields": [
+        "법원명",
+        "법원종류코드",
+        "사건명",
+        "사건번호",
+        "사건종류명",
+        "사건종류코드",
+        "선고",
+        "선고일자",
+        "참조조문",
+        "참조판례",
+        "판결요지",
+        "판결유형",
+        "판례내용",
+        "판례정보일련번호",
+        "판시사항"
+      ],
+      "field_lengths": {
+        "판시사항": 380,
+        "참조판례": 284,
+        "사건종류명": 2,
+        "판결요지": 0,
+        "참조조문": 99,
+        "선고일자": 8,
+        "법원명": 3,
+        "사건명": 27,
+        "판례내용": 2329,
+        "사건번호": 8,
+        "사건종류코드": 6,
+        "판례정보일련번호": 6,
+        "선고": 2,
+        "판결유형": 2,
+        "법원종류코드": 6
+      }
+    },
+    {
+      "source": "law_go_kr",
+      "id": "240889",
+      "format": "JSON",
+      "status": "SUCCESS",
+      "hash": "d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+      "fields": [
+        "법원명",
+        "법원종류코드",
+        "사건명",
+        "사건번호",
+        "사건종류명",
+        "사건종류코드",
+        "선고",
+        "선고일자",
+        "참조조문",
+        "참조판례",
+        "판결요지",
+        "판결유형",
+        "판례내용",
+        "판례정보일련번호",
+        "판시사항"
+      ],
+      "field_lengths": {
+        "판시사항": 446,
+        "참조판례": 115,
+        "사건종류명": 2,
+        "판결요지": 0,
+        "참조조문": 95,
+        "선고일자": 8,
+        "법원명": 3,
+        "사건명": 23,
+        "판례내용": 1689,
+        "사건번호": 10,
+        "사건종류코드": 6,
+        "판례정보일련번호": 6,
+        "선고": 2,
+        "판결유형": 2,
+        "법원종류코드": 6
+      }
+    },
+    {
+      "kind": "LIST",
+      "status": "FAILED",
+      "reason": "SENSITIVE_RESPONSE_NOT_PRESERVED"
+    },
+    {
+      "source": "law_go_kr",
+      "id": "195490",
+      "format": "XML",
+      "status": "SUCCESS",
+      "hash": "7440a1930fcacb3b5b8aaf3bc10fa70d3267d140267cc0c62264cba941eb2024",
+      "fields": [
+        "법원명",
+        "법원종류코드",
+        "사건명",
+        "사건번호",
+        "사건종류명",
+        "사건종류코드",
+        "선고",
+        "선고일자",
+        "참조조문",
+        "참조판례",
+        "판결요지",
+        "판결유형",
+        "판례내용",
+        "판례정보일련번호",
+        "판시사항"
+      ],
+      "field_lengths": {
+        "판례정보일련번호": 6,
+        "사건명": 27,
+        "사건번호": 8,
+        "선고일자": 8,
+        "선고": 2,
+        "법원명": 3,
+        "법원종류코드": 6,
+        "사건종류명": 2,
+        "사건종류코드": 6,
+        "판결유형": 2,
+        "판시사항": 380,
+        "판결요지": 0,
+        "참조조문": 99,
+        "참조판례": 284,
+        "판례내용": 2329
+      }
+    },
+    {
+      "source": "law_go_kr",
+      "id": "240889",
+      "format": "XML",
+      "status": "SUCCESS",
+      "hash": "30f537f7a02bd247c0ff70e67dd1666aca97013d141613d9bf8df707356383d8",
+      "fields": [
+        "법원명",
+        "법원종류코드",
+        "사건명",
+        "사건번호",
+        "사건종류명",
+        "사건종류코드",
+        "선고",
+        "선고일자",
+        "참조조문",
+        "참조판례",
+        "판결요지",
+        "판결유형",
+        "판례내용",
+        "판례정보일련번호",
+        "판시사항"
+      ],
+      "field_lengths": {
+        "판례정보일련번호": 6,
+        "사건명": 23,
+        "사건번호": 10,
+        "선고일자": 8,
+        "선고": 2,
+        "법원명": 3,
+        "법원종류코드": 6,
+        "사건종류명": 2,
+        "사건종류코드": 6,
+        "판결유형": 2,
+        "판시사항": 446,
+        "판결요지": 0,
+        "참조조문": 95,
+        "참조판례": 115,
+        "판례내용": 1689
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "hash": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "size": 7335,
+      "path": "blobs/c0/c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=195490",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:23:29.871116+00:00"
+    },
+    {
+      "hash": "d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+      "size": 5765,
+      "path": "blobs/d0/d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=240889",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:23:31.053938+00:00"
+    },
+    {
+      "hash": "7440a1930fcacb3b5b8aaf3bc10fa70d3267d140267cc0c62264cba941eb2024",
+      "size": 7522,
+      "path": "blobs/74/7440a1930fcacb3b5b8aaf3bc10fa70d3267d140267cc0c62264cba941eb2024",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=XML&ID=195490",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:23:33.358173+00:00"
+    },
+    {
+      "hash": "30f537f7a02bd247c0ff70e67dd1666aca97013d141613d9bf8df707356383d8",
+      "size": 5960,
+      "path": "blobs/30/30f537f7a02bd247c0ff70e67dd1666aca97013d141613d9bf8df707356383d8",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=XML&ID=240889",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:23:34.527217+00:00"
+    }
+  ],
+  "legacy_host_dns": "RESOLUTION_FAILED",
+  "scope": "Two detail IDs JSON/XML and one bounded list request; no corpus import"
+}

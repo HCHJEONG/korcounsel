@@ -69,3 +69,9 @@ scourt 기본 검증·등록은 lawgo 보강 완료를 기다리지 않는다. �
 ## Step 2A persistence 구현
 
 [저장·worker 계약](persistence-and-jobs.md)에 현재 테이블·SQL migration·파일/DB 복구·registry snapshot·고정 입력 job·drain·실제 검증 범위를 기록했다. db/records.py와 registry.py·ledger.py가 domain과 PostgreSQL을 연결하고 jobs/queue.py·worker.py를 로컬 CLI와 공유한다. 로그인 HTTP와 실제 source adapter는 후속이며 private API를 추가하지 않았다.
+
+## Step 3 source 경계 구현
+
+source client와 transport는 sources/, 원본 연결은 sources/persistence.py에 두고 단일 worker가 실행한다. scourt metadata·본문은 별도 artifact 및 acquisition manifest로 연결한다. 법제처 JSON/XML 목록 민감 응답은 명시적으로 거부한다. [선택 근거와 검증](source-adapters.md) 참조.
+
+Step 3A 후속: ingestion/inventory.py의 제한 snapshot을 FETCH_SCOURT_INVENTORY worker가 페이지별 저장한다. documents/observe.py는 HTTP 원문 속 제공자 이미지 name/value 매핑을 원본과 별도 manifest로 보존한다. [현행 경로 검증](source-path-validation.md) 참조.

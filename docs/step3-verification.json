@@ -1,0 +1,55 @@
+{
+  "verified_at": "2026-09-10T03:40:43.000243+00:00",
+  "checks": {
+    "ruff_check": "PASS",
+    "ruff_format": "PASS",
+    "mypy": "PASS",
+    "pytest": {
+      "passed": 185,
+      "warnings": 2,
+      "postgresql_tests": 34
+    },
+    "git_diff_check": "PASS"
+  },
+  "live": {
+    "law_detail_ids": [
+      "195490",
+      "240889"
+    ],
+    "law_formats": [
+      "JSON",
+      "XML"
+    ],
+    "law_list": "SENSITIVE_RESPONSE_NOT_PRESERVED",
+    "scourt_detail_ids": [
+      "2252318",
+      "3328392"
+    ],
+    "scourt_direct_http_without_session": true,
+    "compose_job": "8bcff2d8-fd8f-45ac-b909-41e961dd074c",
+    "compose_job_status": "SUCCEEDED",
+    "compose_blob_reverified": true
+  },
+  "not_completed": [
+    "Full inventory",
+    "Sensitive list RAW preservation",
+    "Broad fidelity/resource sampling",
+    "Automatic statute enrichment",
+    "Full legacy corpus import",
+    "AWS deployment"
+  ],
+  "source_files": {
+    "backend/migrations/0005_source_jobs.sql": "97def6b223ce94afba6c96d21e55c4ad8b19fbb70256ea09c0f885d943a61fde",
+    "backend/src/klegal_gold/jobs/queue.py": "88b91f55d401b89c0ac9751ae09dc112ef9eaad41d0bb29a13db7418d5a65912",
+    "backend/src/klegal_gold/jobs/worker.py": "2362d6805885ac45643791e284959ff55520dcc1b0e1cffa292a5e0ea70fe6c8",
+    "backend/src/klegal_gold/operations.py": "4195ee117dd5be12c88eb85a09421f7d059bd4a236c5a7c1f2584a95cfaf7907",
+    "backend/src/klegal_gold/sources/__init__.py": "97232fc63f4a45eca183825a06a9759661c18a280fe1a3b176840bcd5db7ff9f",
+    "backend/src/klegal_gold/sources/law_api.py": "2c830fd579e632957c6015f9cf577f90d7facb7ef94cece82f560ce45fe4d104",
+    "backend/src/klegal_gold/sources/persistence.py": "d52ff085d73f20bfafe7e641a422f0f119463f290cdf269ba3b20299ab4c51a7",
+    "backend/src/klegal_gold/sources/scourt.py": "3cc13f34c907247ddfeb83837a0edee11b076e36fab520d6c8edb533032b10a5",
+    "backend/tests/integration/test_source_jobs.py": "ae1a5c5cd42e6e7f645f58aa737960f7a7fa635abee6a5c036375ded61b55c17",
+    "backend/tests/unit/test_law_api.py": "b9f7e9a7f36f86b6e1987b538db425bf9f793aa7c217a4335ffb16e137646555",
+    "backend/tests/unit/test_scourt.py": "fec39c4d50e78b507b8935543a9b9a193b35645267ea1e66a466eb7c62024260",
+    "scripts/smoke_law_source.py": "6add0750b9310372b074ca1b9f94bc593288776ec310e41d89bd00ae2a33c3f8"
+  }
+}

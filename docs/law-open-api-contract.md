@@ -57,3 +57,16 @@ JSON/XML을 decode한 필드 텍스트와 HTML markup 변환을 각각 버전 �
 이 메모의 source_document_id는 law_go_kr namespace의 serialno이며 canonical ID가 아니다. scourt contId와의 복합 매칭은 [identity 계약](case-identity.md), source 목록·상세 재조회는 [incremental 계약](incremental-ingestion.md)을 따른다. 실제 네 건의 smoke는 두 source reconciliation이나 전체 inventory 수집 검증이 아니다.
 
 빈 판결요지는 정상 LegalCase에서 허용하고 field 부재/parse 실패를 구분한다. JSON/XML text에 이미지 참조가 없더라도 판결문 전체에 이미지가 없다고 확정하지 않는다. [fidelity 계약](source-fidelity.md)에 따라 reference·탐지 범위·UNKNOWN 상태를 보존한다. API 목록/본문의 원 ID·raw·field provenance는 canonical 연결 후에도 유지한다.
+
+## 2026-09-10 구현 재검증
+
+195490·240889 상세 JSON/XML 네 응답을 새 client로 취득·보존했다. 목록은 credential 포함이 다시 감지돼 저장을 차단했다. [실측과 남은 계약](source-adapters.md)을 따른다. 이 차단은 아래 사용자 결정 이전의 구현 이력이다.
+
+## LAW OPEN API OC 분류 — 2026-09-10 사용자 확정
+
+- LAW_GO_KR_OC와 별칭 LAW_OPEN_API_OC, 요청 매개변수 OC는 이 프로젝트에서 비밀값으로 취급하지 않는다. 사용자가 응답에도 포함되도록 제공되는 값임을 명시했다.
+- OC가 응답에 포함됐다는 이유로 원본 저장을 차단하거나 삭제·마스킹하지 않는다. 응답 바이트를 그대로 보존하고 그 바이트의 SHA-256을 계산한다.
+- OC 포함만을 이유로 별도 민감 원본 격리·암호화 정책을 선행 조건으로 요구하지 않는다. 이 결정은 OC에 한정하며 DB 비밀번호·세션 token 등 다른 실제 비밀정보의 보호 규칙은 유지한다.
+- 기존 문서의 OC를 비밀정보로 분류한 전제보다 이 사용자 결정이 우선한다. 이전 저장 차단은 당시 구현·검증 이력이며 앞으로의 요구사항이 아니다.
+
+후속 구현에서 OC 차단을 제거하고 JSON/XML 목록 첫 페이지·빈 페이지를 실제 보존·검증했다. 법제처 기존 ID 194079·192890은 미조회 응답을 보였고 새 ID 후보를 별도로 확인했다. docs/source-path-validation.md 참조.

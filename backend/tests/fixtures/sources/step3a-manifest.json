@@ -1,0 +1,32 @@
+[
+  {
+    "file": "law-list-oc.json",
+    "sha256": "37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+    "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=1&display=1&nb=2017%EB%8F%84953",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "portal-list-1.json",
+    "sha256": "d2eb83794856c6e363ac5c9024eb0829e368865027c54d8f757516a8dcfea77e",
+    "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "portal-not-found.json",
+    "sha256": "99ea907b21901d0a43701b3c117db9784cd28e9d16a585d8ff1916ca0343347b",
+    "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "law-not-found.json",
+    "sha256": "79f185dd00b0bc071941a45bc12209d9c7b84c187823fd254d29224ebd5b03c6",
+    "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=194079",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "portal-images-fragment.html",
+    "parent_sha256": "35faa161f1b6c622cf95cbaf0a114aef99d10244f635eb6e95d77690ba2e10e6",
+    "origin": "DERIVED_MARKUP_EXCERPT",
+    "rule": "img/input start tags in source order; not raw HTTP bytes"
+  }
+]

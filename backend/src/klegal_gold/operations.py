@@ -124,3 +124,34 @@ def worker_health() -> None:
     if not queue.worker_available():
         raise ValueError("WORKER_UNAVAILABLE")
     typer.echo("Worker heartbeat current")
+
+
+@operations.command("submit-law-detail")
+@_safe
+def submit_law_detail(request_key: str, source_id: str) -> None:
+    """Queue one official lawgo detail; the worker reads its own explicit credential."""
+    _, _, queue = _services()
+    job = queue.submit_law_detail(request_key, source_id)
+    typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("submit-scourt-detail")
+@_safe
+def submit_scourt_detail(request_key: str, source_id: str) -> None:
+    """Queue one current portal jisCntntsSrno; no automatic legacy ID relinking."""
+    _, _, queue = _services()
+    job = queue.submit_scourt_detail(request_key, source_id)
+    typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("submit-scourt-inventory")
+@_safe
+def submit_scourt_inventory(
+    request_key: str, query: str = "", max_pages: int = 2, display: int = 20
+) -> None:
+    """Register a bounded portal inventory observation, never an implicit full crawl."""
+    _, _, queue = _services()
+    job = queue.submit_scourt_inventory(
+        request_key, query=query, max_pages=max_pages, display=display
+    )
+    typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))

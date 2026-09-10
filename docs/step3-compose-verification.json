@@ -1,0 +1,17 @@
+{
+  "job_id": "8bcff2d8-fd8f-45ac-b909-41e961dd074c",
+  "status": "SUCCEEDED",
+  "attempts": 1,
+  "artifact_id": "scourt:2252318:d7b3f92ce579a54d35be4a76b4e69afe8f2065a1cb06188495f5bd1479504d98",
+  "sha256": "d7b3f92ce579a54d35be4a76b4e69afe8f2065a1cb06188495f5bd1479504d98",
+  "size_bytes": 11851,
+  "verified": true,
+  "worker_available": true,
+  "drain": {
+    "draining": false,
+    "running": 0,
+    "ready_to_stop": false
+  },
+  "observed_at": "2026-09-10T03:39:50.491210+00:00",
+  "scope": "Local Compose live scourt source job and verified immutable blob; no AWS"
+}

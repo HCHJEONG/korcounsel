@@ -1,12 +1,20 @@
 """Bounded artifact verification handler and restartable worker loop."""
 
+import json
 import logging
 import signal
 import threading
 import time
 from uuid import uuid4
 
+from klegal_gold.config import load_settings
 from klegal_gold.db.records import Records
+from klegal_gold.documents.observe import observe_html
+from klegal_gold.domain.identity import SourceSystem
+from klegal_gold.ingestion.inventory import InventoryCapture, collect_inventory
+from klegal_gold.sources.law_api import LawOpenApiCaseSource, Response
+from klegal_gold.sources.persistence import preserve_response, save_detail
+from klegal_gold.sources.scourt import ScourtPortalSource, listing_params
 
 from .queue import Job, Queue
 
@@ -54,6 +62,124 @@ class Worker:
             progress=progress,
         )
 
+    def _fetch_law(self, job: Job) -> None:
+        settings = load_settings()
+        credential = settings.law_api_credential
+        if credential is None:
+            raise ValueError("SOURCE_CREDENTIAL_UNAVAILABLE")
+
+        def progress() -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        # No credential or arbitrary URL is accepted in the persistent job payload.
+        def preserve(response: Response) -> None:
+            preserve_response(self.records, response, str(job.job_id))
+
+        source = LawOpenApiCaseSource(
+            credential,
+            preserve=preserve,
+            progress=progress,
+        )
+        progress()
+        detail = source.fetch_detail(job.payload["source_id"])
+        progress()
+        artifact_id = save_detail(self.records, detail, str(job.job_id))
+        self.queue.heartbeat(job, {"artifact_id": artifact_id})
+
+    def _fetch_scourt(self, job: Job) -> None:
+        def progress() -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        def preserve(response: Response) -> None:
+            preserve_response(self.records, response, str(job.job_id), SourceSystem.SCOURT)
+
+        source = ScourtPortalSource(preserve=preserve, progress=progress)
+        detail = source.fetch_detail(job.payload["source_id"])
+        progress()
+        artifact_id = save_detail(self.records, detail, str(job.job_id), SourceSystem.SCOURT)
+        self.records.save_manifest(
+            "scourt-document:" + artifact_id,
+            "DOCUMENT_OBSERVATION",
+            {
+                "parent_artifact_id": artifact_id,
+                "observation": observe_html(
+                    detail.fields["body"]["orgdocXmlCtt"],
+                    "https://portal.scourt.go.kr/",
+                    scourt_id=detail.source_id,
+                ),
+            },
+        )
+        self.records.put_artifact(
+            "scourt-acquisition:" + str(uuid4()),
+            json.dumps(
+                {
+                    "run_id": str(job.job_id),
+                    "source_id": detail.source_id,
+                    "body_artifact": artifact_id,
+                    "metadata_artifact": "http:" + detail.fields["metadata_response_hash"],
+                    "collector_version": "scourt-portal-2",
+                },
+                sort_keys=True,
+            ).encode(),
+            origin="DERIVED",
+            metadata={"kind": "SCOURT_ACQUISITION"},
+            parent_id=artifact_id,
+        )
+        self.queue.heartbeat(job, {"artifact_id": artifact_id})
+
+    def _inventory(self, job: Job) -> None:
+        def progress() -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        def preserve(response: Response) -> None:
+            preserve_response(self.records, response, str(job.job_id), SourceSystem.SCOURT)
+
+        def save(capture: InventoryCapture) -> None:
+            artifact_id = self.records.save_inventory(capture.snapshot)
+            self.records.save_manifest(
+                "inventory-pages:" + capture.snapshot.snapshot_id,
+                "INVENTORY_PAGES",
+                {
+                    "job_id": str(job.job_id),
+                    "snapshot_artifact": artifact_id,
+                    "pages": capture.pages,
+                },
+            )
+            self.queue.heartbeat(
+                job,
+                {
+                    "snapshot_artifact": artifact_id,
+                    "observed": capture.snapshot.observed_unique_count,
+                },
+            )
+
+        query = job.payload["query"]
+        display = job.payload["display"]
+        source = ScourtPortalSource(preserve=preserve, progress=progress)
+        # Every completed page is persisted. After interruption a new bounded observation
+        # starts from page 1; a mutable provider result must not be spliced into an old snapshot.
+        capture = collect_inventory(
+            source,
+            system=SourceSystem.SCOURT,
+            scope=listing_params(query, 1, display),
+            max_pages=job.payload["max_pages"],
+            display=display,
+            query=query,
+            on_page=save,
+        )
+        save(capture)
+        if capture.snapshot.failed_pages:
+            raise ValueError("INVENTORY_PARTIAL_FAILURE")
+
     def run_once(self) -> bool:
         if self.stop.is_set():
             return False
@@ -61,12 +187,20 @@ class Worker:
         if job is None:
             return False
         try:
-            if job.handler_version != "persistence-1":
+            if job.handler_version != (
+                "source-1" if job.kind.startswith("FETCH_") else "persistence-1"
+            ):
                 raise ValueError("UNSUPPORTED_HANDLER_VERSION")
             if job.kind == "VERIFY_ARTIFACT":
                 self._verify(job)
             elif job.kind == "REBUILD_PROJECTION":
                 self._rebuild(job)
+            elif job.kind == "FETCH_LAW_DETAIL":
+                self._fetch_law(job)
+            elif job.kind == "FETCH_SCOURT_DETAIL":
+                self._fetch_scourt(job)
+            elif job.kind == "FETCH_SCOURT_INVENTORY":
+                self._inventory(job)
             else:
                 raise ValueError("UNKNOWN_JOB_KIND")
             self.queue.finish(job, outcome="SUCCEEDED")
@@ -75,7 +209,15 @@ class Worker:
         except (OSError, ValueError):
             # A stale worker must never mark another owner's attempt failed.
             try:
-                self.queue.finish(job, outcome="FAILED", error_code="ARTIFACT_INTEGRITY_FAILED")
+                self.queue.finish(
+                    job,
+                    outcome="FAILED",
+                    error_code=(
+                        "HANDLER_FAILED"
+                        if job.kind.startswith("FETCH_")
+                        else "ARTIFACT_INTEGRITY_FAILED"
+                    ),
+                )
             except ValueError:
                 logger.warning("Worker lease lost; result not committed")
         return True

@@ -1,0 +1,3520 @@
+{
+  "started_at": "2026-09-10T04:06:11.395704+00:00",
+  "responses": [
+    {
+      "sha256": "37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+      "size": 769,
+      "path": "blobs/37/37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=1&display=1&nb=2017%EB%8F%84953",
+      "retrieved_at": "2026-09-10T04:06:12.628710+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "d2eb83794856c6e363ac5c9024eb0829e368865027c54d8f757516a8dcfea77e",
+      "size": 2212,
+      "path": "blobs/d2/d2eb83794856c6e363ac5c9024eb0829e368865027c54d8f757516a8dcfea77e",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:06:13.722178+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "b3cd078c3cfe6b18c71025143a6634df25c96e7051cf11116828e997b11f4221",
+      "size": 2036,
+      "path": "blobs/b3/b3cd078c3cfe6b18c71025143a6634df25c96e7051cf11116828e997b11f4221",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:06:14.809647+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "5a514e1f4ae8d021c17e916a795913606750e9fc7b28571e6403e74de857d08c",
+      "size": 13098,
+      "path": "blobs/5a/5a514e1f4ae8d021c17e916a795913606750e9fc7b28571e6403e74de857d08c",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:06:15.920548+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "eee91216024b2fccbdedf6aa6a532f9049e518a0f511ddbef0dab65db85908d6",
+      "size": 13383,
+      "path": "blobs/ee/eee91216024b2fccbdedf6aa6a532f9049e518a0f511ddbef0dab65db85908d6",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:06:19.308458+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "4f8200317dc85f845ed6604d111f35f945485631cbc2f6a2f70b4de601a5bc71",
+      "size": 13658,
+      "path": "blobs/4f/4f8200317dc85f845ed6604d111f35f945485631cbc2f6a2f70b4de601a5bc71",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:06:20.382405+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+      "size": 769,
+      "path": "blobs/37/37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=1&display=1&nb=2017%EB%8F%84953",
+      "retrieved_at": "2026-09-10T04:06:21.590476+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "5581b900cc03ca15163889797a3716fc2a28e554a7a64101fd3d4687a8ab626d",
+      "size": 158,
+      "path": "blobs/55/5581b900cc03ca15163889797a3716fc2a28e554a7a64101fd3d4687a8ab626d",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=2&display=1&nb=2017%EB%8F%84953",
+      "retrieved_at": "2026-09-10T04:06:22.813956+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "6a0ce5dd84b04d7e172acef911b319156622e39f7dc4317a0d0a343402f82d51",
+      "size": 863,
+      "path": "blobs/6a/6a0ce5dd84b04d7e172acef911b319156622e39f7dc4317a0d0a343402f82d51",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=XML&page=1&display=1&nb=2017%EB%8F%84953",
+      "retrieved_at": "2026-09-10T04:06:23.952839+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "5576a71fac90e8bad3d66915e022d4695ea3a659539e615392c258eb992fe2c8",
+      "size": 210,
+      "path": "blobs/55/5576a71fac90e8bad3d66915e022d4695ea3a659539e615392c258eb992fe2c8",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=XML&page=2&display=1&nb=2017%EB%8F%84953",
+      "retrieved_at": "2026-09-10T04:06:25.107181+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "7ae88400e95757b11a6041f9f4e78f5bd9ec9e4a74c2bdf8532dc64968e33188",
+      "size": 969,
+      "path": "blobs/7a/7ae88400e95757b11a6041f9f4e78f5bd9ec9e4a74c2bdf8532dc64968e33188",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:26.862889+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "95ab571e5deb0712784cc768f72c02d6740bc6ad29fd409f2001e59059d3bee1",
+      "size": 56802,
+      "path": "blobs/95/95ab571e5deb0712784cc768f72c02d6740bc6ad29fd409f2001e59059d3bee1",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:27.934002+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "7e14fc841e84465cb3d79a4dd47902513d31c7ef38a8b3db4d8a341fce4eee15",
+      "size": 42382,
+      "path": "blobs/7e/7e14fc841e84465cb3d79a4dd47902513d31c7ef38a8b3db4d8a341fce4eee15",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=166330",
+      "retrieved_at": "2026-09-10T04:06:29.140183+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "cf4563bbaf38955157df284ba06ca426fcf82921ad10299e2b683bb7f8ff121e",
+      "size": 944,
+      "path": "blobs/cf/cf4563bbaf38955157df284ba06ca426fcf82921ad10299e2b683bb7f8ff121e",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:30.240410+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "bd2fc571dba12c3592889d7b47d9530efd6ed4bdafe7da42fe97d91585d5f7de",
+      "size": 33502,
+      "path": "blobs/bd/bd2fc571dba12c3592889d7b47d9530efd6ed4bdafe7da42fe97d91585d5f7de",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:31.325332+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "3d6ca6e28700f76551c28d781652557be1177ce1d3ab0faab9c5d8d259d86af0",
+      "size": 21671,
+      "path": "blobs/3d/3d6ca6e28700f76551c28d781652557be1177ce1d3ab0faab9c5d8d259d86af0",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=224141",
+      "retrieved_at": "2026-09-10T04:06:32.538025+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "90b2f9d64afdd24d5a21037b6d57aff2d2d8845a29e87cfd3fa5e26382be48de",
+      "size": 865,
+      "path": "blobs/90/90b2f9d64afdd24d5a21037b6d57aff2d2d8845a29e87cfd3fa5e26382be48de",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:33.596353+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "7cd08e820a722d5a72b490a46604e4eed4696a83c9d8db01bea71d180b1c7d1b",
+      "size": 52956,
+      "path": "blobs/7c/7cd08e820a722d5a72b490a46604e4eed4696a83c9d8db01bea71d180b1c7d1b",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:34.666264+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "648fd2000f3e72f71beac5e0e06b2ff4ecd9d750ffeffdeee9df052cd8d6dba8",
+      "size": 49689,
+      "path": "blobs/64/648fd2000f3e72f71beac5e0e06b2ff4ecd9d750ffeffdeee9df052cd8d6dba8",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=159795",
+      "retrieved_at": "2026-09-10T04:06:35.887553+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "6d5a1734b72cc364916495a7ca5480e7509aac00b1800a05b94b6e94c594b675",
+      "size": 871,
+      "path": "blobs/6d/6d5a1734b72cc364916495a7ca5480e7509aac00b1800a05b94b6e94c594b675",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:36.942421+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "53a75ba98fb57ffeb36aa5a4903a04f4caac043f9fd4b8c4a43c070d5f114d59",
+      "size": 83892,
+      "path": "blobs/53/53a75ba98fb57ffeb36aa5a4903a04f4caac043f9fd4b8c4a43c070d5f114d59",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:38.008821+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "27925cf06a92e0dd02af7b17f4b12276afcbb07bf8277cf2d16583ebfff46a4b",
+      "size": 78667,
+      "path": "blobs/27/27925cf06a92e0dd02af7b17f4b12276afcbb07bf8277cf2d16583ebfff46a4b",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=224121",
+      "retrieved_at": "2026-09-10T04:06:39.212810+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "a5dd2c6ef3bf87c307713f522717a5e45810e00257db3b517b3e2553585b15ec",
+      "size": 919,
+      "path": "blobs/a5/a5dd2c6ef3bf87c307713f522717a5e45810e00257db3b517b3e2553585b15ec",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:40.267513+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "f3211a4b67f8087f4f50e0cdfebf5a8da2e4bb5bbafe775144f32042d211cbe9",
+      "size": 11851,
+      "path": "blobs/f3/f3211a4b67f8087f4f50e0cdfebf5a8da2e4bb5bbafe775144f32042d211cbe9",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:42.339473+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "size": 7335,
+      "path": "blobs/c0/c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=195490",
+      "retrieved_at": "2026-09-10T04:06:43.537319+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "99ea907b21901d0a43701b3c117db9784cd28e9d16a585d8ff1916ca0343347b",
+      "size": 155,
+      "path": "blobs/99/99ea907b21901d0a43701b3c117db9784cd28e9d16a585d8ff1916ca0343347b",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:44.653981+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "79f185dd00b0bc071941a45bc12209d9c7b84c187823fd254d29224ebd5b03c6",
+      "size": 88,
+      "path": "blobs/79/79f185dd00b0bc071941a45bc12209d9c7b84c187823fd254d29224ebd5b03c6",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=194079",
+      "retrieved_at": "2026-09-10T04:06:45.820194+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "411724e8dbb549904bc9e7f3d61113ee4575494f677639da54f82ed8c8288bd3",
+      "size": 873,
+      "path": "blobs/41/411724e8dbb549904bc9e7f3d61113ee4575494f677639da54f82ed8c8288bd3",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:46.885345+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "62c1e662651533c4a92bba66c6cc740fd9904463f3a7ffe417a5772b755c544f",
+      "size": 7551,
+      "path": "blobs/62/62c1e662651533c4a92bba66c6cc740fd9904463f3a7ffe417a5772b755c544f",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:47.963114+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "79c50dff2acf65b56e2f4e5df7e30d47310cd603d53de83b652d33cf92ab91e1",
+      "size": 909,
+      "path": "blobs/79/79c50dff2acf65b56e2f4e5df7e30d47310cd603d53de83b652d33cf92ab91e1",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:49.043136+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "b54c841e73f8c12169967f95a9412077bfe151edfcd51fe13c06668e728583f3",
+      "size": 6255,
+      "path": "blobs/b5/b54c841e73f8c12169967f95a9412077bfe151edfcd51fe13c06668e728583f3",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:50.093866+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "79f185dd00b0bc071941a45bc12209d9c7b84c187823fd254d29224ebd5b03c6",
+      "size": 88,
+      "path": "blobs/79/79f185dd00b0bc071941a45bc12209d9c7b84c187823fd254d29224ebd5b03c6",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=192890",
+      "retrieved_at": "2026-09-10T04:06:51.285546+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "207207f766fc45e7d67496371b231c6c0945da00e2b6c7f2044ea8618ea53b72",
+      "size": 911,
+      "path": "blobs/20/207207f766fc45e7d67496371b231c6c0945da00e2b6c7f2044ea8618ea53b72",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:54.585497+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "59652b5ef2badd214b44739ba67b1de946ac548e9986ba9030b181f6e0622c51",
+      "size": 11178,
+      "path": "blobs/59/59652b5ef2badd214b44739ba67b1de946ac548e9986ba9030b181f6e0622c51",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:55.640384+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+      "size": 5765,
+      "path": "blobs/d0/d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=240889",
+      "retrieved_at": "2026-09-10T04:06:56.863348+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "7bfeab65d57775939fcaeef17affb0fb458882082ade2b255027ad0e858f799f",
+      "size": 868,
+      "path": "blobs/7b/7bfeab65d57775939fcaeef17affb0fb458882082ade2b255027ad0e858f799f",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:06:57.917169+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "43e69bf13fdb7de7c6d2127c5117a276e4841ccd5cae021209fd80ebe7ac8b82",
+      "size": 10542,
+      "path": "blobs/43/43e69bf13fdb7de7c6d2127c5117a276e4841ccd5cae021209fd80ebe7ac8b82",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:06:58.979987+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "8887de296b9553fd091e7a71982d5cc2af3b6f25f7bb8b002a220230ab7092ac",
+      "size": 4812,
+      "path": "blobs/88/8887de296b9553fd091e7a71982d5cc2af3b6f25f7bb8b002a220230ab7092ac",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=240891",
+      "retrieved_at": "2026-09-10T04:07:00.246291+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "4654da9f310dcbcd4b162b95617d02695443389d7d818da217ed42387c04d875",
+      "size": 998,
+      "path": "blobs/46/4654da9f310dcbcd4b162b95617d02695443389d7d818da217ed42387c04d875",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:07:01.324545+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "35faa161f1b6c622cf95cbaf0a114aef99d10244f635eb6e95d77690ba2e10e6",
+      "size": 278109,
+      "path": "blobs/35/35faa161f1b6c622cf95cbaf0a114aef99d10244f635eb6e95d77690ba2e10e6",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:07:02.466864+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "0b91333e865a6ea0ac036d9ea76e54198aeb053c67cea49247e53dba0cdaaf62",
+      "size": 893,
+      "path": "blobs/0b/0b91333e865a6ea0ac036d9ea76e54198aeb053c67cea49247e53dba0cdaaf62",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:09:59.942958+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "fc0b137a1f70c49012bd4d5b65a2b6a57dcec2ff5eec9bd2f06371f7f1fe86a1",
+      "size": 21609,
+      "path": "blobs/fc/fc0b137a1f70c49012bd4d5b65a2b6a57dcec2ff5eec9bd2f06371f7f1fe86a1",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:10:01.019150+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "7fe22f410c48970a28650e2ce3080aa4676c80374c5b39b74a0fe4808d49987c",
+      "size": 705,
+      "path": "blobs/7f/7fe22f410c48970a28650e2ce3080aa4676c80374c5b39b74a0fe4808d49987c",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=1&display=5&nb=85%ED%9B%8440",
+      "retrieved_at": "2026-09-10T04:20:40.674419+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "35227c5b48bd375d8f43c043200b8f39ad81364c0a845eff3e8ce0eab8556217",
+      "size": 733,
+      "path": "blobs/35/35227c5b48bd375d8f43c043200b8f39ad81364c0a845eff3e8ce0eab8556217",
+      "url": "https://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON&page=1&display=5&nb=82%EB%8F%842078",
+      "retrieved_at": "2026-09-10T04:20:41.894782+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "94514a481c4494637cd0f7e1bcc74b1767fb1e8c695fe0172603871bab0a9ae2",
+      "size": 10218,
+      "path": "blobs/94/94514a481c4494637cd0f7e1bcc74b1767fb1e8c695fe0172603871bab0a9ae2",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on",
+      "retrieved_at": "2026-09-10T04:20:42.999735+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "923b5dca8e418540702cfb7fb553f8b02d7c7fe46d029d3a86c22d871109c143",
+      "size": 5761,
+      "path": "blobs/92/923b5dca8e418540702cfb7fb553f8b02d7c7fe46d029d3a86c22d871109c143",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=607465",
+      "retrieved_at": "2026-09-10T04:21:47.968427+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "a9effc68aacb16c4e8e3b74eaf68410f73d7870bb708a749786f3d688022e61f",
+      "size": 3954,
+      "path": "blobs/a9/a9effc68aacb16c4e8e3b74eaf68410f73d7870bb708a749786f3d688022e61f",
+      "url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=601365",
+      "retrieved_at": "2026-09-10T04:21:49.191490+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "df7eceb7a4a683a1367ea29c2846356469b6b49067aa33850c3ce054d49586ec",
+      "size": 855,
+      "path": "blobs/df/df7eceb7a4a683a1367ea29c2846356469b6b49067aa33850c3ce054d49586ec",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "retrieved_at": "2026-09-10T04:21:50.242499+00:00",
+      "status": 200
+    },
+    {
+      "sha256": "53ac27cca78fdac480e763c3d65106fe708de117ecb7487a70da557b3ec3907a",
+      "size": 7107,
+      "path": "blobs/53/53ac27cca78fdac480e763c3d65106fe708de117ecb7487a70da557b3ec3907a",
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "retrieved_at": "2026-09-10T04:21:51.293953+00:00",
+      "status": 200
+    }
+  ],
+  "listings": [
+    {
+      "snapshot": {
+        "schema_version": "0.1.0",
+        "snapshot_id": "f542a83c-287d-434d-80f8-918e97cf3ed3:1:0",
+        "source": "law_go_kr",
+        "retrieved_at": "2026-09-10T04:06:12.632538Z",
+        "started_at": "2026-09-10T04:06:11.396583Z",
+        "finished_at": "2026-09-10T04:06:12.632538Z",
+        "total_count": 1,
+        "entries": [
+          {
+            "schema_version": "0.1.0",
+            "source_id": "195490",
+            "metadata_hash": "b9d02b562845ef03e3ade521c78b9b9eb0e79c2aacb3e01d62c5cd962829426c"
+          }
+        ],
+        "observed_unique_count": 1,
+        "metadata_hash": "765e32188ecd8d06cd993c756354fd362650d3a1292a6f01de3b884501649858",
+        "scope": "{\"nb\":\"2017도953\",\"target\":\"prec\",\"type\":\"JSON\"}",
+        "scope_hash": "5390916e5e20a7b3fcd8e52b62d1605966a2b55663f098aaaa1405eccda5aa8e",
+        "collector_version": "bounded-inventory-1",
+        "hash_rules_version": "selected-source-metadata-1",
+        "completeness": "UNKNOWN",
+        "failed_pages": [],
+        "completeness_basis": "All reported rows observed; provider offers no frozen snapshot token"
+      },
+      "pages": [
+        {
+          "page": 1,
+          "raw_content_hash": "37ee29941aff53d4ad88f05f6d6f253d3aad8e0e72610d1e5c3fcdb26745336c",
+          "source_ids": [
+            "195490"
+          ],
+          "reported_total": 1
+        }
+      ]
+    },
+    {
+      "snapshot": {
+        "schema_version": "0.1.0",
+        "snapshot_id": "d548cefd-0481-48f1-a973-75460dd00853:2:0",
+        "source": "scourt",
+        "retrieved_at": "2026-09-10T04:06:14.813183Z",
+        "started_at": "2026-09-10T04:06:12.632745Z",
+        "finished_at": "2026-09-10T04:06:14.813183Z",
+        "total_count": 2,
+        "entries": [
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2252318",
+            "metadata_hash": "23f600981aa145b1a5bbedae61534d5c1c2265158583109d536707049305d143"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "3273858",
+            "metadata_hash": "1b910c7926266e593816a941bb0a1c2b62d8f59c4d302b43022c09e1ff29c6ff"
+          }
+        ],
+        "observed_unique_count": 2,
+        "metadata_hash": "5ddc31b346e5eb969d937ebb555ba3a4309de3311c2eb3bddcce426e8279954b",
+        "scope": "{\"dma_searchParam\":{\"category\":\"jdcpct\",\"chnchrYn\":\"N\",\"crntClCd\":\"01\",\"crntLawDvsCd\":\"02\",\"gb\":\"lst\",\"isKwdSearch\":\"N\",\"jdcpctGrCd\":\"111|112|130|141|180|182|232|235\",\"pageNo\":\"1\",\"pageSize\":\"1\",\"sort\":\"jis_jdcpc_instn_dvs_cd_s asc, $relevance desc, prnjdg_ymd_o desc, jdcpct_gr_cd_s asc\",\"sortType\":\"정확도\",\"srchwd\":\"2017도953\"}}",
+        "scope_hash": "479be6f4cc7628f677f16a4eb69c81a7424fd14f41dec22c89502692f1d966c2",
+        "collector_version": "bounded-inventory-1",
+        "hash_rules_version": "selected-source-metadata-1",
+        "completeness": "UNKNOWN",
+        "failed_pages": [],
+        "completeness_basis": "All reported rows observed; provider offers no frozen snapshot token"
+      },
+      "pages": [
+        {
+          "page": 1,
+          "raw_content_hash": "d2eb83794856c6e363ac5c9024eb0829e368865027c54d8f757516a8dcfea77e",
+          "source_ids": [
+            "2252318"
+          ],
+          "reported_total": 2
+        },
+        {
+          "page": 2,
+          "raw_content_hash": "b3cd078c3cfe6b18c71025143a6634df25c96e7051cf11116828e997b11f4221",
+          "source_ids": [
+            "3273858"
+          ],
+          "reported_total": 2
+        }
+      ]
+    },
+    {
+      "snapshot": {
+        "schema_version": "0.1.0",
+        "snapshot_id": "ebe433fa-058a-4dee-bfd3-f296911b0e51:3:0",
+        "source": "scourt",
+        "retrieved_at": "2026-09-10T04:06:20.386598Z",
+        "started_at": "2026-09-10T04:06:14.813351Z",
+        "finished_at": "2026-09-10T04:06:20.386598Z",
+        "total_count": 92202,
+        "entries": [
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043183",
+            "metadata_hash": "d471e9ab30486b0e573c2a97c2234b74635167ee63489e6dfada01484202f22c"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043192",
+            "metadata_hash": "12b7ba77c775b7fc6ab099e659660c3a3c51aadbf06a069652c53315f6b99f74"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043195",
+            "metadata_hash": "3cadcff03823a4bf0b74fd9bb611cf43fdfff7b7ddbf16be587623fd5afd8056"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043216",
+            "metadata_hash": "678a791269f1bf73e40565ba633eaa506b82d057521fbe62769d6ab51e85d118"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043225",
+            "metadata_hash": "bd46d1b38ebc3a4b057787f503f96a04f4a34e3795c7330732ef50bf859bad71"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000043228",
+            "metadata_hash": "4b58de938c90f39655a60697a3aed6ee22dc2262aab13ff451e25f6f90e666be"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044594",
+            "metadata_hash": "1f6d032eb0e5d69a68c41fa4b9f0b22c7ec1d19dcfcf8cc102dfca261fd6cc94"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044597",
+            "metadata_hash": "af9d019a48c0a093ece5ac69e68855fa0e0e23e9f697de1a2e659043531b72d2"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044600",
+            "metadata_hash": "beb6f1a57ec40c14ef8d3748c83d43adcc223cf18505f22bf35143ca192789ea"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044603",
+            "metadata_hash": "f60203fdd44d88ae02ba6d86a6bca91cc44fafb48f537b0cdb45808d369c7156"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044606",
+            "metadata_hash": "6a825f99e52e6a65790158cc03ba8bc9809565f0997d75864054bd5c616a05d7"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044609",
+            "metadata_hash": "38ba437e442956ca5a6338445f92b3b39e8720a77ac82fa4f15c34c14527b239"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044612",
+            "metadata_hash": "b7020252b639058a37761936944ae2d0e63014d447f62a082c7cb681c456e1b9"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044615",
+            "metadata_hash": "76ce82163b0006d9b0f8d6dc3aef6428ea9198bb983ff8fa03c65cece1311758"
+          },
+          {
+            "schema_version": "0.1.0",
+            "source_id": "2026000044618",
+            "metadata_hash": "5db24e96b378e800d0b7761344daf169f5cacdfd23744fe470331cd2ede270ca"
+          }
+        ],
+        "observed_unique_count": 15,
+        "metadata_hash": "2b34e005208d6efd6e9488620b9e274be8a10780f6eb508b706699ed5dfb0d6b",
+        "scope": "{\"dma_searchParam\":{\"category\":\"jdcpct\",\"chnchrYn\":\"N\",\"crntClCd\":\"01\",\"crntLawDvsCd\":\"02\",\"gb\":\"lst\",\"isKwdSearch\":\"N\",\"jdcpctGrCd\":\"111|112|130|141|180|182|232|235\",\"pageNo\":\"1\",\"pageSize\":\"5\",\"sort\":\"jis_jdcpc_instn_dvs_cd_s asc, $relevance desc, prnjdg_ymd_o desc, jdcpct_gr_cd_s asc\",\"sortType\":\"정확도\",\"srchwd\":\"\"}}",
+        "scope_hash": "be98933059672018052848cefe49c0eff78297405450c8b52689b93309ce46f4",
+        "collector_version": "bounded-inventory-1",
+        "hash_rules_version": "selected-source-metadata-1",
+        "completeness": "PARTIAL",
+        "failed_pages": [],
+        "completeness_basis": "Bounded or interrupted observation"
+      },
+      "pages": [
+        {
+          "page": 1,
+          "raw_content_hash": "5a514e1f4ae8d021c17e916a795913606750e9fc7b28571e6403e74de857d08c",
+          "source_ids": [
+            "2026000044612",
+            "2026000044603",
+            "2026000044609",
+            "2026000044597",
+            "2026000044618"
+          ],
+          "reported_total": 92202
+        },
+        {
+          "page": 2,
+          "raw_content_hash": "eee91216024b2fccbdedf6aa6a532f9049e518a0f511ddbef0dab65db85908d6",
+          "source_ids": [
+            "2026000044615",
+            "2026000044594",
+            "2026000044606",
+            "2026000044600",
+            "2026000043216"
+          ],
+          "reported_total": 92202
+        },
+        {
+          "page": 3,
+          "raw_content_hash": "4f8200317dc85f845ed6604d111f35f945485631cbc2f6a2f70b4de601a5bc71",
+          "source_ids": [
+            "2026000043225",
+            "2026000043228",
+            "2026000043192",
+            "2026000043183",
+            "2026000043195"
+          ],
+          "reported_total": 92202
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "scourt_id": "2064767",
+      "law_id": "166330",
+      "legacy_position": 325,
+      "legacy_case_full_no": "대법원 2011. 1. 20. 선고 2008재도11 전원합의체 판결 ★ ",
+      "legacy": [],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "95ab571e5deb0712784cc768f72c02d6740bc6ad29fd409f2001e59059d3bee1",
+        "metadata": {
+          "jisCntntsSrno": 2064767,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2008재도11",
+          "mrgCsNoCtt": "2008재도11",
+          "prnjdgYmd": "20110120",
+          "adjdTypNm": "전원합의체 판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "7859aae2838d70efdd3a0bcb6944bb68b67fc5ed0e293248dd139e6b7c7313dc",
+          "text_sha256": "3ec4897ad58e7eea1b2d0fc89e2f757c78437edac4de08a3ea779cbd4af24658",
+          "text_length": 17712,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": true,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.132
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "7e14fc841e84465cb3d79a4dd47902513d31c7ef38a8b3db4d8a341fce4eee15",
+        "metadata": {
+          "법원명": "대법원",
+          "사건번호": "2008재도11",
+          "선고일자": "20110120",
+          "판결유형": "전원합의체 판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "6a81df6e98ae44cd89d44226e8c8f80ec2bca1594a1c5c9c790ef89636af68dc",
+          "text_sha256": "c99159ca2f31e6600e0db38b00eff45ff77d2126129392c468f80688bfba36bf",
+          "text_length": 13178,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 787,
+          "판결요지": 2499
+        }
+      },
+      "comparison": []
+    },
+    {
+      "scourt_id": "2063727",
+      "law_id": "224141",
+      "legacy_position": 952,
+      "legacy_case_full_no": "대법원 2010. 10. 29.자 2008재도11 전원합의체 결정 ★ ",
+      "legacy": [],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "bd2fc571dba12c3592889d7b47d9530efd6ed4bdafe7da42fe97d91585d5f7de",
+        "metadata": {
+          "jisCntntsSrno": 2063727,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2008재도11",
+          "mrgCsNoCtt": "2008재도11",
+          "prnjdgYmd": "20101029",
+          "adjdTypNm": "전원합의체 결정"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "27a69add2c72d85d9a9f8de875d57d584a2054c88a71ff336b29ba1a36017a6d",
+          "text_sha256": "d828325ac4859d3341b121ac3c38ccb3a8d79e075cf0e4065fb3de746a5bdc09",
+          "text_length": 9329,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": true,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.179
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "3d6ca6e28700f76551c28d781652557be1177ce1d3ab0faab9c5d8d259d86af0",
+        "metadata": {
+          "법원명": "대법원",
+          "사건번호": "2008재도11",
+          "선고일자": "20101029",
+          "판결유형": "전원합의체 결정"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "98b9078508bc66b152c1fb87a116f2491ad5de07853561aea68f00e704ea3184",
+          "text_sha256": "0415e06124334bd608db44accb8be014b3c62667b37f211aacf5fe2a5b1db372",
+          "text_length": 6843,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 486,
+          "판결요지": 1210
+        }
+      },
+      "comparison": []
+    },
+    {
+      "scourt_id": "2036595",
+      "law_id": "159795",
+      "legacy_position": 1884,
+      "legacy_case_full_no": "서울고등법원 2010. 6. 23. 선고 2001나60578 판결 ",
+      "legacy": [],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "7cd08e820a722d5a72b490a46604e4eed4696a83c9d8db01bea71d180b1c7d1b",
+        "metadata": {
+          "jisCntntsSrno": 2036595,
+          "cortNm": "서울고등법원",
+          "csNoLstCtt": "2001나60578",
+          "mrgCsNoCtt": "2001나60578",
+          "prnjdgYmd": "20100623",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "f62da81d3ee895b5925d6cfa91fa9039ba4c427816a7f9983766e226630e4dcf",
+          "text_sha256": "90e3fbfbe2b80076947cc3b45fd01507600e4dbde2fde30e522a2fcc75977602",
+          "text_length": 20548,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.12
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "648fd2000f3e72f71beac5e0e06b2ff4ecd9d750ffeffdeee9df052cd8d6dba8",
+        "metadata": {
+          "법원명": "서울고등법원",
+          "사건번호": "2001나60578",
+          "선고일자": "20100623",
+          "판결유형": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "ea53ebf6e430b5ba185be31c27d5d9e48343e6e88f5550db1ae31abd83a4cfb1",
+          "text_sha256": "13e4fe2e5f5cca1f8635c37b8966daaa25a412309647e1f02755bd600a3ef42f",
+          "text_length": 20038,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 0,
+          "판결요지": 0
+        }
+      },
+      "comparison": []
+    },
+    {
+      "scourt_id": "2036768",
+      "law_id": "224121",
+      "legacy_position": 8499,
+      "legacy_case_full_no": "서울고등법원 2008. 2. 19. 선고 2001나60578 판결 ",
+      "legacy": [],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "53a75ba98fb57ffeb36aa5a4903a04f4caac043f9fd4b8c4a43c070d5f114d59",
+        "metadata": {
+          "jisCntntsSrno": 2036768,
+          "cortNm": "서울고등법원",
+          "csNoLstCtt": "2001나60578",
+          "mrgCsNoCtt": "2001나60578",
+          "prnjdgYmd": "20080219",
+          "adjdTypNm": "중간판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "d159ddaaa243c1192a7152b61aceda3ba1189014c8e4d232a48987c24d76fd37",
+          "text_sha256": "b4434e4c1a04b4a2660f6f64ce8e5a10bff0672952739cef8fbf3ef89e5bbd30",
+          "text_length": 32559,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.115
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "27925cf06a92e0dd02af7b17f4b12276afcbb07bf8277cf2d16583ebfff46a4b",
+        "metadata": {
+          "법원명": "서울고등법원",
+          "사건번호": "2001나60578",
+          "선고일자": "20080219",
+          "판결유형": "중간판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "6737e5d0c0eb20ced5149dbc2777f2b71d2f362d8f52e21311b9dca884edad78",
+          "text_sha256": "7e278da5313ee1457a39b5635891439f261f62a10ef7a6aabab0c8215e3293c9",
+          "text_length": 32268,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 0,
+          "판결요지": 0
+        }
+      },
+      "comparison": []
+    },
+    {
+      "scourt_id": "2252318",
+      "law_id": "195490",
+      "legacy_position": 29641,
+      "legacy_case_full_no": "대법원 2017. 4. 13. 선고 2017도953 판결 ",
+      "legacy": [],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "f3211a4b67f8087f4f50e0cdfebf5a8da2e4bb5bbafe775144f32042d211cbe9",
+        "metadata": {
+          "jisCntntsSrno": 2252318,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2017도953",
+          "mrgCsNoCtt": "2017도953",
+          "prnjdgYmd": "20170413",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "e46a7d0bd7665235f40e144fa71f2a7784c5005435b685535a50379e7f91d64a",
+          "text_sha256": "4fd207fbaabc8896f7f3e4c5884ba31fb1c0c8ee46a3fd6f141cdc5443813eae",
+          "text_length": 3077,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 3.119
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+        "metadata": {
+          "법원명": "대법원",
+          "사건번호": "2017도953",
+          "선고일자": "20170413",
+          "판결유형": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "7140a8f5776057078b9d0e927b809f4140b5fcc3aff93bee5e0f07f4496eba2f",
+          "text_sha256": "1b6424257c88a8e4e04ae521dc63d32470707b5d53f48d50ff7ccbdd63773a52",
+          "text_length": 2218,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 380,
+          "판결요지": 0
+        }
+      },
+      "comparison": []
+    },
+    {
+      "scourt_id": "2061329",
+      "law_id": "194079",
+      "legacy_position": 64176,
+      "legacy_case_full_no": " 대법원 1986. 10. 28. 선고 85후40 판결 ",
+      "legacy": [
+        {
+          "path": "20240723/lawgo_jomunupdated_panre_txt/64176-2061329-194079.txt",
+          "sha256": "05852757fd7bad955364186a7ba0dca58a704299cd26a7d48821713a4b91ddfe",
+          "storage_path": "blobs/05/05852757fd7bad955364186a7ba0dca58a704299cd26a7d48821713a4b91ddfe",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "05852757fd7bad955364186a7ba0dca58a704299cd26a7d48821713a4b91ddfe",
+            "text_sha256": "79874b487de37c3b23a3f94c75f39ea0b538033a1518f96d1030326718f315cb",
+            "text_length": 2690,
+            "images": [],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": false,
+              "판결요지": true,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "FAILED",
+        "reason": "UNEXPECTED_RESPONSE_SCHEMA",
+        "reclassified_from_preserved_response": "SOURCE_NOT_FOUND"
+      },
+      "law": {
+        "status": "FAILED",
+        "reason": "UNEXPECTED_RESPONSE_SCHEMA",
+        "reclassified_from_preserved_response": "SOURCE_NOT_FOUND"
+      }
+    },
+    {
+      "scourt_id": "3325151",
+      "law_id": null,
+      "legacy_position": 88471,
+      "legacy_case_full_no": " 대법원 2023. 11. 16. 선고 2019다289310 판결",
+      "legacy": [
+        {
+          "path": "20240723/glaw_updated_panre_txt/3325151.txt",
+          "sha256": "304a4eb6828700966ff3c30499afeab52b6397b47ff33e621fc861a41c26f741",
+          "storage_path": "blobs/30/304a4eb6828700966ff3c30499afeab52b6397b47ff33e621fc861a41c26f741",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "304a4eb6828700966ff3c30499afeab52b6397b47ff33e621fc861a41c26f741",
+            "text_sha256": "65675f6130accc629e9f377c4b25e574aed1a14721c65bb7bbde6a5baa3f5d28",
+            "text_length": 2062,
+            "images": [],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "62c1e662651533c4a92bba66c6cc740fd9904463f3a7ffe417a5772b755c544f",
+        "metadata": {
+          "jisCntntsSrno": 3325151,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2019다289310",
+          "mrgCsNoCtt": "2019다289310",
+          "prnjdgYmd": "20231116",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "2287974ccbaa1f2cc071dd759e62f0309001ef06602c55c204bd5383cd6f1039",
+          "text_sha256": "6a9fb0fd16774ce260718056fc805cd73e58c2367aa7395744c28f008fda3ddc",
+          "text_length": 1758,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.125
+      },
+      "comparison": [
+        {
+          "legacy_path": "20240723/glaw_updated_panre_txt/3325151.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2062,
+          "current_text_length": 1758,
+          "legacy_image_count": 0,
+          "current_image_count": 0,
+          "original_image_sources_equal": true
+        }
+      ]
+    },
+    {
+      "scourt_id": "3325503",
+      "law_id": "192890",
+      "legacy_position": 88481,
+      "legacy_case_full_no": " 대법원 1982. 10. 12. 선고 82도2078 판결",
+      "legacy": [
+        {
+          "path": "20240723/glaw_updated_panre_txt/3325503.txt",
+          "sha256": "6d321fd76d6baaefd686df29efc9160193d22824f843c76bf1e47bfe8fef05f4",
+          "storage_path": "blobs/6d/6d321fd76d6baaefd686df29efc9160193d22824f843c76bf1e47bfe8fef05f4",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "6d321fd76d6baaefd686df29efc9160193d22824f843c76bf1e47bfe8fef05f4",
+            "text_sha256": "a23676a99356658de0de090a4d9cf0d96246e9d8ae995e051d43503c729ce2e8",
+            "text_length": 2840,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  33,
+                  205
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": true,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        },
+        {
+          "path": "20240723/lawgo_jomunupdated_panre_txt/88481-3325503-192890.txt",
+          "sha256": "fba196a5bc86e383ff331361d984d81c7fc14569fa7832157178bea8ab5d72cb",
+          "storage_path": "blobs/fb/fba196a5bc86e383ff331361d984d81c7fc14569fa7832157178bea8ab5d72cb",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "fba196a5bc86e383ff331361d984d81c7fc14569fa7832157178bea8ab5d72cb",
+            "text_sha256": "658b7554b2e416499c5146ca9b1091ad63a3c8bbb5a1491caa0f1a56aefcd58d",
+            "text_length": 2847,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  100,
+                  199
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 2,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": true,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "b54c841e73f8c12169967f95a9412077bfe151edfcd51fe13c06668e728583f3",
+        "metadata": {
+          "jisCntntsSrno": 3325503,
+          "cortNm": "대법원",
+          "csNoLstCtt": "82도2078",
+          "mrgCsNoCtt": "82도2078",
+          "prnjdgYmd": "19821012",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "fa9bb1ef0b616806c8c04960bc470faed79ac53b1024af76d874ae75114be646",
+          "text_sha256": "89806999e0eee6707374f29bcd95eade3cd1245ea1017e8314e5e862dcda72fe",
+          "text_length": 1547,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": true,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.096
+      },
+      "law": {
+        "status": "FAILED",
+        "reason": "UNEXPECTED_RESPONSE_SCHEMA",
+        "reclassified_from_preserved_response": "SOURCE_NOT_FOUND"
+      },
+      "comparison": [
+        {
+          "legacy_path": "20240723/glaw_updated_panre_txt/3325503.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2840,
+          "current_text_length": 1547,
+          "legacy_image_count": 1,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        },
+        {
+          "legacy_path": "20240723/lawgo_jomunupdated_panre_txt/88481-3325503-192890.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2847,
+          "current_text_length": 1547,
+          "legacy_image_count": 1,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        }
+      ]
+    },
+    {
+      "scourt_id": "3328392",
+      "law_id": "240889",
+      "legacy_position": 88590,
+      "legacy_case_full_no": " 대법원 2023. 11. 16. 선고 2023도11810 판결",
+      "legacy": [
+        {
+          "path": "20241126/glaw_updated_panre_txt/3328392.txt",
+          "sha256": "09f2209307d74589e423023e47331df3c980c9f765a851ba848917ed98bc5f8b",
+          "storage_path": "blobs/09/09f2209307d74589e423023e47331df3c980c9f765a851ba848917ed98bc5f8b",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "09f2209307d74589e423023e47331df3c980c9f765a851ba848917ed98bc5f8b",
+            "text_sha256": "8bd03e01ab030fa3148d86aecf2520ab606050ca66ec8cd3ff7cdb388b6e0a81",
+            "text_length": 2810,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  32,
+                  221
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  32,
+                  437
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  32,
+                  1002
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  32,
+                  1218
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        },
+        {
+          "path": "20241126/lawgo_jomunupdated_panre_txt/88590-3328392-240889.txt",
+          "sha256": "ae2cd1335d90f1dbae034bdec46c81a9e903ec8ff8951ab91a56ef92e6b3a270",
+          "storage_path": "blobs/ae/ae2cd1335d90f1dbae034bdec46c81a9e903ec8ff8951ab91a56ef92e6b3a270",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "ae2cd1335d90f1dbae034bdec46c81a9e903ec8ff8951ab91a56ef92e6b3a270",
+            "text_sha256": "ab2155386530b1c6a797d3b643a7d759ceb8df68fb41ecffdc54646291661a56",
+            "text_length": 2817,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  347,
+                  215
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  347,
+                  453
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  347,
+                  1040
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  347,
+                  1278
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 11,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "59652b5ef2badd214b44739ba67b1de946ac548e9986ba9030b181f6e0622c51",
+        "metadata": {
+          "jisCntntsSrno": 3328392,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2023도11810",
+          "mrgCsNoCtt": "2023도11810",
+          "prnjdgYmd": "20231116",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "1763298511d6aba9b555e31511861a3233b06dc420a5c45426305f2b9ca1a08c",
+          "text_sha256": "d989f9c06ce287d25a2569ff8be59eeac1ec337109cd17ca756e5dd965e2ca54",
+          "text_length": 2325,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.109
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+        "metadata": {
+          "법원명": "대법원",
+          "사건번호": "2023도11810",
+          "선고일자": "20231116",
+          "판결유형": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "97658bcbd2921c7381ee103875ae6823ee6076d57cffe4d782c479aa1fe60f7e",
+          "text_sha256": "cd1ed461a0ea372d2ae0ed349121f44d791dd33a15721ecf72b0f75ccc9cad40",
+          "text_length": 1569,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 446,
+          "판결요지": 0
+        }
+      },
+      "comparison": [
+        {
+          "legacy_path": "20241126/glaw_updated_panre_txt/3328392.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2810,
+          "current_text_length": 2325,
+          "legacy_image_count": 4,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        },
+        {
+          "legacy_path": "20241126/lawgo_jomunupdated_panre_txt/88590-3328392-240889.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2817,
+          "current_text_length": 2325,
+          "legacy_image_count": 4,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        }
+      ]
+    },
+    {
+      "scourt_id": "3328393",
+      "law_id": "240891",
+      "legacy_position": 88591,
+      "legacy_case_full_no": " 대법원 2023. 11. 16. 선고 2023도12333 판결",
+      "legacy": [
+        {
+          "path": "20241126/glaw_updated_panre_txt/3328393.txt",
+          "sha256": "befe3b579c64a208ee34aac0bb7872b51e7c4e53b58a30acbaf9036296b56d7c",
+          "storage_path": "blobs/be/befe3b579c64a208ee34aac0bb7872b51e7c4e53b58a30acbaf9036296b56d7c",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "befe3b579c64a208ee34aac0bb7872b51e7c4e53b58a30acbaf9036296b56d7c",
+            "text_sha256": "758e5ddbde4b6bd3fd2e902c9472fc5df11188c8c839918a705d8b2262c425bf",
+            "text_length": 2579,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  209
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  421
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  644
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  862
+                ]
+              },
+              {
+                "order": 4,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1080
+                ]
+              },
+              {
+                "order": 5,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1288
+                ]
+              },
+              {
+                "order": 6,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1500
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        },
+        {
+          "path": "20241126/lawgo_jomunupdated_panre_txt/88591-3328393-240891.txt",
+          "sha256": "66db0b4ee2f57ac22b5c25fb64b02774b9c27fae9a518affd480ad5ae3f10213",
+          "storage_path": "blobs/66/66db0b4ee2f57ac22b5c25fb64b02774b9c27fae9a518affd480ad5ae3f10213",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "66db0b4ee2f57ac22b5c25fb64b02774b9c27fae9a518affd480ad5ae3f10213",
+            "text_sha256": "983a8f220d955dc1f7ac3a817e9991df5b279acc8ebd6cd2a7e848a419eeb06a",
+            "text_length": 2586,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  203
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  437
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  682
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  922
+                ]
+              },
+              {
+                "order": 4,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  1162
+                ]
+              },
+              {
+                "order": 5,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  1392
+                ]
+              },
+              {
+                "order": 6,
+                "original_src": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  379,
+                  1626
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 12,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "43e69bf13fdb7de7c6d2127c5117a276e4841ccd5cae021209fd80ebe7ac8b82",
+        "metadata": {
+          "jisCntntsSrno": 3328393,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2023도12333",
+          "mrgCsNoCtt": "2023도12333",
+          "prnjdgYmd": "20231116",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "9fabf78d98c803a93d5382b2c7f937e836559a7823e5c39e31cf3beb601f8cd1",
+          "text_sha256": "cda7d6ddf51d814966d0d0594741c11c8f35930e0f69497eee1597b1fee5cb5f",
+          "text_length": 2037,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.11
+      },
+      "law": {
+        "status": "SUCCESS",
+        "sha256": "8887de296b9553fd091e7a71982d5cc2af3b6f25f7bb8b002a220230ab7092ac",
+        "metadata": {
+          "법원명": "대법원",
+          "사건번호": "2023도12333",
+          "선고일자": "20231116",
+          "판결유형": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "5cef4304a1d8425b81d7a86b69983d58c0c95e3e31b9a8aa50f25be80bb905c3",
+          "text_sha256": "68f57a4818cd910210c64787862ca09513823019f9bb0323ed3bae74fc4554dc",
+          "text_length": 1391,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "editorial_lengths": {
+          "판시사항": 293,
+          "판결요지": 0
+        }
+      },
+      "comparison": [
+        {
+          "legacy_path": "20241126/glaw_updated_panre_txt/3328393.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2579,
+          "current_text_length": 2037,
+          "legacy_image_count": 7,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        },
+        {
+          "legacy_path": "20241126/lawgo_jomunupdated_panre_txt/88591-3328393-240891.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 2586,
+          "current_text_length": 2037,
+          "legacy_image_count": 7,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        }
+      ]
+    },
+    {
+      "scourt_id": "2029039",
+      "law_id": null,
+      "legacy_position": null,
+      "legacy_case_full_no": "legacy non-court/full-text/image specimen",
+      "legacy": [
+        {
+          "path": "20240723/glaw_updated_panre_txt/2029039.txt",
+          "sha256": "03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+          "storage_path": "blobs/03/03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "03a7a956ab1b0cd9008fefff4e3406c5aebd134c0d9a3a737a6002d6892ebecb",
+            "text_sha256": "bee034402fd38d2140d8f61ebbc0de9c28e0310ff23a8e0936618850015990b9",
+            "text_length": 99718,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-01.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-01.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  611
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-02.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-02.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  849
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-03.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-03.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  992
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-04.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-04.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  1142
+                ]
+              },
+              {
+                "order": 4,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-05.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-05.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  1285
+                ]
+              },
+              {
+                "order": 5,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-06.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-06.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5352
+                ]
+              },
+              {
+                "order": 6,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-07.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-07.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5495
+                ]
+              },
+              {
+                "order": 7,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-08.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-08.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5645
+                ]
+              },
+              {
+                "order": 8,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-09.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-09.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6146
+                ]
+              },
+              {
+                "order": 9,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-10.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-10.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6289
+                ]
+              },
+              {
+                "order": 10,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-11.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-11.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6684
+                ]
+              },
+              {
+                "order": 11,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-12.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-12.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  25,
+                  1179
+                ]
+              },
+              {
+                "order": 12,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-13.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-13.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  25,
+                  1710
+                ]
+              },
+              {
+                "order": 13,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-14.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-14.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  26,
+                  3011
+                ]
+              },
+              {
+                "order": 14,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-15.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-15.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  27,
+                  91
+                ]
+              },
+              {
+                "order": 15,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-16.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-16.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  30,
+                  2367
+                ]
+              },
+              {
+                "order": 16,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-17.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-17.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  1521
+                ]
+              },
+              {
+                "order": 17,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-18.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-18.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  3402
+                ]
+              },
+              {
+                "order": 18,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-19.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-19.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  4721
+                ]
+              },
+              {
+                "order": 19,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-20.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-20.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  9509
+                ]
+              },
+              {
+                "order": 20,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-21.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-21.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  34,
+                  1589
+                ]
+              },
+              {
+                "order": 21,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-22.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-22.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  1051
+                ]
+              },
+              {
+                "order": 22,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-23.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-23.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  2718
+                ]
+              },
+              {
+                "order": 23,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-24.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-24.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  2920
+                ]
+              },
+              {
+                "order": 24,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-25.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-25.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  49,
+                  1341
+                ]
+              },
+              {
+                "order": 25,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-26.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-26.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  1169
+                ]
+              },
+              {
+                "order": 26,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2505
+                ]
+              },
+              {
+                "order": 27,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-28.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-28.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2752
+                ]
+              },
+              {
+                "order": 28,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-29.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-29.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2903
+                ]
+              },
+              {
+                "order": 29,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-30.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-30.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3054
+                ]
+              },
+              {
+                "order": 30,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3344
+                ]
+              },
+              {
+                "order": 31,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-31.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-31.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3895
+                ]
+              },
+              {
+                "order": 32,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-32.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-32.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  4046
+                ]
+              },
+              {
+                "order": 33,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-33.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-33.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  62,
+                  1386
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 35,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": false,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        },
+        {
+          "path": "20241126/glaw_updated_panre_txt/2029039.txt",
+          "sha256": "c4f4397433f4293953b0156ce6d713364f5bf4db0a2c36f9cb47bcb24b245ad0",
+          "storage_path": "blobs/c4/c4f4397433f4293953b0156ce6d713364f5bf4db0a2c36f9cb47bcb24b245ad0",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "c4f4397433f4293953b0156ce6d713364f5bf4db0a2c36f9cb47bcb24b245ad0",
+            "text_sha256": "ce0df3a8b20655c36aebc79acd8011250bc738f4234fdfd9237025056a51e6a2",
+            "text_length": 99719,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-01.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-01.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  611
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-02.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-02.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  849
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-03.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-03.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  992
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-04.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-04.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  1142
+                ]
+              },
+              {
+                "order": 4,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-05.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-05.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  21,
+                  1285
+                ]
+              },
+              {
+                "order": 5,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-06.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-06.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5352
+                ]
+              },
+              {
+                "order": 6,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-07.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-07.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5495
+                ]
+              },
+              {
+                "order": 7,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-08.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-08.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  5645
+                ]
+              },
+              {
+                "order": 8,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-09.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-09.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6146
+                ]
+              },
+              {
+                "order": 9,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-10.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-10.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6289
+                ]
+              },
+              {
+                "order": 10,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-11.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-11.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  22,
+                  6684
+                ]
+              },
+              {
+                "order": 11,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-12.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-12.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  25,
+                  1179
+                ]
+              },
+              {
+                "order": 12,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-13.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-13.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  25,
+                  1710
+                ]
+              },
+              {
+                "order": 13,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-14.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-14.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  26,
+                  3011
+                ]
+              },
+              {
+                "order": 14,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-15.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-15.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  27,
+                  91
+                ]
+              },
+              {
+                "order": 15,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-16.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-16.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  30,
+                  2367
+                ]
+              },
+              {
+                "order": 16,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-17.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-17.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  1521
+                ]
+              },
+              {
+                "order": 17,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-18.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-18.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  3402
+                ]
+              },
+              {
+                "order": 18,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-19.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-19.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  4721
+                ]
+              },
+              {
+                "order": 19,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-20.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-20.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  32,
+                  9509
+                ]
+              },
+              {
+                "order": 20,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-21.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-21.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  34,
+                  1589
+                ]
+              },
+              {
+                "order": 21,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-22.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-22.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  1051
+                ]
+              },
+              {
+                "order": 22,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-23.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-23.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  2718
+                ]
+              },
+              {
+                "order": 23,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-24.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-24.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  44,
+                  2920
+                ]
+              },
+              {
+                "order": 24,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-25.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-25.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  49,
+                  1341
+                ]
+              },
+              {
+                "order": 25,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-26.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-26.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  1169
+                ]
+              },
+              {
+                "order": 26,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2505
+                ]
+              },
+              {
+                "order": 27,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-28.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-28.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2752
+                ]
+              },
+              {
+                "order": 28,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-29.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-29.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  2903
+                ]
+              },
+              {
+                "order": 29,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-30.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-30.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3054
+                ]
+              },
+              {
+                "order": 30,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-27.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3344
+                ]
+              },
+              {
+                "order": 31,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-31.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-31.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  3895
+                ]
+              },
+              {
+                "order": 32,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-32.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-32.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  56,
+                  4046
+                ]
+              },
+              {
+                "order": 33,
+                "original_src": "/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-33.gif",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=2029039&attachImgNm=11w0401-009-33.gif",
+                "srcset_original": null,
+                "alt": "본문내 삽입된 이미지",
+                "html_line_column": [
+                  62,
+                  1386
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 35,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": false,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "35faa161f1b6c622cf95cbaf0a114aef99d10244f635eb6e95d77690ba2e10e6",
+        "metadata": {
+          "jisCntntsSrno": 2029039,
+          "cortNm": "중앙해양안전심판원",
+          "csNoLstCtt": "중해심2008-26",
+          "mrgCsNoCtt": "중해심제2008-26호",
+          "prnjdgYmd": "20081204",
+          "adjdTypNm": "재결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "487ac087b4ac2dbe0905ba04eaa59732a6c635d14bcba93e2aa8060924d55eae",
+          "text_sha256": "2f98b911adc3b81d81ad720f94255e8e29a9ebbc8abea6419ca453e2486575e2",
+          "text_length": 98997,
+          "images": [
+            {
+              "order": 0,
+              "original_src": null,
+              "name": "img1",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-01.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                29,
+                115
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-01.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 1,
+              "original_src": null,
+              "name": "img2",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-02.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                29,
+                255
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-02.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 2,
+              "original_src": null,
+              "name": "img3",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-03.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                29,
+                300
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-03.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 3,
+              "original_src": null,
+              "name": "img4",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-04.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                29,
+                352
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-04.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 4,
+              "original_src": null,
+              "name": "img5",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-05.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                29,
+                397
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-05.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 5,
+              "original_src": null,
+              "name": "img6",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-06.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                5275
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-06.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 6,
+              "original_src": null,
+              "name": "img7",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-07.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                5320
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-07.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 7,
+              "original_src": null,
+              "name": "img8",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-08.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                5372
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-08.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 8,
+              "original_src": null,
+              "name": "img9",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-09.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                5775
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-09.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 9,
+              "original_src": null,
+              "name": "img10",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-10.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                5820
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-10.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 10,
+              "original_src": null,
+              "name": "img11",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-11.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                30,
+                6117
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-11.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 11,
+              "original_src": null,
+              "name": "img12",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-12.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                33,
+                1102
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-12.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 12,
+              "original_src": null,
+              "name": "img13",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-13.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                33,
+                1535
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-13.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 13,
+              "original_src": null,
+              "name": "img14",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-14.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                34,
+                2934
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-14.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 14,
+              "original_src": null,
+              "name": "img15",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-15.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                35,
+                91
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-15.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 15,
+              "original_src": null,
+              "name": "img16",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-16.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                38,
+                2290
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-16.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 16,
+              "original_src": null,
+              "name": "img17",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-17.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                40,
+                1521
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-17.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 17,
+              "original_src": null,
+              "name": "img18",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-18.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                40,
+                3304
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-18.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 18,
+              "original_src": null,
+              "name": "img19",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-19.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                40,
+                4525
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-19.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 19,
+              "original_src": null,
+              "name": "img20",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-20.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                40,
+                9215
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-20.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 20,
+              "original_src": null,
+              "name": "img21",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-21.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                42,
+                1512
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-21.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 21,
+              "original_src": null,
+              "name": "img22",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-22.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                64,
+                1051
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-22.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 22,
+              "original_src": null,
+              "name": "img23",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-23.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                64,
+                2620
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-23.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 23,
+              "original_src": null,
+              "name": "img24",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-24.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                64,
+                2724
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-24.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 24,
+              "original_src": null,
+              "name": "img25",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-25.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                69,
+                1264
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-25.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 25,
+              "original_src": null,
+              "name": "img26",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-26.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                1092
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-26.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 26,
+              "original_src": null,
+              "name": "img27",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-27.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                2330
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-27.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 27,
+              "original_src": null,
+              "name": "img28",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-28.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                2479
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-28.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 28,
+              "original_src": null,
+              "name": "img29",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-29.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                2532
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-29.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 29,
+              "original_src": null,
+              "name": "img30",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-30.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                2585
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-30.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 30,
+              "original_src": null,
+              "name": "img27",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-27.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                2777
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-27.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 31,
+              "original_src": null,
+              "name": "img31",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-31.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                3230
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-31.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 32,
+              "original_src": null,
+              "name": "img32",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-32.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                76,
+                3283
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-32.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            },
+            {
+              "order": 33,
+              "original_src": null,
+              "name": "img33",
+              "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=2029039&atchImgFileNm=11w0401-009-33.gif",
+              "srcset_original": null,
+              "alt": null,
+              "html_line_column": [
+                82,
+                1309
+              ],
+              "provider_mapping_values": [
+                "11w0401-009-33.gif"
+              ],
+              "resolution_basis": "Observed provider contImagePath name/value mapping"
+            }
+          ],
+          "statute_links": [],
+          "tables": 35,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": false,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        },
+        "elapsed_seconds": 2.195
+      },
+      "comparison": [
+        {
+          "legacy_path": "20240723/glaw_updated_panre_txt/2029039.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 99718,
+          "current_text_length": 98997,
+          "legacy_image_count": 34,
+          "current_image_count": 34,
+          "original_image_sources_equal": false
+        },
+        {
+          "legacy_path": "20241126/glaw_updated_panre_txt/2029039.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 99719,
+          "current_text_length": 98997,
+          "legacy_image_count": 34,
+          "current_image_count": 34,
+          "original_image_sources_equal": false
+        }
+      ],
+      "browser_mapping_verified": true
+    },
+    {
+      "scourt_id": "3325500",
+      "law_id": null,
+      "legacy_position": 88478,
+      "legacy_case_full_no": "대법원 2023. 11. 16. 선고 2020다296741, 296758 판결",
+      "legacy": [
+        {
+          "path": "20240723/glaw_updated_panre_txt/3325500.txt",
+          "sha256": "0ea618e2252400f4ee6b3d4f5cbc56be96577657c6cdc3c00446f443b81fdf43",
+          "storage_path": "blobs/0e/0ea618e2252400f4ee6b3d4f5cbc56be96577657c6cdc3c00446f443b81fdf43",
+          "observation": {
+            "observation_version": "html-diagnostic-1",
+            "html_sha256": "0ea618e2252400f4ee6b3d4f5cbc56be96577657c6cdc3c00446f443b81fdf43",
+            "text_sha256": "49fea13181cb826f34983384b4b5f9bfb36eff6834ce29408be54d9a2108ca77",
+            "text_length": 7820,
+            "images": [
+              {
+                "order": 0,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  211
+                ]
+              },
+              {
+                "order": 1,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  421
+                ]
+              },
+              {
+                "order": 2,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  637
+                ]
+              },
+              {
+                "order": 3,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1276
+                ]
+              },
+              {
+                "order": 4,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1486
+                ]
+              },
+              {
+                "order": 5,
+                "original_src": "/wsjodocs/images/contents/alert_img_01.png",
+                "resolved_url": "https://glaw.scourt.go.kr/wsjodocs/images/contents/alert_img_01.png",
+                "srcset_original": null,
+                "alt": "위헌조문 표시",
+                "html_line_column": [
+                  28,
+                  1838
+                ]
+              }
+            ],
+            "statute_links": [],
+            "tables": 0,
+            "legacy_jtables": 0,
+            "pdf_reference_count": 0,
+            "editorial_markers": {
+              "판시사항": true,
+              "판결요지": false,
+              "결정요지": false,
+              "이유": true,
+              "이 유": true
+            },
+            "requires_ocr": null,
+            "binary_acquired": false,
+            "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+          }
+        }
+      ],
+      "scourt": {
+        "status": "SUCCESS",
+        "sha256": "fc0b137a1f70c49012bd4d5b65a2b6a57dcec2ff5eec9bd2f06371f7f1fe86a1",
+        "metadata": {
+          "jisCntntsSrno": 3325500,
+          "cortNm": "대법원",
+          "csNoLstCtt": "2020다296741",
+          "mrgCsNoCtt": "2020다296741, 296758",
+          "prnjdgYmd": "20231116",
+          "adjdTypNm": "판결"
+        },
+        "observation": {
+          "observation_version": "html-diagnostic-1",
+          "html_sha256": "0f7038248f71a769718798bfe28291e6d3dfdb84a4b9bf3292868d16262c8cff",
+          "text_sha256": "196015f2ac885c4596fcf0dfcecb2518cfe761be12522612e0282de373ced76e",
+          "text_length": 7349,
+          "images": [],
+          "statute_links": [],
+          "tables": 0,
+          "legacy_jtables": 0,
+          "pdf_reference_count": 0,
+          "editorial_markers": {
+            "판시사항": true,
+            "판결요지": false,
+            "결정요지": false,
+            "이유": true,
+            "이 유": true
+          },
+          "requires_ocr": null,
+          "binary_acquired": false,
+          "scope": "Observed HTML only; text hash is diagnostic, not evidence or semantic equality"
+        }
+      },
+      "comparison": [
+        {
+          "legacy_path": "20240723/glaw_updated_panre_txt/3325500.txt",
+          "text_hash_equal": false,
+          "legacy_text_length": 7820,
+          "current_text_length": 7349,
+          "legacy_image_count": 6,
+          "current_image_count": 0,
+          "original_image_sources_equal": false
+        }
+      ]
+    }
+  ],
+  "law_page_checks": [
+    {
+      "format": "JSON",
+      "page": 1,
+      "ids": [
+        "195490"
+      ],
+      "status": "SUCCESS"
+    },
+    {
+      "format": "JSON",
+      "page": 2,
+      "ids": [],
+      "status": "SUCCESS"
+    },
+    {
+      "format": "XML",
+      "page": 1,
+      "ids": [
+        "195490"
+      ],
+      "status": "SUCCESS"
+    },
+    {
+      "format": "XML",
+      "page": 2,
+      "ids": [],
+      "status": "SUCCESS"
+    }
+  ],
+  "finished_at": "2026-09-10T04:07:02.485381+00:00",
+  "scope": "At most 12 selected legacy cases, bounded listings; no binary acquisition, OCR, corpus import or identity mutation",
+  "failed_id_search_followup": [
+    {
+      "source": "law_go_kr",
+      "query": "85후40",
+      "total": 1,
+      "candidates": [
+        {
+          "판례일련번호": "607465",
+          "사건번호": "85후40",
+          "법원명": "대법원",
+          "선고일자": "1986.10.28"
+        }
+      ],
+      "scope": "First five search results, not an identity decision"
+    },
+    {
+      "source": "law_go_kr",
+      "query": "82도2078",
+      "total": 1,
+      "candidates": [
+        {
+          "판례일련번호": "601365",
+          "사건번호": "82도2078",
+          "법원명": "대법원",
+          "선고일자": "1982.10.12"
+        }
+      ],
+      "scope": "First five search results, not an identity decision"
+    },
+    {
+      "source": "scourt",
+      "query": "85후40",
+      "total": 12,
+      "candidates": [
+        {
+          "jisCntntsSrno": "2025000017702",
+          "csNoLstCtt": "<strong>85후40</strong>",
+          "cortNm": "대법원",
+          "prnjdgYmd": "19861028"
+        },
+        {
+          "jisCntntsSrno": "2086318",
+          "csNoLstCtt": "86후132",
+          "cortNm": "대법원",
+          "prnjdgYmd": "19870224"
+        },
+        {
+          "jisCntntsSrno": "2090534",
+          "csNoLstCtt": "86후72",
+          "cortNm": "대법원",
+          "prnjdgYmd": "19871110"
+        },
+        {
+          "jisCntntsSrno": "2098880",
+          "csNoLstCtt": "89후1318",
+          "cortNm": "대법원",
+          "prnjdgYmd": "19900125"
+        },
+        {
+          "jisCntntsSrno": "2087559",
+          "csNoLstCtt": "86후109",
+          "cortNm": "대법원",
+          "prnjdgYmd": "19870324"
+        }
+      ],
+      "scope": "First five search results, not an identity decision"
+    }
+  ],
+  "replacement_candidates": [
+    {
+      "source": "law_go_kr",
+      "legacy_id": "194079",
+      "candidate_id": "607465",
+      "registry_changed": false,
+      "resolution": "REVIEW_REQUIRED",
+      "status": "SUCCESS",
+      "sha256": "923b5dca8e418540702cfb7fb553f8b02d7c7fe46d029d3a86c22d871109c143",
+      "metadata": {
+        "법원명": "대법원",
+        "사건번호": "85후40, 41",
+        "선고일자": "19861028",
+        "판결유형": "판결"
+      }
+    },
+    {
+      "source": "law_go_kr",
+      "legacy_id": "192890",
+      "candidate_id": "601365",
+      "registry_changed": false,
+      "resolution": "REVIEW_REQUIRED",
+      "status": "SUCCESS",
+      "sha256": "a9effc68aacb16c4e8e3b74eaf68410f73d7870bb708a749786f3d688022e61f",
+      "metadata": {
+        "법원명": "대법원",
+        "사건번호": "82도2078",
+        "선고일자": "19821012",
+        "판결유형": "판결"
+      }
+    },
+    {
+      "source": "scourt",
+      "legacy_id": "2061329",
+      "candidate_id": "2025000017702",
+      "registry_changed": false,
+      "resolution": "REVIEW_REQUIRED",
+      "status": "SUCCESS",
+      "sha256": "53ac27cca78fdac480e763c3d65106fe708de117ecb7487a70da557b3ec3907a",
+      "metadata": {
+        "cortNm": "대법원",
+        "csNoLstCtt": "85후40",
+        "prnjdgYmd": "19861028",
+        "adjdTypNm": "판결"
+      }
+    }
+  ]
+}

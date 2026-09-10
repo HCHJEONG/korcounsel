@@ -1,0 +1,58 @@
+[
+  {
+    "file": "law-0.json",
+    "sha256": "c0ba0e0536c76501bda71a5f501dbfd41ffbbcfd8be6c64e38d625a11417e624",
+    "source_url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=195490",
+    "retrieved_at": "2026-09-10T03:23:29.871116+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "law-1.json",
+    "sha256": "d06ad57d01e775397dcbec8c40f15e42824b4aed688903a6ec27407caf52f37d",
+    "source_url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=JSON&ID=240889",
+    "retrieved_at": "2026-09-10T03:23:31.053938+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "law-2.xml",
+    "sha256": "7440a1930fcacb3b5b8aaf3bc10fa70d3267d140267cc0c62264cba941eb2024",
+    "source_url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=XML&ID=195490",
+    "retrieved_at": "2026-09-10T03:23:33.358173+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "law-3.xml",
+    "sha256": "30f537f7a02bd247c0ff70e67dd1666aca97013d141613d9bf8df707356383d8",
+    "source_url": "https://www.law.go.kr/DRF/lawService.do?target=prec&type=XML&ID=240889",
+    "retrieved_at": "2026-09-10T03:23:34.527217+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "scourt-0.json",
+    "sha256": "287ff48636cf616dc9702e46626371cedbc26d69df0572c363440d7657219866",
+    "source_url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+    "retrieved_at": "2026-09-10T03:27:58.310662+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "scourt-1.json",
+    "sha256": "1d94769207683f9dc0c9ec5d0c20687689cb659567149e2ed16f70349baac9ef",
+    "source_url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+    "retrieved_at": "2026-09-10T03:27:59.354785+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "scourt-2.json",
+    "sha256": "71ab737b1d297ad591e31fe217bb77dc3b55f8fe715bfca50ba2bd17ab97b738",
+    "source_url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+    "retrieved_at": "2026-09-10T03:28:00.400375+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  },
+  {
+    "file": "scourt-3.json",
+    "sha256": "ec30c705c397bc42242aeed684582ab134767fc017a7e1f33e484e712893b12a",
+    "source_url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+    "retrieved_at": "2026-09-10T03:28:01.449654+00:00",
+    "origin": "OBSERVED_HTTP_RESPONSE"
+  }
+]

@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / source adapter·보존 import 후속
+> 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / Step 3 client·양 출처 상세 구현 / Step 3A 확대 검증·목록 보존 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 최신 작업: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
+> 최신 작업: 2026-09-10 OC 차단 제거·목록 재검증, scourt bounded inventory/worker, 12개 기존 ID 확대 조사 및 34개 이미지 참조 매핑 검증. 새 ID 후보는 검토 대상으로 보존하며 registry를 변경하지 않았다. docs/source-path-validation.md 참조. 이전 기록: 2026-09-10 사용자 결정 기록: LAW_GO_KR_OC/LAW_OPEN_API_OC는 비밀값이 아니며 응답 내 OC 포함으로 저장을 차단하지 않는다. 기존 차단 제거·목록 재검증은 후속 구현이다. 이전 기록: 2026-09-10 Step 3 JSON/XML client·현재 scourt 상세 adapter·worker 연결과 대표 2건 live 검증. 목록 credential 반사로 저장 차단; Step 3A 전체 inventory/fidelity 미완료. docs/source-adapters.md 참조. 이전 기록: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
 
 ## 1. 목적과 성공 기준
 
@@ -204,21 +204,25 @@ data/                 # runtime 데이터, Git 제외
 
 ### Step 3 — LAW OPEN API client
 
-- [ ] `CaseSource` protocol과 `LawOpenApiCaseSource`의 목록·상세 조회를 구현한다.
-- [ ] pagination, limit, timeout, 제한된 retry/backoff, 호출 간격과 오류 처리를 구현한다.
-- [ ] transport 응답 모델과 domain mapper를 분리한다.
-- [ ] 정상·빈 목록·오류·pagination 종료·limit을 mock integration test로 검증한다.
+- [x] `CaseSource` protocol과 `LawOpenApiCaseSource`의 목록·상세 조회를 구현한다.
+- [x] pagination, limit, timeout, 제한된 retry/backoff, 호출 간격과 오류 처리를 구현한다.
+- [x] transport 응답 모델과 domain mapper를 분리한다.
+- [x] 정상·빈 목록·오류·pagination 종료·limit을 mock integration test로 검증한다.
 
 완료 기준: credential 없는 테스트가 통과하며 실제 인증 설정이 있으면 소량의 API 응답을 검증한다. live 미실행은 명시한다.
 
 ### Step 3A — scourt·lawgo 현행 취득/보강 경로 검증
 
+2026-09-10 후속: 승인한 소량 검증·목록 구현 완료. OC 포함 목록 보존, scourt 페이지 snapshot·단일 worker, 12개 legacy 표본·새 ID 후보·이미지 34곳 브라우저 대조를 수행했다. 전체 completeness·PDF/scan·운영 자원 측정은 별도 미완료다. [기록](docs/source-path-validation.md).
+
 - [ ] 양쪽 사이트의 현행 endpoint·응답 schema·세션·DOM·popup·iframe·조문 링크·원문/asset 경로를 확인한다. 수년 전 selector·URL·형식의 호환성을 가정하지 않고 제공 정보 보존 범위에서 HTTP/세션/browser 전략을 비교한다.
 - [ ] 기존 ID의 대표 표본으로 본문·조문·이미지 참조를 대조하고 구조 변경/빈 추출/오류 페이지 탐지 fixture를 만든다. 미검증 adapter의 대량 수집·보강을 시작하지 않는다.
 - [ ] browser가 필요하면 Python 3.12/uv·headless·download/popup/iframe·network/DOM·Windows/Linux·testability로 Selenium/Playwright를 비교해 결정한다.
-- [ ] scourt metadata snapshot·contId 본문 취득 adapter를 구현하고 소량 live와 offline fixture를 구분해 검증한다.
+- [x] scourt metadata snapshot·기존 ID 본문 취득 adapter를 구현하고 소량 live와 offline fixture를 구분해 검증한다. 현재 jisCntntsSrno와 old contId의 일괄 동일성은 가정하지 않는다.
 
 완료 기준: 선택 근거와 접근 조건, 동일 표본의 metadata·원문 충실도·자원 사용을 기록한다. 단순 패키지 교체나 과거 URL 재사용만으로 완료하지 않는다.
+
+2026-09-10 부분 구현: 현재 portal.scourt.go.kr metadata·본문과 lawgo 조문 popup을 검증했다. 상세 adapter·worker 및 2쌍의 실제 표본을 보존했다. 전체 inventory·넓은 fidelity/자원 측정·목록 민감 원본 보존은 미완료다. [상세 기록](docs/source-adapters.md).
 
 ### Step 4 — Raw persistence 및 ingest
 

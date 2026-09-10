@@ -45,6 +45,43 @@ class Queue:
             request_key, "VERIFY_ARTIFACT", {"artifact_id": artifact_id}, max_attempts
         )
 
+    def submit_law_detail(self, request_key: str, source_id: str) -> Job:
+        from klegal_gold.sources.law_api import identifier
+
+        return self._submit(
+            request_key, "FETCH_LAW_DETAIL", {"source_id": identifier(source_id)}, 3
+        )
+
+    def submit_scourt_detail(self, request_key: str, source_id: str) -> Job:
+        from klegal_gold.sources.law_api import identifier
+
+        return self._submit(
+            request_key, "FETCH_SCOURT_DETAIL", {"source_id": identifier(source_id)}, 3
+        )
+
+    def submit_scourt_inventory(
+        self, request_key: str, *, query: str = "", max_pages: int = 2, display: int = 20
+    ) -> Job:
+        if (
+            not isinstance(query, str)
+            or len(query) > 200
+            or type(max_pages) is not int
+            or not 1 <= max_pages <= 10
+            or type(display) is not int
+            or not 1 <= display <= 100
+        ):
+            raise ValueError("INVALID_INVENTORY_REQUEST")
+        return self._submit(
+            request_key,
+            "FETCH_SCOURT_INVENTORY",
+            {
+                "query": query,
+                "max_pages": max_pages,
+                "display": display,
+            },
+            3,
+        )
+
     def submit_rebuild(self, request_key: str, *, max_attempts: int = 3) -> Job:
         return self._submit(request_key, "REBUILD_PROJECTION", {}, max_attempts)
 
@@ -78,9 +115,16 @@ class Queue:
             ):
                 raise ValueError("ARTIFACT_NOT_FOUND")
             result = conn.execute(
-                """INSERT INTO jobs(job_id,request_key,kind,payload,max_attempts)
-                   VALUES(%s,%s,%s,%s,%s) RETURNING *""",
-                (uuid4(), request_key, kind, Jsonb(payload), max_attempts),
+                """INSERT INTO jobs(job_id,request_key,kind,payload,max_attempts,handler_version)
+                   VALUES(%s,%s,%s,%s,%s,%s) RETURNING *""",
+                (
+                    uuid4(),
+                    request_key,
+                    kind,
+                    Jsonb(payload),
+                    max_attempts,
+                    "source-1" if kind.startswith("FETCH_") else "persistence-1",
+                ),
             ).fetchone()
             assert result is not None
             if kind == "REBUILD_PROJECTION":

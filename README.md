@@ -137,3 +137,9 @@ Step 0의 네 API 요청 기록과 소스·표본 해시는 docs/step0/에 보�
 운영 대상은 기존 aws-bastion 한 대이며 micro→호환 small, 필요 시 medium을 검토합니다. korcounsel.com에서 인증된 소수 사용자가 접근하고 같은 EC2에 API·worker·PostgreSQL·정적 웹을 둡니다. 월~금 한국 시간 10시 기동, 17시 작업 접수 중단·checkpoint 후 중지를 구현할 예정입니다. 평일 공휴일은 운영하며 주말은 자동 시작하지 않습니다.
 
 기존 약 9만 건을 초기 corpus로 계승하고 신규·변경분을 확장합니다. 기존 공식 ID를 보존하며 canonical ID를 새 UUID로 강제하지 않습니다. **법원명+사건번호**를 고유 업무키로 함께 유지하여 정부 ID 없는 LawnB 보유 판례에도 사용합니다. source ID·내용 버전·연결 revision의 역할과 원본 근거를 보존합니다. 판시사항·요지가 없거나 scan만 있어도 정상 판례로 수용합니다. gold에는 확실한 연결과 유효 evidence가 있는 쟁점만 포함하며 자동 검증과 사람 승인을 구분합니다. 이미지 탐지·참조 보존 뒤 취득·위치 복원·OCR를 순차 확장합니다. LLM·학습·GPU·OCR 해석은 초기 범위 밖입니다.
+
+## 공식 출처 소량 수집 — Step 3
+
+법제처 JSON/XML client와 현재 법원 포털 metadata·본문 수집을 단일 worker에 연결했습니다. klegal ops submit-law-detail / submit-scourt-detail은 request key를 유지해 조회·재시도합니다. 새 migration 0005가 필요합니다. [구현·실측·실행·남은 범위](docs/source-adapters.md)를 확인하세요. 사용자 확정에 따라 법제처 OC는 비밀값이 아니며 응답에 포함돼도 저장을 차단할 필요가 없습니다. OC 차단 제거와 JSON/XML 목록 재검증을 완료했고, 대량 수집은 아직 열지 않았습니다. 사용자 env는 검증에 명시적으로 사용했고 Compose에는 자동 전달하지 않았습니다.
+
+현재 scourt 목록은 klegal ops submit-scourt-inventory로 제한 등록합니다. migration 0006이 필요하며 전체 목록 완전성을 뜻하지 않습니다. [현행 경로 변경·ID 후보·이미지 검증](docs/source-path-validation.md)을 확인하세요.

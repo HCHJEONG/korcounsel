@@ -1,0 +1,29 @@
+{
+  "jobs": [
+    {
+      "job_id": "d10e8d57-e307-45a5-a7e2-cd01491030f3",
+      "status": "SUCCEEDED",
+      "attempts": 1,
+      "kind": "FETCH_SCOURT_INVENTORY",
+      "count": 10,
+      "completeness": "PARTIAL",
+      "metadata_hash": "509ba307522bdb9d4e3c21b519d2a91cd384a6077e220e547f8d5e1f7c5328a1"
+    },
+    {
+      "job_id": "a83c83f1-cb2a-4b90-a96c-9d0ea6eb1834",
+      "status": "SUCCEEDED",
+      "attempts": 1,
+      "kind": "FETCH_SCOURT_DETAIL",
+      "image_positions": 34,
+      "unique_image_urls": 33,
+      "raw_verified": true
+    }
+  ],
+  "worker_available": true,
+  "runtime": {
+    "draining": false,
+    "running": 0,
+    "ready_to_stop": false
+  },
+  "observed_at": "2026-09-10T04:25:56.953771+00:00"
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "url": "https://www.law.go.kr/lsLinkProc.do?lsClsCd=L&lsNm=%EC%95%84%EB%8F%99%C2%B7%EC%B2%AD%EC%86%8C%EB%85%84%EC%9D%98%20%EC%84%B1%EB%B3%B4%ED%98%B8%EC%97%90%20%EA%B4%80%ED%95%9C%20%EB%B2%95%EB%A5%A0&lsId=prec20231116&joNo=001300&efYd=20231116&mode=11&lnkJoNo=undefined",
+    "title": "조문정보 | 국가법령정보센터",
+    "observedAt": "2026-09-10T03:33:05.130Z",
+    "scope": "DOM table fragment, not HTTP response bytes",
+    "iframeCount": 0,
+    "sha256": "5e89a5e8c35bc73c4c0db069718196c1b6a63572a046f3f9b6639f54a2d65669",
+    "size_bytes": 1794,
+    "storage_path": "data/source-smoke/dom/5e89a5e8c35bc73c4c0db069718196c1b6a63572a046f3f9b6639f54a2d65669.html",
+    "representation": "DOM_SNAPSHOT"
+  },
+  {
+    "url": "https://portal.scourt.go.kr/pgp/main.on?w2xPath=PGP1011M04&jisCntntsSrno=2252318&c=900&srchwd=2017%EB%8F%84953",
+    "title": "판례 > 대법원 2017도953 | 사법정보공개포털",
+    "observedAt": "2026-09-10T03:33:10.733Z",
+    "scope": "DOM .page fragment, not HTTP response bytes",
+    "iframeCount": 0,
+    "sha256": "ed0bd98226be0d4e321630e9316306399178bad7d9d6e963fc4ade5c2663d864",
+    "size_bytes": 12669,
+    "storage_path": "data/source-smoke/dom/ed0bd98226be0d4e321630e9316306399178bad7d9d6e963fc4ade5c2663d864.html",
+    "representation": "DOM_SNAPSHOT"
+  }
+]

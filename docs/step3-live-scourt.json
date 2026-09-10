@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-09-10T03:28:01.452978+00:00",
+  "scope": "Two public portal details; no cookies or browser session supplied; no inventory",
+  "results": [
+    {
+      "id": "2252318",
+      "status": "SUCCESS",
+      "court": "대법원",
+      "docket": "2017도953",
+      "date": "20170413",
+      "hash": "1d94769207683f9dc0c9ec5d0c20687689cb659567149e2ed16f70349baac9ef",
+      "html_length": 6991,
+      "metadata_hash": "287ff48636cf616dc9702e46626371cedbc26d69df0572c363440d7657219866"
+    },
+    {
+      "id": "3328392",
+      "status": "SUCCESS",
+      "court": "대법원",
+      "docket": "2023도11810",
+      "date": "20231116",
+      "hash": "ec30c705c397bc42242aeed684582ab134767fc017a7e1f33e484e712893b12a",
+      "html_length": 6662,
+      "metadata_hash": "71ab737b1d297ad591e31fe217bb77dc3b55f8fe715bfca50ba2bd17ab97b738"
+    }
+  ],
+  "receipts": [
+    {
+      "hash": "287ff48636cf616dc9702e46626371cedbc26d69df0572c363440d7657219866",
+      "path": "blobs/28/287ff48636cf616dc9702e46626371cedbc26d69df0572c363440d7657219866",
+      "size": 919,
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:27:58.310662+00:00"
+    },
+    {
+      "hash": "1d94769207683f9dc0c9ec5d0c20687689cb659567149e2ed16f70349baac9ef",
+      "path": "blobs/1d/1d94769207683f9dc0c9ec5d0c20687689cb659567149e2ed16f70349baac9ef",
+      "size": 11851,
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:27:59.354785+00:00"
+    },
+    {
+      "hash": "71ab737b1d297ad591e31fe217bb77dc3b55f8fe715bfca50ba2bd17ab97b738",
+      "path": "blobs/71/71ab737b1d297ad591e31fe217bb77dc3b55f8fe715bfca50ba2bd17ab97b738",
+      "size": 911,
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:28:00.400375+00:00"
+    },
+    {
+      "hash": "ec30c705c397bc42242aeed684582ab134767fc017a7e1f33e484e712893b12a",
+      "path": "blobs/ec/ec30c705c397bc42242aeed684582ab134767fc017a7e1f33e484e712893b12a",
+      "size": 11178,
+      "url": "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctCtxt.on",
+      "status": 200,
+      "retrieved_at": "2026-09-10T03:28:01.449654+00:00"
+    }
+  ]
+}
