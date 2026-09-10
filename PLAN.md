@@ -1,5 +1,9 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**교정 후 Parquet 확정 — 2026-09-10:** 기준 원문은 태그 있는 스크레이핑 텍스트로 보존하고, 추출 필드의 확인된 오류를 고친 결과를 Parquet에 담는다. 기존 pickle은 동결 보관한다. 다음은 decision_date·closing_argument의 기존 로직 보완과 전수 대조, 다른 추출 오류 목록화다. 원문 불변·교정 근거·변경 이력·미확정 상태를 검증하며 실제 전수 교정과 Parquet 생성은 아직 미실행이다. [확정 계약](docs/legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
+
+**날짜 로직 조사 — 2026-09-10:** 기존 date 함수의 parser.parser/parse 오호출을 재현했다. 146행 중 145행은 호출 수정으로 날짜 추출, 나머지 군사법원 1행은 사건번호 regex 오인식이며 기존 datetime도 2072-01-01 오류 표식이다. closing_argument는 date 30개·no_info 116개 모두 기존값과 일치했다. 다음 우선 작업은 기존 로직 보완·날짜 전수 대조이며 원본 수정·전수 복구는 아직 하지 않았다. [조사 근거](docs/legacy-date-logic-audit.md).
+
 **Parquet 검증 완료 — 2026-09-10:** 89,130행×60컬럼의 최상위 타입 전수 조사와 실제 146행 표본의 Python·Node 왕복 검증을 통과했다. 자동 변환은 혼합형 컬럼에서 실패하며 명시 schema가 필요하다. 표본 8,615셀은 값 보존, 145셀은 OPAQUE 원본 참조다. 전수 exporter·worker Parquet 입력·전체 적재는 후속이다. [실측·재현·한계](docs/legacy-parquet-validation.md).
 
 **전체 import 전 점검:** text 8,482개 중 7,989개는 newline 변환 후 저장값과 일치, 기본 본문 491개도 저장된 보강본에 대응한다. ID 미연결 2029039 두 파일은 기존 6429행과 동일 재결 후보다. 전체 import는 아직 실행하지 않았다. [점검 결과](docs/legacy-text-coverage-audit.md).

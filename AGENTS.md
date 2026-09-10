@@ -1,5 +1,7 @@
 # KorCounsel Agent Instructions
 
+**원문·교정 정책 — 2026-09-10 사용자 확정:** 태그 있는 스크레이핑 텍스트가 기준 원문이며 추출 필드는 교정 가능한 파생 데이터다. 기존 pickle은 동결 archive로 유지하고 확인된 추출 오류를 교정한 DataFrame을 Parquet에 담는다. 원문 문자열은 변경하지 않고 보강 이력·원래 행 locator·수정 전후 값/참조·근거·규칙 버전·미확정 상태를 기록한다. FULL_ROW 원행 보존 규칙은 교정 전 archive 계약이며 잘못된 값을 운영 필드에 영구 유지하라는 뜻이 아니다. 날짜 두 필드 교정·전수 대조를 우선하고 다른 추출 오류도 목록화한다. docs/legacy-full-row-import.md 참조. 전수 교정은 아직 미실행이다.
+
 **FULL_ROW import 규칙 — 2026-09-10:** 기존 pickle의 DataFrame을 재사용하며 text 파일로 재구성하지 않는다. pandas/NumPy·allowlist unpickler는 분석용 export에만 두고 앱 worker에는 넣지 않는다. 해시 고정 bundle·전체 컬럼/position·원행·OPAQUE archive 참조·행별 격리/재개 ledger를 보존한다. 보존 성공을 canonical 등록·gold 완료로 취급하지 않는다. docs/legacy-full-row-import.md 참조.
 
 > **재판결과 식별 규칙 — 2026-09-10 사용자 확정:** 법원 명칭 + 사건번호 + 재판 종류는 제도적으로 특정 재판결과를 식별하는 조합이다. 사건 키(법원+사건번호), 재판결과 키(세 요소), 독립 canonical ID, 출처 ID를 구분한다. 재판 종류의 원표기·법원 지원/지부·병합 사건번호를 보존하고 결측·충돌은 기록한다. 선고일이나 source ID를 임의로 키에 추가하지 않으며, 데이터 충돌을 자동 병합·삭제로 해소하지 않는다. docs/case-identity.md 참조. 모델·정규화·DB 제약은 구현됐으며 docs/decision-identity-implementation.md의 범위와 한계를 따른다.

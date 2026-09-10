@@ -1,5 +1,7 @@
 # Provenance와 재현성 계약
 
+**원문과 파생값 — 2026-09-10 사용자 확정:** legacy 기준 원문은 태그 있는 스크레이핑 텍스트이며 추출 필드는 오류 교정 대상이다. 기존 pickle은 동결 archive로 남기고, 교정값은 원래 행 locator·수정 전후 값/참조·근거·규칙 버전·상태와 함께 새 Parquet 버전에 담는다. 원문과 기존 release 불변 원칙은 파생값의 교정을 금지하지 않는다. 보강된 저장 문자열을 과거 HTTP 응답 바이트로 간주하지 않는 계약은 유지한다. [상세](legacy-full-row-import.md#원문-보존과-추출값-교정--2026-09-10-사용자-확정).
+
 2026-09-09 추가 지시 반영. 원본과 파생 결과, source identity와 canonical identity를 구분한다.
 
 - 원본 바이트 SHA-256과 source_system/source_document_id, 취득 UTC 시각, credential 없는 source URL, parser/normalizer/schema/dataset version을 보존한다.

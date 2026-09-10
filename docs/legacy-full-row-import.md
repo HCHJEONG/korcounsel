@@ -4,11 +4,35 @@
 
 2026-09-10. 기존 pickle에 저장된 DataFrame을 재사용하는 export 도구와 단일 worker importer를 구현하고 실제 표본을 검증했다.
 
+## 원문 보존과 추출값 교정 — 2026-09-10 사용자 확정
+
+**기준 원문은 태그가 있는 스크레이핑 텍스트이며, 그 텍스트에서 추출한 필드값은 교정 가능한 파생 데이터다. 기존 DataFrame의 확인된 오류를 고친 결과를 Parquet에 담는다.** 원본성 보존을 이유로 추출 오류를 계속 정상값으로 사용하지 않는다.
+
+- 기준 원문인 `case_txt_scraped_with_tags`의 저장 문자열을 변경하지 않는다. 기존 조문·이미지 보강이 반영된 경우 그 이력을 함께 보존하며, 이 문자열을 과거 HTTP 응답 원본 바이트라고 부르지 않는다. `case_txt_in_file` 등 추출·가공 텍스트와 metadata의 출처도 구분한다.
+- 기존 pickle은 수정 전 상태의 동결 archive로 보관·백업한다. 새 교정 결과를 원본 pickle에 덮어쓰거나 신규 판례를 계속 증보할 필요는 없다.
+- 기존 DataFrame의 행·컬럼을 출발점으로 삼되, 추출 필드의 명확한 버그·잘못된 타입·오류용 기본값은 근거에 따라 교정한다. 전체 DataFrame을 별도 text 파일 목록으로 다시 조립하라는 결정은 아니다.
+- 운영용 Parquet에는 보존한 원문과 검증된 교정값을 함께 담는다. 기존 parser 객체나 가짜 날짜 `2072-01-01`을 정상 추출값으로 계승하지 않는다. 역사적 OPAQUE 값은 원본 archive와 변경 이력에서 추적하며 모든 운영 셀에 중복 보유할 필요는 없다.
+- 교정 기록에는 snapshot 해시·원래 행 position/index·필드명·수정 전후 값 또는 archive 참조·수정 이유·근거 텍스트/위치·규칙 버전·처리 상태를 남긴다. 객체를 무리하게 문자열화하지 않는다.
+- 불확실한 값은 추측해서 확정하지 않는다. 미확정·결측·충돌·실패를 구분하고 이전값과 근거를 추적할 수 있게 한다. 예를 들어 closing_argument의 `no_info`는 자동으로 추출 버그라는 뜻이 아니다.
+- 과거 보존 bundle과 release는 덮어쓰지 않는다. 이후 수정도 새 Parquet 버전과 manifest로 반영할 수 있다. 보존 성공·교정 검증·canonical 연결·gold 완료는 별도 상태다.
+
+### 우선 작업과 완료 기준
+
+1. 기존 decision_date·closing_argument 추출 로직을 재사용하되 확인된 버그와 경계 사례를 보완하고 전수 재계산·대조한다.
+2. 다른 추출 필드의 타입 오류·오류 표식·원문 불일치 후보도 목록화한다. 의미 있는 값을 일괄 결측 처리하거나 타입만 보고 자동 교정하지 않는다.
+3. 기준 원문 문자열의 hash 불변, 전체 행·컬럼 대응, 변경 내역의 완전성, 교정값의 근거 일치, 미확정 건수, Parquet 왕복을 검증한다.
+4. 검증된 교정 결과로 전수 Parquet을 만들고 후속 PostgreSQL 적재를 연결한다.
+
+**현재는 정책 확정과 날짜 로직 표본 조사까지 완료했다. 실제 전수 교정·교정본 Parquet 생성·전체 DB 적재는 아직 실행하지 않았다.** [날짜 로직 조사](legacy-date-logic-audit.md).
+
+아래의 원행 값·타입·OPAQUE 보존 설명은 기존 FULL_ROW archive 경로와 교정 전 표본 실험의 계약이다. 교정된 운영용 Parquet의 모든 파생 필드를 과거 오류값과 동일하게 유지하라는 요구가 아니다.
+
+
 ## 저장 매체 결정: pickle, Parquet, PostgreSQL
 
 Parquet은 행 단위 문서 형식이 아니라 **컬럼 지향(columnar) 이진 파일 형식**이다. 컬럼의 자료형과 schema를 기록하고, 컬럼별 압축·인코딩과 필요한 컬럼만 선택해 읽는 처리를 지원한다. 따라서 89,130행×60컬럼을 한 행당 JSON 파일 89,130개로 펼치는 것보다 파일 수와 파일시스템 부하를 줄이면서 전수 통계, 컬럼 검사, 재처리 입력으로 사용하기 쉽다. 파일 또는 partition의 SHA-256을 manifest에 고정하면 변경되지 않는 snapshot으로 전달·대조하기도 쉽다.
 
-다만 Parquet은 Python 객체 저장소가 아니다. 문자열, 정수, 실수, bool, 날짜·시각, binary, list·struct처럼 schema로 표현 가능한 값은 Python·Java·Node.js 등에서 공유할 수 있지만 `dateutil.parser.parser` 같은 임의의 Python 객체 그래프를 그대로 복원하지는 못한다. 기존 corpus의 이런 값은 원래 pickle에 보존하고 Parquet에는 최소한 `OPAQUE`, Python type, snapshot hash, original position/index, field 이름을 기록해 원본 위치를 찾을 수 있게 한다. 빈 문자열, 정수 0, null, NaN, list/tuple 같은 역사적 구분도 변환 전에 명시적 표현 계약과 cell fingerprint로 검증해야 한다.
+다만 Parquet은 Python 객체 저장소가 아니다. 문자열, 정수, 실수, bool, 날짜·시각, binary, list·struct처럼 schema로 표현 가능한 값은 Python·Java·Node.js 등에서 공유할 수 있지만 `dateutil.parser.parser` 같은 임의의 Python 객체 그래프를 그대로 복원하지는 못한다. 교정 전 원행 보존 실험에서는 이런 값을 원래 pickle에 보존하고 Parquet에 최소한 `OPAQUE`, Python type, snapshot hash, original position/index, field 이름을 기록해 원본 위치를 찾을 수 있게 한다. 빈 문자열, 정수 0, null, NaN, list/tuple 같은 역사적 구분도 변환 전에 명시적 표현 계약과 cell fingerprint로 검증해야 한다.
 
 세 저장 매체의 책임은 다음과 같이 구분한다.
 
@@ -20,7 +44,7 @@ Parquet은 행 단위 문서 형식이 아니라 **컬럼 지향(columnar) 이�
 
 PostgreSQL은 89,130행을 담을 용량이 부족해서 제외하는 것이 아니다. 이 규모 자체는 PostgreSQL에 작다. 직접 적재만으로 끝내지 않는 이유는 원본 보존, 재현 가능한 입력 snapshot, 운영 데이터의 책임이 서로 다르기 때문이다. 대형 HTML과 모든 중간 표현을 운영 테이블에 넣으면 같은 EC2의 DB 크기·backup·vacuum 비용이 커지고, schema를 정하기 전에 값이 coercion될 수 있다. PostgreSQL에는 사용자·세션, job·ledger, canonical/link revision, 검토 이력, 검색에 필요한 판례 projection과 artifact hash/locator를 둔다. 원본과 전수 snapshot은 불변 파일로 유지한다. JSONB를 사용해도 JSON이 표현하지 못하는 Python 객체와 타입 구분 문제가 사라지지는 않는다.
 
-따라서 현재 목표 구조는 **원본 pickle + 전체 Parquet snapshot + PostgreSQL projection/registry**다. 이미 구현한 행별 tagged JSON bundle은 SAMPLE 검증, 행 단위 격리, API 전달과 개별 원행 대조에 사용할 수 있지만, 89,130행 전수 보존의 유일한 주 형식으로 확정하지 않는다. Parquet 전환은 원본 pickle을 폐기하거나 현재 PostgreSQL importer의 보존 이력을 초기화하는 작업이 아니다.
+따라서 현재 목표 구조는 **동결 pickle archive + 기준 원문과 교정된 추출값을 담은 전체 Parquet snapshot + PostgreSQL projection/registry**다. 이미 구현한 행별 tagged JSON bundle은 SAMPLE 검증, 행 단위 격리, API 전달과 개별 원행 대조에 사용할 수 있지만, 89,130행 전수 보존의 유일한 주 형식으로 확정하지 않는다. Parquet 전환은 원본 pickle을 폐기하거나 현재 PostgreSQL importer의 보존 이력을 초기화하는 작업이 아니다.
 
 ### Node.js 사용 경계
 

@@ -1,0 +1,89 @@
+{
+  "scope": "EXISTING_146_ROW_PARQUET_SAMPLE_NOT_FULL_CORPUS",
+  "source_sha256": "23410f1b67c139a7c2f6ee12eed6550749ce7a2b5f89ee7096ca3867cbd62fe9",
+  "source": "/mnt/i/VSCodeBases/web2df/_04_concat_old_and_new_df_corpus_then_create_fullest.py",
+  "sample_rows": 146,
+  "counts": {
+    "old_parser": 145,
+    "corrected_date": 145,
+    "closing_str": 116,
+    "closing_value_no_info": 116,
+    "closing_date": 30,
+    "old_datetime": 1,
+    "corrected_sentinel": 1
+  },
+  "closing_mismatches": [],
+  "examples": [
+    {
+      "position": 0,
+      "title": "대법원 2011. 3. 10. 선고 2010도16942 판결 ",
+      "buggy_result_type": "dateutil.parser._parser.parser",
+      "buggy_parser_info": "2011. 3. 10.",
+      "corrected": "2011-03-10T00:00:00"
+    },
+    {
+      "position": 1,
+      "title": "대법원 2011. 3. 10. 선고 2010두9976 판결 ",
+      "buggy_result_type": "dateutil.parser._parser.parser",
+      "buggy_parser_info": "2011. 3. 10.",
+      "corrected": "2011-03-10T00:00:00"
+    },
+    {
+      "position": 4,
+      "title": "대법원 2011. 3. 10. 선고 2008도6335 판결 ",
+      "buggy_result_type": "dateutil.parser._parser.parser",
+      "buggy_parser_info": "2011. 3. 10.",
+      "corrected": "2011-03-10T00:00:00"
+    },
+    {
+      "position": 19539,
+      "title": "제26사단보통군사법원 2002. 10. 24. 선고 2002고26 판결 ",
+      "stored_decision_date": {
+        "type": "datetime.datetime",
+        "value": "2072-01-01T00:00:00"
+      },
+      "corrected": "2072-01-01T00:00:00"
+    }
+  ],
+  "synthetic_checks": [
+    {
+      "input": "【변론종결】lnfd 2010. 7. 9. 【주문】기각",
+      "result": "2010-07-09"
+    },
+    {
+      "input": "【변론종결】2010. 7. 9. 및 2010. 8. 10. 【주문】기각",
+      "result": "2010-08-10"
+    },
+    {
+      "input": "【주문】기각",
+      "result": "no_info"
+    },
+    {
+      "input": "",
+      "result": "Error"
+    },
+    {
+      "input": null,
+      "error": "TypeError"
+    },
+    {
+      "input": "【변론종결】2010. 13. 40. 【주문】기각",
+      "error": "ParserError"
+    },
+    {
+      "title": "대법원 2020. 1. 2. 선고 2019다12345 판결",
+      "corrected_result": "2020-01-02T00:00:00"
+    },
+    {
+      "title": "대법원 2020.1.2. 선고 2019다12345 판결",
+      "corrected_result": "2072-01-01T00:00:00"
+    },
+    {
+      "title": "",
+      "corrected_result": "2072-01-01T00:00:00"
+    }
+  ],
+  "military_title_first_case_match": "26사단보통군사법원 2002",
+  "parser_constructor_source": "    def __init__(self, info=None):\n        self.info = info or parserinfo()\n",
+  "method": "Reviewed AST function definitions only; no legacy module import or top-level execution. One-call parse correction is an in-memory experiment only."
+}
