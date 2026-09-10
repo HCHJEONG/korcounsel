@@ -1,0 +1,1943 @@
+{
+  "scope": "FULL_TYPE_PROFILE_AND_SAMPLE_PARQUET",
+  "runtime": {
+    "pandas": "2.2.3",
+    "numpy": "1.26.4",
+    "pyarrow": "25.0.0"
+  },
+  "profile": {
+    "case_txt_scraped_with_tags": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        2225813,
+        16634
+      ],
+      "representation": "string"
+    },
+    "case_txt_in_file": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        985386,
+        16634
+      ],
+      "representation": "string"
+    },
+    "case_full_no": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        120,
+        87500
+      ],
+      "representation": "string"
+    },
+    "case_official_name": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        386,
+        14527
+      ],
+      "representation": "string"
+    },
+    "case_unofficial_name": {
+      "dtype": "object",
+      "types": {
+        "builtins.int": 87984,
+        "builtins.str": 1146
+      },
+      "categories": {
+        "builtins.int:zero": 87984,
+        "builtins.str:text": 1146
+      },
+      "first_positions": {
+        "builtins.int:zero": 0,
+        "builtins.str:text": 4
+      },
+      "longest_string": [
+        248,
+        21944
+      ],
+      "representation": "cell"
+    },
+    "citedPlace": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 75662,
+        "builtins.int": 13468
+      },
+      "categories": {
+        "builtins.str:text": 75662,
+        "builtins.int:zero": 13468
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 29
+      },
+      "longest_string": [
+        44,
+        88321
+      ],
+      "representation": "cell"
+    },
+    "previous_case": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 77145,
+        "builtins.int": 11985
+      },
+      "categories": {
+        "builtins.str:text": 77145,
+        "builtins.int:zero": 11985
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 31
+      },
+      "longest_string": [
+        886,
+        39658
+      ],
+      "representation": "cell"
+    },
+    "decision_items": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 74213,
+        "builtins.int": 14917
+      },
+      "categories": {
+        "builtins.str:text": 74213,
+        "builtins.int:zero": 14917
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 29
+      },
+      "longest_string": [
+        2956,
+        36630
+      ],
+      "representation": "cell"
+    },
+    "decision_gists": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 64433,
+        "builtins.int": 24697
+      },
+      "categories": {
+        "builtins.str:text": 64433,
+        "builtins.int:zero": 24697
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 8
+      },
+      "longest_string": [
+        12696,
+        41762
+      ],
+      "representation": "cell"
+    },
+    "main_decision": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89128,
+        "builtins.int": 2
+      },
+      "categories": {
+        "builtins.str:text": 88580,
+        "builtins.str:empty": 548,
+        "builtins.int:zero": 2
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.str:empty": 704,
+        "builtins.int:zero": 46394
+      },
+      "longest_string": [
+        27716,
+        89007
+      ],
+      "representation": "cell"
+    },
+    "reasoning": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89126,
+        "builtins.int": 4
+      },
+      "categories": {
+        "builtins.str:text": 89126,
+        "builtins.int:zero": 4
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 46394
+      },
+      "longest_string": [
+        970554,
+        16634
+      ],
+      "representation": "cell"
+    },
+    "case_comment": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        1790,
+        29801
+      ],
+      "representation": "string"
+    },
+    "related_articles": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        21891,
+        61221
+      ],
+      "representation": "string"
+    },
+    "applicable_acts": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 73011,
+        "builtins.int": 16119
+      },
+      "categories": {
+        "builtins.str:text": 73011,
+        "builtins.int:zero": 16119
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 29
+      },
+      "longest_string": [
+        2694,
+        7711
+      ],
+      "representation": "cell"
+    },
+    "applicable_precedents": {
+      "dtype": "object",
+      "types": {
+        "builtins.int": 47950,
+        "builtins.str": 41180
+      },
+      "categories": {
+        "builtins.int:zero": 47950,
+        "builtins.str:text": 41180
+      },
+      "first_positions": {
+        "builtins.int:zero": 0,
+        "builtins.str:text": 1
+      },
+      "longest_string": [
+        2224,
+        18166
+      ],
+      "representation": "cell"
+    },
+    "applicable_acts_tail": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        1853,
+        39101
+      ],
+      "representation": "string"
+    },
+    "applicable_precedents_tail": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        2184,
+        18166
+      ],
+      "representation": "string"
+    },
+    "applicable_acts_in_body": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        4375,
+        16634
+      ],
+      "representation": "string"
+    },
+    "applicable_precedents_in_body": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        7140,
+        16634
+      ],
+      "representation": "string"
+    },
+    "following_cases": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        3457,
+        44374
+      ],
+      "representation": "string"
+    },
+    "original_case": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        932,
+        70825
+      ],
+      "representation": "string"
+    },
+    "site": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        4,
+        0
+      ],
+      "representation": "string"
+    },
+    "hangul_keyword": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 86113,
+        "builtins.int": 3017
+      },
+      "categories": {
+        "builtins.str:text": 86113,
+        "builtins.int:zero": 3017
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 86113
+      },
+      "longest_string": [
+        11,
+        72019
+      ],
+      "representation": "cell"
+    },
+    "important": {
+      "dtype": "object",
+      "types": {
+        "builtins.bool": 89130
+      },
+      "categories": {
+        "builtins.bool": 89130
+      },
+      "first_positions": {
+        "builtins.bool": 0
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "supreme": {
+      "dtype": "object",
+      "types": {
+        "builtins.bool": 89130
+      },
+      "categories": {
+        "builtins.bool": 89130
+      },
+      "first_positions": {
+        "builtins.bool": 0
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "jeonhap": {
+      "dtype": "object",
+      "types": {
+        "builtins.bool": 89130
+      },
+      "categories": {
+        "builtins.bool": 89130
+      },
+      "first_positions": {
+        "builtins.bool": 0
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "party_info": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89128,
+        "builtins.int": 2
+      },
+      "categories": {
+        "builtins.str:text": 89126,
+        "builtins.str:empty": 2,
+        "builtins.int:zero": 2
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.str:empty": 33012,
+        "builtins.int:zero": 46394
+      },
+      "longest_string": [
+        1626,
+        25897
+      ],
+      "representation": "cell"
+    },
+    "multipartycase": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        137,
+        86694
+      ],
+      "representation": "string"
+    },
+    "uppercase": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        270,
+        33140
+      ],
+      "representation": "string"
+    },
+    "file_created_time": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        24,
+        0
+      ],
+      "representation": "string"
+    },
+    "etcdoc": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        10,
+        0
+      ],
+      "representation": "string"
+    },
+    "file_process_time": {
+      "dtype": "object",
+      "types": {
+        "builtins.float": 89130
+      },
+      "categories": {
+        "builtins.float:finite": 89130
+      },
+      "first_positions": {
+        "builtins.float:finite": 0
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "folder_file_name": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        131,
+        72021
+      ],
+      "representation": "string"
+    },
+    "case_no": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        21,
+        79911
+      ],
+      "representation": "string"
+    },
+    "code": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        10,
+        84650
+      ],
+      "representation": "string"
+    },
+    "case_sort": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        8,
+        8422
+      ],
+      "representation": "string"
+    },
+    "court_name": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        15,
+        15870
+      ],
+      "representation": "string"
+    },
+    "decision_date": {
+      "dtype": "object",
+      "types": {
+        "dateutil.parser._parser.parser": 89129,
+        "datetime.datetime": 1
+      },
+      "categories": {
+        "dateutil.parser._parser.parser": 89129,
+        "datetime.datetime": 1
+      },
+      "first_positions": {
+        "dateutil.parser._parser.parser": 0,
+        "datetime.datetime": 19539
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "judge": {
+      "dtype": "object",
+      "types": {
+        "builtins.dict": 89130
+      },
+      "categories": {
+        "builtins.dict": 89130
+      },
+      "first_positions": {
+        "builtins.dict": 0
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "repealed_cases": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        42,
+        17577
+      ],
+      "representation": "string"
+    },
+    "party_info_dict": {
+      "dtype": "object",
+      "types": {
+        "builtins.dict": 89126,
+        "builtins.str": 4
+      },
+      "categories": {
+        "builtins.dict": 89126,
+        "builtins.str:text": 4
+      },
+      "first_positions": {
+        "builtins.dict": 0,
+        "builtins.str:text": 33012
+      },
+      "longest_string": [
+        7,
+        33012
+      ],
+      "representation": "cell"
+    },
+    "closing_argument": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 75584,
+        "datetime.date": 13546
+      },
+      "categories": {
+        "builtins.str:text": 75584,
+        "datetime.date": 13546
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "datetime.date": 29
+      },
+      "longest_string": [
+        7,
+        0
+      ],
+      "representation": "cell"
+    },
+    "gmeta_contId": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        7,
+        0
+      ],
+      "representation": "string"
+    },
+    "gmeta_gjaeInfo": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 75175,
+        "builtins.str:empty": 13955
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.str:empty": 29
+      },
+      "longest_string": [
+        37,
+        47582
+      ],
+      "representation": "string"
+    },
+    "gmeta_sngoDay": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        8,
+        0
+      ],
+      "representation": "string"
+    },
+    "gmeta_bubNm": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        15,
+        15870
+      ],
+      "representation": "string"
+    },
+    "gmeta_panTypeNm": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        5,
+        421
+      ],
+      "representation": "string"
+    },
+    "gmeta_saNm": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89128,
+        "builtins.str:empty": 2
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.str:empty": 21785
+      },
+      "longest_string": [
+        384,
+        14527
+      ],
+      "representation": "string"
+    },
+    "gmeta_saNo": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        21,
+        79911
+      ],
+      "representation": "string"
+    },
+    "for_lawschool": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        17,
+        561
+      ],
+      "representation": "string"
+    },
+    "lmeta_serialno": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 89130
+      },
+      "categories": {
+        "builtins.str:text": 89130
+      },
+      "first_positions": {
+        "builtins.str:text": 0
+      },
+      "longest_string": [
+        6,
+        0
+      ],
+      "representation": "string"
+    },
+    "lmeta_saNm": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 87993,
+        "builtins.int": 1137
+      },
+      "categories": {
+        "builtins.str:text": 87993,
+        "builtins.int:zero": 1137
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        395,
+        42410
+      ],
+      "representation": "cell"
+    },
+    "lmeta_saNo": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88003,
+        "builtins.int": 1127
+      },
+      "categories": {
+        "builtins.str:text": 88003,
+        "builtins.int:zero": 1127
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        20,
+        15399
+      ],
+      "representation": "cell"
+    },
+    "lmeta_sngoDay": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88003,
+        "builtins.int": 1127
+      },
+      "categories": {
+        "builtins.str:text": 88003,
+        "builtins.int:zero": 1127
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        10,
+        0
+      ],
+      "representation": "cell"
+    },
+    "lmeta_bubNm": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88003,
+        "builtins.int": 1127
+      },
+      "categories": {
+        "builtins.str:text": 88003,
+        "builtins.int:zero": 1127
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        15,
+        15870
+      ],
+      "representation": "cell"
+    },
+    "lmeta_bubCode": {
+      "dtype": "float64",
+      "types": {
+        "numpy.float64": 89130
+      },
+      "categories": {
+        "numpy.float64:finite": 88674,
+        "numpy.float64:nan": 456
+      },
+      "first_positions": {
+        "numpy.float64:finite": 0,
+        "numpy.float64:nan": 19539
+      },
+      "longest_string": [
+        -1,
+        0
+      ],
+      "representation": "cell"
+    },
+    "lmeta_saType": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88000,
+        "builtins.int": 1130
+      },
+      "categories": {
+        "builtins.str:text": 88000,
+        "builtins.int:zero": 1130
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        4,
+        1
+      ],
+      "representation": "cell"
+    },
+    "lmeta_saCode": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88000,
+        "builtins.int": 1130
+      },
+      "categories": {
+        "builtins.str:text": 88000,
+        "builtins.int:zero": 1130
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        6,
+        0
+      ],
+      "representation": "cell"
+    },
+    "lmeta_deType": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88003,
+        "builtins.int": 1127
+      },
+      "categories": {
+        "builtins.str:text": 88003,
+        "builtins.int:zero": 1127
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        26,
+        21250
+      ],
+      "representation": "cell"
+    },
+    "lmeta_sentence": {
+      "dtype": "object",
+      "types": {
+        "builtins.str": 88002,
+        "builtins.int": 1128
+      },
+      "categories": {
+        "builtins.str:text": 88002,
+        "builtins.int:zero": 1128
+      },
+      "first_positions": {
+        "builtins.str:text": 0,
+        "builtins.int:zero": 421
+      },
+      "longest_string": [
+        7,
+        77851
+      ],
+      "representation": "cell"
+    }
+  },
+  "naive_conversion": {
+    "success": false,
+    "error_type": "ArrowInvalid",
+    "error": "(\"Could not convert '〈론스타 사건〉' with type str: tried to convert to int64\", 'Conversion failed for column case_unofficial_name with type object')"
+  },
+  "sample": {
+    "rows": 146,
+    "columns": 60,
+    "positions": [
+      0,
+      1,
+      4,
+      8,
+      29,
+      31,
+      421,
+      561,
+      704,
+      891,
+      1782,
+      2673,
+      3564,
+      4455,
+      5346,
+      6237,
+      7128,
+      7711,
+      8019,
+      8422,
+      8910,
+      9801,
+      10692,
+      11583,
+      12474,
+      13365,
+      14256,
+      14527,
+      15147,
+      15399,
+      15870,
+      16038,
+      16634,
+      16929,
+      17577,
+      17820,
+      18166,
+      18711,
+      19539,
+      19602,
+      20493,
+      21250,
+      21384,
+      21785,
+      21944,
+      22275,
+      23166,
+      24057,
+      24948,
+      25839,
+      25897,
+      26730,
+      27621,
+      28512,
+      29403,
+      29801,
+      30294,
+      31185,
+      32076,
+      32967,
+      33012,
+      33140,
+      33858,
+      34749,
+      35640,
+      36531,
+      36630,
+      37422,
+      38313,
+      39101,
+      39204,
+      39658,
+      40095,
+      40986,
+      41762,
+      41877,
+      42410,
+      42768,
+      43659,
+      44374,
+      44550,
+      45441,
+      46332,
+      46394,
+      47223,
+      47582,
+      48114,
+      49005,
+      49896,
+      50787,
+      51678,
+      52569,
+      53460,
+      54351,
+      55242,
+      56133,
+      57024,
+      57915,
+      58806,
+      59697,
+      60588,
+      61221,
+      61479,
+      62370,
+      63261,
+      64152,
+      65043,
+      65934,
+      66825,
+      67716,
+      68607,
+      69498,
+      70389,
+      70825,
+      71280,
+      72019,
+      72021,
+      72171,
+      73062,
+      73953,
+      74844,
+      75735,
+      76626,
+      77517,
+      77851,
+      78408,
+      79299,
+      79911,
+      80190,
+      81081,
+      81972,
+      82863,
+      83754,
+      84645,
+      84650,
+      85536,
+      86113,
+      86427,
+      86694,
+      87318,
+      87500,
+      88209,
+      88321,
+      89007,
+      89100,
+      89129
+    ],
+    "opaque_cells": 145,
+    "value_cells": 8615,
+    "parquet_bytes": 5846653,
+    "arrow_uncompressed_bytes": 26675865,
+    "parquet_sha256": "13af0dcf5f2ff477d5bb7c1940aff3becdca2ed9fea2fcc8e32c34dd080f61f0",
+    "expected_sha256": "59cc8f7637897270f4d7f4ffba823b6d3798878043dc4545a6d105559c811be7",
+    "cell_fingerprint": "e3431ea888680ac959c6921d0bff2d15ac4f6153d68d91a9cb6c4e6b03b2c70e",
+    "python_roundtrip": true,
+    "selected_column_read": true,
+    "write_seconds": 0.0747659900000599,
+    "read_verify_seconds": 0.21639813000001595,
+    "schema": {
+      "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+      "archive_locator": "/mnt/i/VSCodeBases/web2df/saved/20241126/df_glaw_corpus/df_glaw_corpus_fullest_gmeta_lmeta.pickle",
+      "snapshot_size": 6525441901,
+      "total_rows": 89130,
+      "scope": "SAMPLE",
+      "columns": [
+        "case_txt_scraped_with_tags",
+        "case_txt_in_file",
+        "case_full_no",
+        "case_official_name",
+        "case_unofficial_name",
+        "citedPlace",
+        "previous_case",
+        "decision_items",
+        "decision_gists",
+        "main_decision",
+        "reasoning",
+        "case_comment",
+        "related_articles",
+        "applicable_acts",
+        "applicable_precedents",
+        "applicable_acts_tail",
+        "applicable_precedents_tail",
+        "applicable_acts_in_body",
+        "applicable_precedents_in_body",
+        "following_cases",
+        "original_case",
+        "site",
+        "hangul_keyword",
+        "important",
+        "supreme",
+        "jeonhap",
+        "party_info",
+        "multipartycase",
+        "uppercase",
+        "file_created_time",
+        "etcdoc",
+        "file_process_time",
+        "folder_file_name",
+        "case_no",
+        "code",
+        "case_sort",
+        "court_name",
+        "decision_date",
+        "judge",
+        "repealed_cases",
+        "party_info_dict",
+        "closing_argument",
+        "gmeta_contId",
+        "gmeta_gjaeInfo",
+        "gmeta_sngoDay",
+        "gmeta_bubNm",
+        "gmeta_panTypeNm",
+        "gmeta_saNm",
+        "gmeta_saNo",
+        "for_lawschool",
+        "lmeta_serialno",
+        "lmeta_saNm",
+        "lmeta_saNo",
+        "lmeta_sngoDay",
+        "lmeta_bubNm",
+        "lmeta_bubCode",
+        "lmeta_saType",
+        "lmeta_saCode",
+        "lmeta_deType",
+        "lmeta_sentence"
+      ],
+      "contracts": {
+        "case_txt_scraped_with_tags": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_txt_in_file": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_full_no": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_official_name": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_unofficial_name": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.int": 87984,
+            "builtins.str": 1146
+          }
+        },
+        "citedPlace": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 75662,
+            "builtins.int": 13468
+          }
+        },
+        "previous_case": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 77145,
+            "builtins.int": 11985
+          }
+        },
+        "decision_items": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 74213,
+            "builtins.int": 14917
+          }
+        },
+        "decision_gists": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 64433,
+            "builtins.int": 24697
+          }
+        },
+        "main_decision": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89128,
+            "builtins.int": 2
+          }
+        },
+        "reasoning": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89126,
+            "builtins.int": 4
+          }
+        },
+        "case_comment": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "related_articles": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "applicable_acts": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 73011,
+            "builtins.int": 16119
+          }
+        },
+        "applicable_precedents": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.int": 47950,
+            "builtins.str": 41180
+          }
+        },
+        "applicable_acts_tail": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "applicable_precedents_tail": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "applicable_acts_in_body": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "applicable_precedents_in_body": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "following_cases": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "original_case": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "site": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "hangul_keyword": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 86113,
+            "builtins.int": 3017
+          }
+        },
+        "important": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.bool": 89130
+          }
+        },
+        "supreme": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.bool": 89130
+          }
+        },
+        "jeonhap": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.bool": 89130
+          }
+        },
+        "party_info": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89128,
+            "builtins.int": 2
+          }
+        },
+        "multipartycase": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "uppercase": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "file_created_time": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "etcdoc": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "file_process_time": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.float": 89130
+          }
+        },
+        "folder_file_name": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_no": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "code": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "case_sort": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "court_name": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "decision_date": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "dateutil.parser._parser.parser": 89129,
+            "datetime.datetime": 1
+          }
+        },
+        "judge": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.dict": 89130
+          }
+        },
+        "repealed_cases": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "party_info_dict": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.dict": 89126,
+            "builtins.str": 4
+          }
+        },
+        "closing_argument": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 75584,
+            "datetime.date": 13546
+          }
+        },
+        "gmeta_contId": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_gjaeInfo": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_sngoDay": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_bubNm": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_panTypeNm": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_saNm": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "gmeta_saNo": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "for_lawschool": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "lmeta_serialno": {
+          "mode": "string",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 89130
+          }
+        },
+        "lmeta_saNm": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 87993,
+            "builtins.int": 1137
+          }
+        },
+        "lmeta_saNo": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88003,
+            "builtins.int": 1127
+          }
+        },
+        "lmeta_sngoDay": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88003,
+            "builtins.int": 1127
+          }
+        },
+        "lmeta_bubNm": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88003,
+            "builtins.int": 1127
+          }
+        },
+        "lmeta_bubCode": {
+          "mode": "cell",
+          "dtype": "float64",
+          "types": {
+            "numpy.float64": 89130
+          }
+        },
+        "lmeta_saType": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88000,
+            "builtins.int": 1130
+          }
+        },
+        "lmeta_saCode": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88000,
+            "builtins.int": 1130
+          }
+        },
+        "lmeta_deType": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88003,
+            "builtins.int": 1127
+          }
+        },
+        "lmeta_sentence": {
+          "mode": "cell",
+          "dtype": "object",
+          "types": {
+            "builtins.str": 88002,
+            "builtins.int": 1128
+          }
+        }
+      },
+      "positions": [
+        0,
+        1,
+        4,
+        8,
+        29,
+        31,
+        421,
+        561,
+        704,
+        891,
+        1782,
+        2673,
+        3564,
+        4455,
+        5346,
+        6237,
+        7128,
+        7711,
+        8019,
+        8422,
+        8910,
+        9801,
+        10692,
+        11583,
+        12474,
+        13365,
+        14256,
+        14527,
+        15147,
+        15399,
+        15870,
+        16038,
+        16634,
+        16929,
+        17577,
+        17820,
+        18166,
+        18711,
+        19539,
+        19602,
+        20493,
+        21250,
+        21384,
+        21785,
+        21944,
+        22275,
+        23166,
+        24057,
+        24948,
+        25839,
+        25897,
+        26730,
+        27621,
+        28512,
+        29403,
+        29801,
+        30294,
+        31185,
+        32076,
+        32967,
+        33012,
+        33140,
+        33858,
+        34749,
+        35640,
+        36531,
+        36630,
+        37422,
+        38313,
+        39101,
+        39204,
+        39658,
+        40095,
+        40986,
+        41762,
+        41877,
+        42410,
+        42768,
+        43659,
+        44374,
+        44550,
+        45441,
+        46332,
+        46394,
+        47223,
+        47582,
+        48114,
+        49005,
+        49896,
+        50787,
+        51678,
+        52569,
+        53460,
+        54351,
+        55242,
+        56133,
+        57024,
+        57915,
+        58806,
+        59697,
+        60588,
+        61221,
+        61479,
+        62370,
+        63261,
+        64152,
+        65043,
+        65934,
+        66825,
+        67716,
+        68607,
+        69498,
+        70389,
+        70825,
+        71280,
+        72019,
+        72021,
+        72171,
+        73062,
+        73953,
+        74844,
+        75735,
+        76626,
+        77517,
+        77851,
+        78408,
+        79299,
+        79911,
+        80190,
+        81081,
+        81972,
+        82863,
+        83754,
+        84645,
+        84650,
+        85536,
+        86113,
+        86427,
+        86694,
+        87318,
+        87500,
+        88209,
+        88321,
+        89007,
+        89100,
+        89129
+      ],
+      "index_class": "pandas.core.indexes.range.RangeIndex",
+      "index_dtype": "int64",
+      "index_names": [
+        null
+      ],
+      "format": "legacy-parquet-experiment-1"
+    }
+  },
+  "elapsed_seconds": 87.77380811799992,
+  "peak_rss_kib": 8603024
+}

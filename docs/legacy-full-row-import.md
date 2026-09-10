@@ -35,7 +35,7 @@ KorCounsel의 실행 책임은 다음과 같이 둔다.
 
 Parquet 구현 전에는 실제 60컬럼별 dtype과 혼합형 값을 분류하고, 원래 컬럼 순서·pandas dtype·row count·position/index·cell fingerprint를 manifest에 넣는 schema를 먼저 고정한다. 표본 변환에서 Python과 Node/DuckDB 읽기, 선택 컬럼 조회, null/sentinel/OPAQUE, 압축 후 크기와 round-trip을 검증한 뒤 전수 변환 여부를 결정한다. `pyarrow` 또는 Node library는 이 검증을 시작할 때만 의존성에 추가한다.
 
-현재 Parquet exporter와 이를 읽는 worker 경로는 미구현이다. 위 내용은 후속 구현의 목표이며, 아래의 구현·검증 결과는 기존 tagged JSON bundle 경로에 해당한다.
+2026-09-10 후속: 분석용 Parquet 표본 변환과 60컬럼 최상위 타입 전수 조사·Python/Node 대조를 완료했다. [실제 146행 검증과 보존 한계](legacy-parquet-validation.md). 전수 exporter와 Parquet을 읽는 worker 경로는 미구현이다. 아래의 구현·검증 결과는 기존 tagged JSON bundle 경로에 해당한다.
 
 ## 입력은 기존 DataFrame
 

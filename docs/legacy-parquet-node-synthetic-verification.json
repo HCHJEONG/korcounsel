@@ -1,0 +1,12 @@
+{
+  "node": "v24.16.0",
+  "duckdb_node_api": "1.5.5-r.4",
+  "parquet_sha256": "5951f1939727bfa987228d5f42c70c1a78d5dbae4e2999ab4b21cd24bd4c878f",
+  "rows": 19,
+  "original_columns": 3,
+  "all_cells_equal": true,
+  "selected_column_equal": true,
+  "elapsed_ms": 10.681961999999999,
+  "peak_rss_bytes": 104042496,
+  "bigint_policy": "DuckDB JSON decimal strings, no conversion to JavaScript Number"
+}
