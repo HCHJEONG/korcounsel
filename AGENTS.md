@@ -1,5 +1,10 @@
 # KorCounsel Agent Instructions
 
+> **재판결과 식별 규칙 — 2026-09-10 사용자 확정:** 법원 명칭 + 사건번호 + 재판 종류는 제도적으로 특정 재판결과를 식별하는 조합이다. 사건 키(법원+사건번호), 재판결과 키(세 요소), 독립 canonical ID, 출처 ID를 구분한다. 재판 종류의 원표기·법원 지원/지부·병합 사건번호를 보존하고 결측·충돌은 기록한다. 선고일이나 source ID를 임의로 키에 추가하지 않으며, 데이터 충돌을 자동 병합·삭제로 해소하지 않는다. docs/case-identity.md 참조. 모델·정규화·DB 제약 반영은 후속 구현이다.
+
+> **중요 identity 결정 — 2026-09-10:** contId/serialno는 영구 canonical ID가 아니라 출처별 관찰·재조회 키다. 기존 번호 미조회와 동일 사건의 다른 번호 후보를 실제 확인했으므로 신규 canonical은 출처와 독립적으로 발급한다. 번호 변경 원인·문서 동일성은 미확인이다. 새 번호만으로 신규 문서·동일 문서를 확정하지 않으며 기존 source ID·원본·연결 이력을 보존한다. docs/case-identity.md 및 docs/source-path-validation.md 참조. 과거 공식 ID 우선 후보 생성 코드는 전체 corpus 등록 전 수정·검증할 후속 항목이다.
+
+
 작업 전 루트 PLAN.md를 읽고 현재 범위·순서·완료 기준을 확인한다. UI 작업 전 DESIGN.md를 읽는다. README.md는 사용자 안내와 운영 진입점, PLAN.md는 실행 계획·상태, DESIGN.md는 UX 기준, 이 문서는 작업 규칙이다.
 
 이 문서는 인접 onju-ai-kr/AGENTS.md의 명시적 작업 범위, domain/adapters 경계, immutable evidence, 검수 이력, 배포·비밀정보 관리 및 검증 원칙을 이 프로젝트에 맞게 이전했다. 참조 저장소의 지침을 현재 저장소의 실행 명령이나 구현 완료 사실로 취급하지 않는다. 사용자의 최신 명시적 결정이 과거 문서의 상충하는 전제보다 우선한다.
@@ -166,7 +171,7 @@
 ## 추가 identity·incremental·fidelity 지침
 
 - 구현 전 docs/legacy-case-identity-and-assets.md와 architecture.md, case-identity.md, incremental-ingestion.md, source-fidelity.md, dataset-schema.md, provenance.md를 읽는다. 추가 지시가 기존 단일-source/text 전제보다 우선한다.
-- contId와 serialno는 별도 namespace의 source IDs다. canonical ID와 source version·issue revision을 분리한다. canonical_id를 UUID로 강제하지 않는다. 기존 약 9만 건의 실제 대표/정부 ID를 조사해 우선 계승하고, 발급 정책은 조사 후 결정한다.
+- contId와 serialno는 별도 namespace의 source IDs다. canonical ID와 source version·issue revision을 분리한다. canonical_id를 UUID로 강제하지 않는다. 기존 약 9만 건의 정부 ID는 출처 이력으로 계승하며, 신규 canonical은 출처 ID와 독립적으로 발급한다. 상세 정책은 docs/case-identity.md를 따른다.
 - identity/는 후보·전체 번호·법원/지원·날짜·disposition·점수/사유를 다룬다. 첫 후보·substring·fuzzy 점수만으로 확정하지 않는다. EXACT/HIGH_CONFIDENCE/AMBIGUOUS/UNMATCHED/CONFLICT와 연결 revision을 보존한다.
 - ingestion/는 inventory·delta·fetch ledger·refresh, documents/는 artifact/blocks, assets/는 탐지·참조/후속 취득, enrichment/는 초기 확장 Step 5B의 조문 보강을 담당한다. shared metadata normalization을 중복 작성하지 않는다.
 - snapshot은 범위·완전성·per-ID metadata hash를 보존한다. 선고일만으로 신규를 판단하거나 부분 목록에서 삭제를 추정하지 않는다. UNCHANGED metadata는 unchanged body 보장이 아니다. 상세 실패 ID도 재시도한다.
@@ -194,7 +199,7 @@
 - 기존 약 9만 건을 bootstrap corpus로 활용하고 이후 신규·변경분을 확장한다. ID 정책보다 실제 저장본의 전수 프로파일·층화 표본 분석을 먼저 수행한다. 전체 재수집·일괄 재번호를 기본안으로 삼지 않는다.
 - **법원명 + 사건번호는 고유 업무 식별키**이며 canonical ID 및 출처 ID와 함께 유지한다. 정부 ID 없는 LawnB 보유 판례 등록에도 사용한다. 지원·지부와 모든 병합 사건번호를 보존한다.
 - 극히 드문 과거 수작업 오류는 충돌/예외 이력으로 관리한다. 여러 source representation을 고유성 예외로 오인하거나, 조합의 고유성을 포기하거나, 임의 삭제·병합하지 않는다.
-- 기존 공식 ID가 대표 ID 역할을 했다면 그대로 활용할 수 있다. canonical과 source의 논리적 역할 분리가 반드시 새로운 UUID를 요구하지 않는다.
+- 기존 공식 ID를 신규 canonical 대표값으로 사용하지 않는다. 기존 확정 ID·release는 이력을 보존하며 일괄 재번호하지 않는다. 독립 ID의 구체적 형식은 별도 결정하며 UUID를 강제하지 않는다.
 - legacy row locator(snapshot hash + 원래 index/position), 기존 필드·sentinel·추출 원문을 보존한다. 저장 문자열을 과거 HTTP 응답 원본 바이트라고 부르거나 과거 수집 시각·hash를 만들어 채우지 않는다.
 - LawnB의 기존 자료 식별/등록 계약과 새로운 LawnB 수집은 별개다. 분석용 pandas/NumPy는 별도 일회성 런타임으로 사용하며 앱 domain/runtime 의존성으로 추가하지 않는다.
 

@@ -1,5 +1,8 @@
 # 아키텍처 설계
 
+> **Identity 정책 개정 — 2026-09-10:** 신규 canonical은 출처 독립 내부 ID다. contId/serialno는 source 관찰·재조회 키이며 숫자나 namespace 조합을 canonical로 발급하지 않는다. 기존 연결·원본·release는 보존한다. [정책·실측·구현 경계](case-identity.md) 참조. legacy mapper의 과거 후보 발급 방식 수정은 전체 corpus 등록 전 선행 작업이다.
+
+
 2026-09-09 추가 지시 반영. 구현 전 계약이다. React 19/Vite/TypeScript, FastAPI, Python 3.12/uv, PostgreSQL과 기존 aws-bastion 운영 결정은 유지한다.
 
 ```text

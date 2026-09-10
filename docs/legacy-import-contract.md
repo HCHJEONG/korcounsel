@@ -1,5 +1,10 @@
 # Legacy 보존 import 계약
 
+> **재판결과 키 — 2026-09-10 사용자 규칙:** 법원 명칭 + 사건번호 + 재판 종류의 조합으로 특정 재판결과를 식별한다. legacy의 사건 business_key와 별도로 재판 종류 원표기·추출 근거·결측·충돌을 보존해 재판결과 키와 독립 canonical을 연결한다. 종류를 판결로 기본 채우거나 날짜를 임의의 추가 키로 사용하지 않는다. 현재 mapper의 세 요소 키 확정은 미구현이며 [identity 계약](case-identity.md)에 따라 후속 반영한다.
+
+> **정책 개정 — 2026-09-10:** 공식 ID 우선 canonical 후보 정책은 [출처 독립 ID 정책](case-identity.md)으로 대체됐다. 아래 행 보존·provenance 계약은 유지한다. 기존 mapper와 과거 검증 결과는 개정 정책 구현 완료를 뜻하지 않는다. 전체 corpus 등록 전에 발급·재사용 로직과 회귀 검증을 수정한다. legacy-row 후보 역시 행 locator이며 그 자체로 canonical 확정 근거가 아니다.
+
+
 2026-09-10 Step 2. 이 계약은 기존 snapshot을 보존하는 staging과 문서 identity 후보를 정의한다. 전체 corpus import, DB registry 확정, 신규 source 취득은 별도 단계다.
 
 ## 사건과 문서 대표값
@@ -9,9 +14,9 @@ canonical_id의 단위는 **개별 판결·결정 문서**다. CourtCaseKey는 �
 신규 registry 등록의 대표값 정책은 다음과 같다.
 
 1. 이미 확정된 registry 연결이 있으면 대표값과 연결 revision을 재사용한다. lawgo-only 자료에 scourt ID가 나중에 붙어도 기존 대표값을 바꾸지 않는다.
-2. 미등록 문서는 검증된 scourt ID의 `scourt:<contId>`를 우선하고, 없으면 검증된 lawgo ID의 `law_go_kr:<serialno>`를 사용한다. 숫자 원값과 namespace를 각각 유지한다.
+2. 미등록 문서의 canonical은 출처 ID와 독립적으로 발급한다. scourt/lawgo 숫자 원값과 namespace는 source 식별자로 유지하며 canonical 발급 재료로 사용하지 않는다. 구체적 발급 형식 및 idempotent import mapping은 후속 구현한다.
 3. 공식 ID가 없으면 `legacy-row:<snapshot SHA-256>:<position>`을 최초 로컬 후보값으로 사용할 수 있다. 이것은 행 보존용 locator에서 유래한 로컬 후보이며 법적 identity나 가짜 정부 ID가 아니다. 사건 업무키로 기존 문서를 대조한 뒤 registry가 확정하고, 이후 snapshot 위치가 달라져도 확정 대표값은 유지한다.
-4. legacy mapper는 이 정책의 **document_id_proposal**만 생성한다. 두 ID를 관찰했다고 동일 문서로 확정하지 않으며 LEGACY_OBSERVED를 EXACT로 승격하지 않는다. source 중복·상이한 key/date/disposition은 원행을 모두 보존하고 충돌 보고서에 넣는다.
+4. 현재 legacy mapper는 과거 공식 ID 우선 정책의 **document_id_proposal**을 생성한다. 새 정책 반영 전에는 이를 canonical로 확정하지 않는다. 두 ID를 관찰했다고 동일 문서로 확정하지 않으며 LEGACY_OBSERVED를 EXACT로 승격하지 않는다. source 중복·상이한 key/date/disposition은 원행을 모두 보존하고 충돌 보고서에 넣는다.
 5. 동일 업무키만으로 merge하지 않는다. 동일 source ID의 같은 metadata도 여러 행/본문 버전 보존을 허용하며, source ID가 다른 중복 표현은 별도 후보 대조 대상이다. 결측 신호로 충돌이 발견되지 않은 경우도 연결 확인 완료가 아니다.
 
 source key 유일성은 registry의 활성 문서 연결에 적용하고 legacy 행 테이블에는 적용하지 않는다. 문서 테이블에 court+docket UNIQUE를 걸지 않는다. 사건 key registry와 문서 연결을 분리한다. registry snapshot은 대표값, 모든 source aliases, 업무키 aliases, link revision을 저장하며 입력 manifest에 hash를 고정한다. 재수집으로 registry를 재발급하지 않는다.

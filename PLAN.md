@@ -1,5 +1,25 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+## 재판결과 식별 규칙 반영 — 2026-09-10
+
+- [x] 사용자 도메인 규칙인 **법원 명칭 + 사건번호 + 재판 종류 = 특정 재판결과의 업무 식별키**를 작업 규칙과 identity·schema·import 계약에 기록했다.
+- [ ] 사건 CourtCaseKey와 별도로 재판결과 세 요소 키를 모델링하고, 재판 종류의 원표기·정규화·결측·충돌 처리 및 독립 canonical 연결을 구현한다.
+- [ ] 실제 PostgreSQL 제약과 같은 사건의 판결/결정·중간판결 구별, 동일 재판결과의 복수 출처, 잘못된 metadata 충돌을 검증한다.
+
+상세 정책은 [identity](docs/case-identity.md)를 따른다. 선고일은 대조 정보이며 필수 키 구성요소가 아니다. 이번 기록은 코드·DB 반영 완료를 뜻하지 않는다.
+
+## 우선 반영할 설계 결정 — 출처 ID 안정성
+
+**2026-09-10 사용자 결정:** contId/serialno를 신규 canonical ID로 사용하지 않는다. 출처별 관찰·재조회 키와 내부 개별 결정 문서 ID를 분리한다. [정책](docs/case-identity.md), [실측 근거](docs/source-path-validation.md).
+
+- [x] 작업 규칙·identity·legacy import 계약에 기존 공식 ID 우선 정책의 대체 및 실측 한계를 기록한다.
+- [ ] 전체 corpus 등록 전에 독립 canonical ID 발급과 동일 import 재실행 시 ID 재사용을 구현한다.
+- [ ] legacy mapper의 source 기반 document_id_proposal을 새 정책에 맞추고 fixture·registry 호환성을 검증한다.
+- [ ] 옛/새 출처 번호 후보의 문서 동일성 및 연결 revision을 검토한다. 기존 source ID·원본·release·검토 기록은 덮어쓰지 않는다.
+
+이번 변경은 문서 정책이며 ID 발급 코드·DB migration·registry 변경 완료를 뜻하지 않는다.
+
+
 > 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / Step 3 client·양 출처 상세 구현 / Step 3A 확대 검증·목록 보존 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
 > 최신 작업: 2026-09-10 OC 차단 제거·목록 재검증, scourt bounded inventory/worker, 12개 기존 ID 확대 조사 및 34개 이미지 참조 매핑 검증. 새 ID 후보는 검토 대상으로 보존하며 registry를 변경하지 않았다. docs/source-path-validation.md 참조. 이전 기록: 2026-09-10 사용자 결정 기록: LAW_GO_KR_OC/LAW_OPEN_API_OC는 비밀값이 아니며 응답 내 OC 포함으로 저장을 차단하지 않는다. 기존 차단 제거·목록 재검증은 후속 구현이다. 이전 기록: 2026-09-10 Step 3 JSON/XML client·현재 scourt 상세 adapter·worker 연결과 대표 2건 live 검증. 목록 credential 반사로 저장 차단; Step 3A 전체 inventory/fidelity 미완료. docs/source-adapters.md 참조. 이전 기록: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
@@ -92,7 +112,7 @@ LLM API와 annotation 구현, fine-tuning, BERT/KoELECTRA 및 embedding 학습, 
 - 원본 버전은 `source_system + source_document_id + raw_content_hash`로 식별한다. 같은 내용은 재사용하고 변경된 내용은 새 버전으로 보존한다.
 - 재다운로드 생략과 원문 변경을 확인하기 위한 refresh를 구분한다. 서버에 요청하지 않고 내용 변경 여부를 알 수 있다고 가정하지 않는다.
 - 처리 키에는 입력 hash, parser/normalizer/schema 버전과 관련 설정을 포함한다. 규칙이 바뀌면 필요한 단계부터 재처리한다.
-- source key, source content version, 독립 canonical ID와 쟁점 revision을 구분한다. canonical ID 정책은 기존 약 9만 건의 대표/정부 ID 사용을 먼저 조사하고 안정성·재현성·merge/split을 검토해 결정한다. 기존 공식 ID 활용을 배제하거나 UUID를 강제하지 않는다. 법원명+사건번호는 별도 고유 업무키다. 쟁점 revision은 실제 source version·위치·규칙에 기반한다.
+- source key, source content version, 독립 canonical ID와 쟁점 revision을 구분한다. 신규 canonical ID는 출처 ID와 독립적으로 발급한다. 현행 조사에서 기존 번호 미조회·다른 번호 후보가 확인되어 공식 ID 대표값 우선 정책을 대체했다. 기존 공식 ID·확정 연결·release는 보존하며 UUID를 강제하지 않는다. 법원명+사건번호는 별도 고유 업무키다. 쟁점 revision은 실제 source version·위치·규칙에 기반한다.
 - 실행마다 `run_id`를 부여하고 dataset release의 `dataset_version`과 구분한다. 실행 이력에는 입력 snapshot, 설정, 단계별 상태·건수·오류를 기록한다. manifest에는 dataset/schema/parser/normalizer 버전, 고정된 입력 목록·hash, 코드 버전, 설정, 건수와 출력 checksum을 기록한다.
 - 같은 입력 snapshot·코드·설정에서는 record ID·내용·순서가 같아야 한다. 실행 시각 등 run metadata는 재현성 비교에서 분리한다.
 - private repository를 전제로 `.env`, 인증정보, 대규모 raw/artifact는 commit하지 않는다. 요청 로그와 manifest에도 credential을 넣지 않는다.
