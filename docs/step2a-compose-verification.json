@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-09-10T02:38:15.416050+00:00",
+  "scope": "LOCAL_COMPOSE_SYNTHETIC",
+  "migrations": [
+    "0001_records.sql",
+    "0002_jobs.sql",
+    "0003_processing_integrity.sql",
+    "0004_job_inputs.sql"
+  ],
+  "job_id": "dba4aa4f-9c34-43ba-9ef7-79cdcc840e17",
+  "job_status": "SUCCEEDED",
+  "attempts": 1,
+  "artifact_sha256": "2eeeb5a95dc3bbae9c32166ea4dd94b8e6cd788215d84938d4515361f50c78c1",
+  "idempotent_submission": "PASS",
+  "drain_admission": "PASS",
+  "worker_heartbeat_current": true,
+  "not_performed": [
+    "AWS changes",
+    "legacy corpus import",
+    "live source fetch"
+  ]
+}

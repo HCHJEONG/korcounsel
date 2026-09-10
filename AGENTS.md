@@ -186,7 +186,7 @@
 - 내부 파일명·폴더 세분화는 변경 가능한 설계다. 구현 필요에 따라 조정하고 PLAN/architecture/README와 연결 경로를 함께 갱신한다. 미래 모듈을 빈 파일로 생성하지 않는다.
 - Python 품질 명령은 backend/에서 uv로 실행하고 프런트 명령은 루트에서 pnpm으로 실행한다. Python fixture는 backend/tests/fixtures, 브라우저 테스트는 tests/e2e에 둔다.
 - Compose와 Nginx를 채택했다. 현재 Compose는 로컬 HTTP 검증용이며 외부 포트를 loopback에만 바인딩한다. TLS·운영 secret·배포 자동화는 Step 11B다.
-- Step 1 worker 서비스는 tools profile의 일회성 DB 연결 점검이다. 영속 queue/실제 worker 구현으로 간주하지 않는다. 상시 실행은 Step 2A에서 구현한다.
+- Step 1 당시 worker는 일회성 DB 연결 점검이었다. Step 2A부터 기본 worker 서비스는 영속 queue의 artifact 검증·projection 재생성을 실행한다. migration은 tools profile의 명시적 일회성 서비스다. 실행·복구 계약은 docs/persistence-and-jobs.md를 따른다.
 
 
 ## 기존 corpus 우선 계승 — 2026-09-10 사용자 결정

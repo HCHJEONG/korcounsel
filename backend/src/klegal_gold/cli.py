@@ -5,8 +5,10 @@ import typer
 from klegal_gold import __version__
 from klegal_gold.config import ConfigurationError, configure_logging, load_settings
 from klegal_gold.db.connection import database_available
+from klegal_gold.operations import operations
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
+app.add_typer(operations, name="ops")
 
 
 @app.command()

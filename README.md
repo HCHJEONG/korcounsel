@@ -2,9 +2,11 @@
 
 공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
-현재 **Step 1·Step 2 데이터 계약 및 legacy 표본 검증 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. 로그인·판례 수집·canonical 매칭·gold 생산·영속 worker는 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
+현재 **Step 1·Step 2 데이터 계약·Step 2A 로컬 저장/worker 검증 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. PostgreSQL migration, 기록 저장, 식별 연결 이력과 단일 worker가 동작합니다. 로그인·실제 판례 수집·자동 canonical 매칭·gold 생산은 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
 
 legacy 보존 모델은 과거 취득시각·HTTP hash를 만들지 않고 기존 필드와 행 locator를 유지합니다. 실제 metadata 15행과 저장 HTML 4개를 검증했으며 전체 corpus/DB import는 후속입니다. [import 계약과 표본 재현](docs/legacy-import-contract.md)을 참고하세요.
+
+저장·작업 실행·재시작 복구와 검증 범위는 [Step 2A 운영 안내](docs/persistence-and-jobs.md)에 있습니다.
 
 ## 폴더 원칙
 
@@ -50,19 +52,21 @@ pnpm dev
 ## Compose 전체 실행
 
 ```bash
-docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml up -d --build --wait web
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml build api web
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml run --rm migrate
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml up -d --wait api worker web
 ```
 
-http://127.0.0.1:8080 에서 Nginx→FastAPI 연결을 확인합니다. api는 PostgreSQL 준비 후 시작하며 health는 API 생존 여부만 뜻합니다. postgres는 named volume, API/향후 worker의 파일은 별도 case_data named volume을 사용합니다. 로컬 data/와 컨테이너 /data 볼륨은 별개의 저장소입니다.
+http://127.0.0.1:8080 에서 Nginx→FastAPI 연결을 확인합니다. api는 PostgreSQL 준비 후 시작하며 health는 API 생존 여부만 뜻합니다. postgres는 named volume, API/worker의 파일은 별도 case_data named volume을 사용합니다. 로컬 data/와 컨테이너 /data 볼륨은 별개의 저장소입니다.
 
 ```bash
-# worker 이미지의 일회성 DB 연결 확인; 실제 작업 worker가 아님
-docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml run --rm worker
+# 실제 worker의 생존 확인
+docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml exec worker klegal ops worker-health
 # 컨테이너 정리, DB·판례 볼륨은 보존
 docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml down
 ```
 
-compose.env.example의 비밀번호는 폐기 가능한 로컬 개발 전용입니다. 운영에 사용하지 않습니다. 현재 포트는 localhost에만 열려 있으며 TLS·운영 secret·백업·자동 재시작과 배포 절차는 Step 11B에서 완성합니다. 실제 DB 접근 권한과 migration은 후속 단계에 설계합니다.
+compose.env.example의 비밀번호는 폐기 가능한 로컬 개발 전용입니다. 운영에 사용하지 않습니다. 현재 포트는 localhost에만 열려 있으며 TLS·운영 secret·백업·자동 재시작과 배포 절차는 Step 11B에서 완성합니다. migration은 Step 2A에서 추가했으며 운영 DB 역할 분리·TLS는 후속입니다.
 
 ## 설정과 CLI
 

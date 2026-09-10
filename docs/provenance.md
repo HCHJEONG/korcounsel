@@ -28,3 +28,7 @@
 ## 출처를 결합한 보강 결과
 
 기존 corpus는 scourt 기본 본문에 lawgo 조문 표를 붙인 보강 표현을 포함한다. import에서 이 가치를 보존하며 출처·취득/법령 버전 미확인을 함께 기록한다. 이후 보강은 scourt 부모 artifact/hash·원래 조문 링크/위치, lawgo 판례일련번호·조문 artifact/version 및 보강 규칙을 연결한다. base 원문과 보강 결과를 덮어 합치지 않는다. 세부 사항은 [계승 전략](legacy-enrichment-and-incremental.md)을 따른다.
+
+## Step 2A 후속 구현
+
+PostgreSQL 저장·migration·artifact/취득 이력·legacy 표본 저장·registry revision/snapshot·worker 복구를 구현했다. [현재 구현과 검증 범위](persistence-and-jobs.md) 참조. 위 Step 2 시점의 DB 미구현 기록을 보완하며 전체 corpus import 완료를 의미하지 않는다.

@@ -49,3 +49,7 @@ JSON/model round-trip과 합성 회귀를 검증했다. Parquet·실제 import·
 ## Legacy staging 계약 추가
 
 [legacy import 계약](legacy-import-contract.md)의 LegacyCaseRecord는 원래 필드·타입·snapshot 행 locator와 검증 전 문서 ID 후보를 보존한다. 역사적 HTTP hash/취득시각/URL은 null로 강제하고 결측 이유를 둔다. LegacyStoredText는 저장 문자열 UTF-8 hash와 실제 파일 hash를 구분한다. 일반 RawLegalCase/LegalCase의 실제 응답 provenance 제약은 유지한다. staging을 gold 또는 전체 구조화 완료로 사용하지 않는다. 실제 metadata 15행·저장 HTML 4개의 JSONL round-trip과 재실행 content revision을 검증했다.
+
+## Step 2A 후속 구현
+
+PostgreSQL 저장·migration·artifact/취득 이력·legacy 표본 저장·registry revision/snapshot·worker 복구를 구현했다. [현재 구현과 검증 범위](persistence-and-jobs.md) 참조. 위 Step 2 시점의 DB 미구현 기록을 보완하며 전체 corpus import 완료를 의미하지 않는다.

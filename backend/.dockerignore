@@ -9,3 +9,11 @@ __pycache__
 .coverage
 htmlcov
 tests
+
+data
+dist
+.fordeploy
+*.dump
+*.backup
+*.pem
+*.key

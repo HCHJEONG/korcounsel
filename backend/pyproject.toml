@@ -26,3 +26,6 @@ files = ["src"]
 testpaths = ["tests"]
 addopts = "-ra"
 markers = ["integration: requires an explicitly configured local PostgreSQL"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"migrations" = "klegal_gold/_migrations"

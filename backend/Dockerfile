@@ -6,6 +6,7 @@ ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH="/app/.venv/bin:$PATH" DATA_DIR
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY src ./src
+COPY migrations ./migrations
 RUN uv sync --frozen --no-dev && useradd --uid 10001 --create-home app && mkdir /data && chown app /data
 USER app
 EXPOSE 8000

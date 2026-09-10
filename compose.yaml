@@ -44,13 +44,30 @@ services:
   worker:
     image: korcounsel-backend:scaffold
     build: ./backend
-    profiles: ["tools"]
-    command: ["klegal", "check-db"]
+    command: ["klegal", "ops", "worker"]
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 130s
+    healthcheck:
+      test: ["CMD", "klegal", "ops", "worker-health"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
     environment:
       DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
       DATA_DIR: /data
     volumes:
       - case_data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+  migrate:
+    image: korcounsel-backend:scaffold
+    build: ./backend
+    profiles: ["tools"]
+    command: ["klegal", "ops", "migrate"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
     depends_on:
       postgres:
         condition: service_healthy

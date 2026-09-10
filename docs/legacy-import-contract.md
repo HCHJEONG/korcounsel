@@ -59,3 +59,7 @@ uv run python scripts/verify_legacy_samples.py \
 전체 89,130행의 FULL_ROW adapter·보존 파일 저장·import ledger·quarantine manifest·DB 등록은 후속이다. imported/quarantined 합계와 source/row locator coverage를 맞추고, unknown provenance를 지원하는 legacy 구조화 경로를 먼저 연결해야 한다. 일반 schema를 만족시키려고 역사적 response를 꾸미지 않는다. Parquet exporter, 현재 scourt/lawgo 호환성, 법률 내용 검수, 조문 버전 검증, AWS 운영 변경은 수행하지 않았다.
 
 2026-09-10 최종 검증: backend에서 uv ruff check·ruff format --check·mypy 통과, 로컬 PostgreSQL 연결 포함 pytest **105건 통과**. 기존 upstream deprecation warning 2건 유지. 실제 metadata 15행·저장 HTML 4개 검증 및 git diff --check 통과. 프런트·분석 전용 도구는 변경하지 않았으며 해당 테스트를 이번 작업에서 재실행하지 않았다.
+
+## Step 2A 후속 구현
+
+PostgreSQL 저장·migration·artifact/취득 이력·legacy 표본 저장·registry revision/snapshot·worker 복구를 구현했다. [현재 구현과 검증 범위](persistence-and-jobs.md) 참조. 위 Step 2 시점의 DB 미구현 기록을 보완하며 전체 corpus import 완료를 의미하지 않는다.

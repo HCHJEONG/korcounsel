@@ -1,8 +1,8 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-> 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A persistence 후속
+> 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / source adapter·보존 import 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 최신 작업: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
+> 최신 작업: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
 
 ## 1. 목적과 성공 기준
 
@@ -25,7 +25,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 ## 2. 현재 상태와 작업 범위
 
-- 현재 프로젝트는 Step 1 scaffold를 구현했다. 도메인 모델과 legacy staging 계약은 Step 2 범위에서 검증했으며 인증·수집·영속 worker는 아직 없다.
+- 현재 프로젝트는 Step 1 scaffold를 구현했다. 도메인 모델과 legacy staging 계약은 Step 2 범위에서 검증했으며 인증·수집은 아직 없으며 Step 2A의 영속 worker는 artifact 검증·조회 projection 재생성을 실행한다.
 - 배포 이름은 `korean-legal-gold`, Python 패키지는 `klegal_gold`, CLI는 `klegal`을 잠정 사용한다. 현재 폴더나 Git 저장소 이름은 자동 변경하지 않는다.
 - 사용자가 안내한 레거시 저장소 탐색 기준 경로는 **`I:\VSCodeBases`**다.
 - 이 경로 아래에서 `web2df`, `df2preproc`의 실제 저장소 루트를 확인한 뒤 읽는다. 실제 두 레포의 경로와 관련 코드를 확인했으며 docs의 두 레거시 조사 문서에 근거를 기록했다.
@@ -187,15 +187,20 @@ data/                 # runtime 데이터, Git 제외
 
 ### Step 2A — PostgreSQL persistence 및 migration
 
-- [ ] 도메인/DB를 분리하고 사용자·세션·작업·판례 projection 외 source-key unique·canonical registry/link revisions·inventory·fetch/asset ledger·manifest 참조를 설계한다. registry와 연결 이력을 보존 대상으로 둔다.
-- [ ] PostgreSQL driver·접근 도구·migration 도구를 선택하고 버전을 고정한다. Pydantic domain model을 ORM 모델에 종속시키지 않는다.
-- [ ] 최초 schema migration, 빈 DB 초기화 및 기존 버전에서의 업그레이드를 검증한다.
-- [ ] job claim, 중복 제출 방지, 상태 전이, heartbeat/lease 또는 동등한 복구 규칙을 정의하고 트랜잭션으로 구현한다.
-- [ ] 파일 artifact의 위치·hash·버전과 DB record 연결을 정의하고 파일 저장/DB 반영 사이의 중단을 복구할 수 있게 한다.
-- [ ] 조회용 projection은 artifact에서 재구성 가능하게 하고 사용자·세션·작업 상태·향후 사람의 검토 기록은 운영 DB의 보존 대상으로 구분한다.
-- [ ] unit 테스트는 외부 서비스 없이 실행하고 DB integration 테스트는 격리된 실제 PostgreSQL에서 실행한다. SQLite로 PostgreSQL의 트랜잭션·제약·동시성을 대신 검증하지 않는다.
+- [x] 도메인/DB를 분리하고 사용자·세션·작업·판례 projection 외 source-key unique·canonical registry/link revisions·inventory·fetch/asset ledger·manifest 참조를 설계한다. registry와 연결 이력을 보존 대상으로 둔다.
+- [x] PostgreSQL driver·접근 도구·migration 도구를 선택하고 버전을 고정한다. Pydantic domain model을 ORM 모델에 종속시키지 않는다.
+- [x] 최초 schema migration, 빈 DB 초기화 및 기존 버전에서의 업그레이드를 검증한다.
+- [x] job claim, 중복 제출 방지, 상태 전이, heartbeat/lease 또는 동등한 복구 규칙을 정의하고 트랜잭션으로 구현한다.
+- [x] 파일 artifact의 위치·hash·버전과 DB record 연결을 정의하고 파일 저장/DB 반영 사이의 중단을 복구할 수 있게 한다.
+- [x] 조회용 projection은 artifact에서 재구성 가능하게 하고 사용자·세션·작업 상태·향후 사람의 검토 기록은 운영 DB의 보존 대상으로 구분한다.
+- [x] unit 테스트는 외부 서비스 없이 실행하고 DB integration 테스트는 격리된 실제 PostgreSQL에서 실행한다. SQLite로 PostgreSQL의 트랜잭션·제약·동시성을 대신 검증하지 않는다.
 
 완료 기준: migration으로 DB를 재현할 수 있고 중복 방지·job claim·재시작 복구와 artifact 참조 일관성 테스트를 통과한다. 운영 DB에 테스트나 초기화 작업이 실행되지 않도록 설정을 분리한다.
+
+2026-09-10 구현: Psycopg 3.3.5 유지, numbered-sql-1 실행기와 migration 0001~0004. HTTP 내용 버전/취득 이력, legacy 표본 persistence, canonical revision·snapshot restore, item ledger, 고정된 입력의 job/attempt/checkpoint, worker heartbeat·120초 drain 및 실제 SIGTERM 복구를 구현했다. 운영 명령은 klegal ops이며 새 비공개 HTTP route는 없다. 상세 및 미실행 범위: docs/persistence-and-jobs.md. 전체 corpus import·source handler·로그인 HTTP·전체 DB/artifact 재해복구는 후속이다.
+
+
+2026-09-10 최종 검증: uv locked sync·ruff check/format·mypy, pytest **140건**(실제 PostgreSQL integration **30건**) 통과. 기존 upstream warning 2건. wheel 설치본의 migration SQL 4개, Compose build/config·migration 적용/재실행·API/worker health·frontend/API HTTP 200·합성 작업 처리·drain 차단을 확인했다. [검증 기록](docs/step2a-verification.json). 로컬 runtime은 resume 상태로 worker가 가동 중이며 AWS 변경·전체 corpus import는 하지 않았다.
 
 ### Step 3 — LAW OPEN API client
 
@@ -542,7 +547,7 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 
 ### 구현 시 선택·고정할 항목
 
-Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.9.3, uv 0.12.5 및 Python 3.12를 사용했다. Python/Node 의존성의 정확한 해상 버전은 lockfile에 고정했다. DB 연결은 Psycopg 3, 로컬 서버는 PostgreSQL 17, 웹 서버는 Nginx다. ORM/migration·router·조회 라이브러리와 운영 TLS는 후속 선택이다.
+Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.9.3, uv 0.12.5 및 Python 3.12를 사용했다. Python/Node 의존성의 정확한 해상 버전은 lockfile에 고정했다. DB 연결은 Psycopg 3, 로컬 서버는 PostgreSQL 17, 웹 서버는 Nginx다. Step 2A는 ORM 없이 Psycopg와 번호순 SQL migration 실행기를 선택했다. router·조회 라이브러리와 운영 TLS는 후속 선택이다.
 
 ### 참고한 공식 문서
 
