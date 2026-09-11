@@ -1,12 +1,20 @@
 # 기존 DataFrame FULL_ROW 보존 importer
 
-**전수 교정 Parquet — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고, 복수 후보 45행과 apply=false null은 기존값 삭제로 처리하지 않았다. Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. 이미지 전수 취득·DB import는 미완료다. [결과와 한계](legacy-repair-and-images-progress.md).
+**전수 교정 Parquet 및 로컬 DB import — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고, 복수 후보 45행과 apply=false null은 기존값 삭제로 처리하지 않았다. Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. corrected bundle v2를 기존 importer 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. [결과와 한계](legacy-repair-and-images-progress.md).
 
 **이미지 보존 범위 확정 — 2026-09-10:** 이번 교정·Parquet 전환에는 이미지 참조 전수 점검과 취득 가능한 실물 파일 확보·검증·본문 위치 연결도 포함한다. 원문 문자열과 원래 URL/name은 보존하고 Parquet에는 이미지 파일/manifest 참조·취득 상태를 담는다. 용량은 현재 선행 장애로 두지 않는다. [확정 범위와 완료 기준](image-preservation-review.md).
 
 **전수 text 대조 후속:** 89,130행의 본문과 별도 파일 8,482개를 대조했다. 신규 미포함 판례로 확정한 자료는 없으며 ID 없는 기존 재결 6429행의 연결 검토가 필요하다. [상세 결과](legacy-text-coverage-audit.md).
 
 2026-09-10. 기존 pickle에 저장된 DataFrame을 재사용하는 export 도구와 단일 worker importer를 구현하고 실제 표본을 검증했다.
+
+## Corrected bundle v2와 로컬 PostgreSQL import — 2026-09-11
+
+보정된 full Parquet data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet을 기존 legacy-full-row-bundle-1 CAS manifest로 변환했다. 최종 bundle은 data/corrected-legacy-bundle-20260911-v2에 있으며 manifest hash는 c3e0ddeb7a23d0896a93c96c47aa1edd3664071a325be29287fa722c32be116b다. v1 bundle은 locator original_index가 Parquet 셀 JSON 전체로 들어간 중간 산출물이므로 사용하지 않는다. v2는 original_index를 실제 legacy index 문자열로 복원한다.
+
+로컬 개발 PostgreSQL에서 job a2498da4-2321-480f-bbeb-fd3c278da1f6로 import를 완료했다. job status는 SUCCEEDED, ledger는 PRESERVED 89,130행, max(row_position)=89129다. 같은 개발 DB에는 과거 15행 표본 import가 남아 있어 legacy_records와 case_projection 총수는 89,145로 조회된다. 이 import는 기존 row와 artifact 보존 및 projection 재생성 범위이며, canonical 등록·gold 확정·이미지 실물 전수 취득을 의미하지 않는다.
+
+대량 import 중 60초 기본 lease가 부족했던 것을 확인해 CLI service queue lease를 300초로 늘렸다. 앞선 실패 job들은 local dev DB의 실험 이력이며 최종 산출물은 v2 bundle과 성공 job이다.
 
 ## 원문 보존과 추출값 교정 — 2026-09-10 사용자 확정
 
@@ -27,7 +35,7 @@
 3. 기준 원문 문자열의 hash 불변, 전체 행·컬럼 대응, 변경 내역의 완전성, 교정값의 근거 일치, 미확정 건수, Parquet 왕복을 검증한다.
 4. 검증된 교정 결과로 전수 Parquet을 만들고 후속 PostgreSQL 적재를 연결한다.
 
-**전수 교정·교정본 Parquet 생성은 완료했다. 전체 DB 적재는 아직 실행하지 않았다.** [날짜 로직 조사](legacy-date-logic-audit.md), [전수 corrected Parquet 보고서](corrected-legacy-parquet-full-export.json).
+**전수 교정·교정본 Parquet 생성과 로컬 개발 PostgreSQL 보존 import는 완료했다. canonical 등록·gold 확정·이미지 실물 전수 취득은 별도 상태다.** [날짜 로직 조사](legacy-date-logic-audit.md), [전수 corrected Parquet 보고서](corrected-legacy-parquet-full-export.json).
 
 아래의 원행 값·타입·OPAQUE 보존 설명은 기존 FULL_ROW archive 경로와 교정 전 표본 실험의 계약이다. 교정된 운영용 Parquet의 모든 파생 필드를 과거 오류값과 동일하게 유지하라는 요구가 아니다.
 
@@ -63,7 +71,7 @@ KorCounsel의 실행 책임은 다음과 같이 둔다.
 
 Parquet 구현 전에는 실제 60컬럼별 dtype과 혼합형 값을 분류하고, 원래 컬럼 순서·pandas dtype·row count·position/index·cell fingerprint를 manifest에 넣는 schema를 먼저 고정한다. 표본 변환에서 Python과 Node/DuckDB 읽기, 선택 컬럼 조회, null/sentinel/OPAQUE, 압축 후 크기와 round-trip을 검증한 뒤 전수 변환 여부를 결정한다. `pyarrow` 또는 Node library는 이 검증을 시작할 때만 의존성에 추가한다.
 
-2026-09-11 후속: 60컬럼 전체 corrected Parquet export와 Python row group 전수 대조, Node/DuckDB count 검증을 완료했다. [실제 146행 검증과 보존 한계](legacy-parquet-validation.md), [전수 corrected Parquet 보고서](corrected-legacy-parquet-full-export.json). Parquet을 읽는 worker/DB import 경로는 미구현이다. 아래의 구현·검증 결과는 기존 tagged JSON bundle 경로에 해당한다.
+2026-09-11 후속: 60컬럼 전체 corrected Parquet export와 Python row group 전수 대조, Node/DuckDB count 검증을 완료했다. [실제 146행 검증과 보존 한계](legacy-parquet-validation.md), [전수 corrected Parquet 보고서](corrected-legacy-parquet-full-export.json). corrected Parquet을 기존 tagged JSON bundle 계약으로 변환해 worker/DB import 경로에 연결했다. 아래의 기존 구현·검증 결과는 tagged JSON bundle 경로의 기반 계약이며, corrected bundle v2가 그 경로를 재사용한다.
 
 ## 입력은 기존 DataFrame
 

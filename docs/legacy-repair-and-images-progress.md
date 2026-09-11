@@ -86,7 +86,15 @@
 ## 검증과 다음 작업
 
 - 새 분석 도구 회귀 19개 통과: 날짜 경계·복수 문맥·offset, 행 격리, hash 불일치, 이미지 오류·중단·재개·반복 위치·0개 이미지.
-- 새 Python 파일 ruff 검사, Node syntax 검증. 기존 backend ruff/format/mypy 통과, pytest 225 passed / 56 skipped. 이번에는 PostgreSQL 테스트 URL 미설정으로 DB 통합 테스트를 실행하지 않았다. DB 코드는 변경하지 않았다.
-- 원본 pickle과 레거시 코드·원문 HTML 수정, PostgreSQL 전수 적재, canonical 등록, AWS 변경은 없다.
+- 새 Python 파일 ruff 검사, Node syntax 검증. 기존 backend ruff/format/mypy 통과, pytest 225 passed / 56 skipped. 이번 corrected bundle 단계에서는 신규 bundle 변환 test와 PostgreSQL legacy import 통합 test를 통과했다.
+- 원본 pickle과 레거시 코드·원문 HTML 수정, canonical 등록, AWS 변경은 없다. PostgreSQL 전수 적재는 로컬 개발 DB 보존 import 범위에서 완료했다.
 
-다음은 (1) corrected Parquet을 읽는 full-row/DB import 경로 연결, (2) 이미지별 영속 ledger와 worker 취득·재시도 연결, (3) 8,418 URL 대상의 제한된 batch 확대 및 name-only/ID 불일치 예외 처리다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다. 전체 snapshot과 이미지 manifest/파일의 일관된 검증·백업 후 PostgreSQL 보존 import로 이어간다.
+corrected Parquet을 기존 full-row/DB import 경로에 연결하고 로컬 개발 PostgreSQL 보존 import까지 완료했다. 다음은 이미지별 영속 ledger와 worker 취득·재시도 연결, 8,418 URL 대상의 제한된 batch 확대, name-only/ID 불일치 예외 처리, 그리고 canonical 연결 후보 검토다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다.
+
+## Corrected bundle v2와 로컬 PostgreSQL import — 2026-09-11
+
+보정된 Parquet data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet을 기존 legacy-full-row-bundle-1 CAS manifest로 변환했다. 최종 산출물은 data/corrected-legacy-bundle-20260911-v2이며 manifest hash는 c3e0ddeb7a23d0896a93c96c47aa1edd3664071a325be29287fa722c32be116b다. docs/corrected-legacy-bundle-export.json에 변환 보고서를 남겼다. v1 bundle은 locator original_index 문제를 고친 v2로 대체한다.
+
+로컬 개발 PostgreSQL import job a2498da4-2321-480f-bbeb-fd3c278da1f6는 SUCCEEDED로 마감됐고, legacy_bundle_rows는 PRESERVED 89,130행, max(row_position)=89129다. legacy_records와 case_projection의 총수 89,145는 이전 15행 표본 import가 같은 개발 DB에 남아 있기 때문이다. 이 결과는 보존 import와 projection 생성 완료이며, canonical 등록·gold 확정·AWS 운영 DB 적재·이미지 binary 전수 취득 완료를 뜻하지 않는다.
+
+초기 대량 import 시 60초 lease가 부족해 local dev 실패 job들이 생겼다. CLI service의 Queue lease를 300초로 늘렸고, 최종 성공 job은 heartbeat가 유지된 상태에서 전체 행을 보존했다. 실패 job들은 실험 이력으로 보되 최종 산출물 기준으로 사용하지 않는다.

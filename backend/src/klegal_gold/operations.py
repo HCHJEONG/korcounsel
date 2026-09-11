@@ -23,7 +23,7 @@ operations = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 def _services() -> tuple[Database, Records, Queue]:
     settings = load_settings()
     db = Database.from_settings(settings)
-    return db, Records(db, FileStore(settings.data_dir)), Queue(db)
+    return db, Records(db, FileStore(settings.data_dir)), Queue(db, lease_seconds=300)
 
 
 def _safe(fn: Callable[..., Any]) -> Callable[..., Any]:

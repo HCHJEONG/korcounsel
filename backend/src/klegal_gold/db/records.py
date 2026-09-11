@@ -2,6 +2,8 @@
 
 import json
 from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import date
 from typing import Any, Literal
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -15,6 +17,33 @@ from klegal_gold.ingestion.legacy import legacy_content_revision
 from klegal_gold.storage.files import Blob, FileStore
 
 from .session import Connection, Database
+
+
+@dataclass(frozen=True)
+class CaseSearchResult:
+    preservation_id: str
+    content_revision: str
+    court: str | None
+    case_numbers: tuple[str, ...]
+    decision_date: date | None
+    body_state: str
+    row_position: int
+    original_index: str
+
+
+def _legacy_search_text(record: LegacyCaseRecord) -> str:
+    values: list[str] = []
+    metadata = record.metadata
+    for value in (metadata.court, metadata.decision_date, metadata.disposition, metadata.title):
+        if value is not None:
+            values.append(str(value))
+    values.extend(metadata.case_numbers)
+    for field in record.original.fields:
+        if field.value is not None:
+            values.append(str(field.value))
+    for stored_text in record.original.stored_texts:
+        values.append(stored_text.text)
+    return "\n".join(values)
 
 
 def _json(value: Any) -> bytes:
@@ -100,11 +129,12 @@ class Records:
     def _project(conn: Connection, record: LegacyCaseRecord, revision: str) -> None:
         conn.execute(
             """INSERT INTO case_projection
-               (preservation_id,content_revision,court,case_numbers,decision_date,body_state)
-               VALUES(%s,%s,%s,%s,%s,%s)
+               (preservation_id,content_revision,court,case_numbers,decision_date,body_state,search_text)
+               VALUES(%s,%s,%s,%s,%s,%s,%s)
                ON CONFLICT(preservation_id,content_revision) DO UPDATE SET
                court=EXCLUDED.court,case_numbers=EXCLUDED.case_numbers,
-               decision_date=EXCLUDED.decision_date,body_state=EXCLUDED.body_state""",
+               decision_date=EXCLUDED.decision_date,body_state=EXCLUDED.body_state,
+               search_text=EXCLUDED.search_text""",
             (
                 record.preservation_id,
                 revision,
@@ -112,6 +142,7 @@ class Records:
                 Jsonb(list(record.metadata.case_numbers)),
                 record.metadata.decision_date,
                 record.body_state,
+                _legacy_search_text(record),
             ),
         )
 
@@ -224,6 +255,48 @@ class Records:
                 count += 1
                 if progress is not None:
                     progress(last, count)
+
+    def search_cases(self, query: str, *, limit: int = 50) -> list[CaseSearchResult]:
+        normalized = query.strip()
+        if not normalized:
+            return []
+        safe_limit = max(1, min(limit, 100))
+        pattern = f"%{normalized}%"
+        with self.db.connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT
+                    cp.preservation_id, cp.content_revision, cp.court, cp.case_numbers,
+                    cp.decision_date, cp.body_state, lr.row_position, lr.original_index
+                FROM case_projection cp
+                JOIN legacy_records lr
+                  ON lr.preservation_id = cp.preservation_id
+                 AND lr.content_revision = cp.content_revision
+                WHERE cp.court ILIKE %s
+                   OR cp.search_text ILIKE %s
+                   OR EXISTS (
+                        SELECT 1
+                        FROM jsonb_array_elements_text(cp.case_numbers) AS n(value)
+                        WHERE n.value ILIKE %s
+                   )
+                ORDER BY cp.decision_date DESC NULLS LAST, lr.row_position ASC
+                LIMIT %s
+                """,
+                (pattern, pattern, pattern, safe_limit),
+            ).fetchall()
+        return [
+            CaseSearchResult(
+                preservation_id=row["preservation_id"],
+                content_revision=row["content_revision"],
+                court=row["court"],
+                case_numbers=tuple(row["case_numbers"]),
+                decision_date=row["decision_date"],
+                body_state=row["body_state"],
+                row_position=row["row_position"],
+                original_index=row["original_index"],
+            )
+            for row in rows
+        ]
 
     def save_inventory(self, snapshot: InventorySnapshot) -> str:
         artifact_id = "inventory:" + snapshot.snapshot_id

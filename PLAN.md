@@ -1,6 +1,6 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-**전수 corrected Parquet — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. 이미지 전수 취득·DB import·canonical 등록은 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
+**전수 corrected Parquet — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. 이미지 전수 취득·canonical 등록은 미완료다. corrected bundle v2를 기존 import worker 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
 
 이하 표본 조사·미실행 표시는 당시 이력이며 최신 완료 범위는 위 보고서를 따른다.
 
@@ -44,7 +44,7 @@
 
 > 상태: Step 1 완료 / Step 2 데이터·legacy 보존 계약 및 표본 검증 완료 / Step 2A 로컬 persistence·worker 구현 및 검증 / Step 3 client·양 출처 상세 구현 / Step 3A 확대 검증·목록 보존 후속
 > 기준: 사용자 제공 작업지시서, 레거시 경로 및 2026-09-09 웹 앱·AWS 운영·기술 스택 결정
-> 최신 작업: 2026-09-10 OC 차단 제거·목록 재검증, scourt bounded inventory/worker, 12개 기존 ID 확대 조사 및 34개 이미지 참조 매핑 검증. 새 ID 후보는 검토 대상으로 보존하며 registry를 변경하지 않았다. docs/source-path-validation.md 참조. 이전 기록: 2026-09-10 사용자 결정 기록: LAW_GO_KR_OC/LAW_OPEN_API_OC는 비밀값이 아니며 응답 내 OC 포함으로 저장을 차단하지 않는다. 기존 차단 제거·목록 재검증은 후속 구현이다. 이전 기록: 2026-09-10 Step 3 JSON/XML client·현재 scourt 상세 adapter·worker 연결과 대표 2건 live 검증. 목록 credential 반사로 저장 차단; Step 3A 전체 inventory/fidelity 미완료. docs/source-adapters.md 참조. 이전 기록: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus import·DB registry·현행 사이트 검증은 미실행. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
+> 최신 작업: 2026-09-10 OC 차단 제거·목록 재검증, scourt bounded inventory/worker, 12개 기존 ID 확대 조사 및 34개 이미지 참조 매핑 검증. 새 ID 후보는 검토 대상으로 보존하며 registry를 변경하지 않았다. docs/source-path-validation.md 참조. 이전 기록: 2026-09-10 사용자 결정 기록: LAW_GO_KR_OC/LAW_OPEN_API_OC는 비밀값이 아니며 응답 내 OC 포함으로 저장을 차단하지 않는다. 기존 차단 제거·목록 재검증은 후속 구현이다. 이전 기록: 2026-09-10 Step 3 JSON/XML client·현재 scourt 상세 adapter·worker 연결과 대표 2건 live 검증. 목록 credential 반사로 저장 차단; Step 3A 전체 inventory/fidelity 미완료. docs/source-adapters.md 참조. 이전 기록: 2026-09-10 Step 2A PostgreSQL SQL migration·불변 파일/DB 연결·registry/ledger·단일 worker·CLI·중단 복구 구현. 로컬 테스트·Compose 검증, 전체 corpus import·AWS 변경 없음. 이전 기록: 2026-09-10 개별 결정 문서 canonical 정책, legacy staging/provenance 및 실제 metadata 15행·저장 HTML 4개 보존 검증 완료. 전체 corpus canonical 등록·현행 사이트 검증은 미실행. corrected full-row bundle의 로컬 개발 PostgreSQL 보존 import는 완료했다. 이전 기록: scourt 기본 본문·lawgo 조문 보강·증분 축적 계승 및 Step 5B 기록. 이전 작업: 2026-09-10 Step 2 모델 초안 구현 중, 기존 약 9만 건 우선 계승·법원명+사건번호 업무키 결정에 따라 ID 확정 전 전수/표본 분석을 추가했다. AWS·source 재수집은 하지 않았다.
 
 ## 1. 목적과 성공 기준
 
