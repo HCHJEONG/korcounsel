@@ -2,3 +2,7 @@
 .login-panel{max-width:460px}.login-panel label{display:block;margin-top:14px}.login-panel button{margin-top:20px}.reader-list{list-style:none;padding:0}.reader-list li{padding:12px 0;border-bottom:1px solid #eee}.reader-list button{white-space:normal;text-align:left;background:transparent;color:#1f5f9f;padding:0;text-decoration:underline}.reader-list span{display:block;font-size:13px;color:#5f6b7a}.document-panel{padding:20px}.document-toolbar{display:flex;gap:12px;align-items:start;justify-content:space-between}.document-panel iframe{width:100%;height:75vh;border:1px solid #ddd;background:white}.document-panel p{font-size:14px}main{max-width:1200px}.result-table{margin-top:20px}
 
 .login-shell main{max-width:480px;margin:10vh auto 48px}.login-shell h1{font-size:26px}.login-shell .login-panel{margin:24px 0;padding:28px}.login-shell .login-panel button{width:100%}.login-help{color:#5f6b7a;font-size:14px;margin:20px 0 0}.account-menu{display:flex;gap:16px;align-items:center}.account-menu span{font-size:14px;color:#5f6b7a}.login-message{min-height:1.6em}
+
+.reader-samples summary{cursor:pointer;font-size:18px;font-weight:700}.reader-samples summary:focus-visible{outline:3px solid #b7791f;outline-offset:3px}
+
+.result-table table{min-width:720px}

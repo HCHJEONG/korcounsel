@@ -1,12 +1,15 @@
 """Direct string search over the corrected legacy Parquet snapshot."""
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import date
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
+import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 
@@ -77,6 +80,46 @@ def _original_index(value: Any) -> str:
     return text if text else ""
 
 
+def _literal_query(query: str) -> bool:
+    """These characters cannot be introduced or changed by Unicode casefold.
+
+    Hangul/digit case identifiers avoid decoding every corpus cell in Python.
+    Other alphabets still use Python casefold, including multi-character folds
+    such as sharp s; Arrow's ignore_case is not an equivalent contract.
+    """
+    return all("가" <= char <= "힣" or (char.isascii() and not char.isalpha()) for char in query)
+
+
+def _string_matches(column: Any, query: str, *, literal: bool) -> Any:
+    if literal:
+        return pc.fill_null(pc.match_substring_regex(column, re.escape(query)), False)
+    return pa.array(
+        [value is not None and query in value.casefold() for value in column.to_pylist()]
+    )
+
+
+def _column_matches(column: Any, query: str, *, literal: bool) -> Any:
+    """Match all types with the existing _text precedence, without row decoding."""
+    if pa.types.is_string(column.type) or pa.types.is_large_string(column.type):
+        return _string_matches(column, query, literal=literal)
+    if pa.types.is_integer(column.type):
+        return _string_matches(pc.cast(column, pa.large_string()), query, literal=literal)
+    if pa.types.is_struct(column.type) and "text" in [field.name for field in column.type]:
+        text = pc.struct_field(column, "text")
+        if pa.types.is_string(text.type) or pa.types.is_large_string(text.type):
+            matched = _string_matches(text, query, literal=literal)
+            # Most legacy tagged cells carry text. Decode only the exceptions:
+            # integer/value precedence and dictionaries without any payload.
+            remaining = pc.indices_nonzero(pc.and_(pc.is_valid(column), pc.is_null(text)))
+            if len(remaining):
+                fallback = [False] * len(column)
+                for index in remaining.to_pylist():
+                    fallback[index] = query in _text(column[index].as_py()).casefold()
+                matched = pc.or_(matched, pa.array(fallback))
+            return matched
+    return pa.array([query in _text(value).casefold() for value in column.to_pylist()])
+
+
 def search_legacy_parquet(
     path: Path, query: str, *, limit: int = 30
 ) -> list[ParquetCaseSearchResult]:
@@ -87,8 +130,12 @@ def search_legacy_parquet(
     parquet = pq.ParquetFile(path)
     results: list[ParquetCaseSearchResult] = []
     column_names = parquet.schema_arrow.names
+    literal = _literal_query(normalized)
     for batch in parquet.iter_batches(batch_size=256):
-        for row in batch.to_pylist():
+        candidates = pa.array([False] * len(batch))
+        for column in batch.columns:
+            candidates = pc.or_(candidates, _column_matches(column, normalized, literal=literal))
+        for row in batch.filter(candidates).to_pylist():
             matched = tuple(
                 name for name in column_names if normalized in _text(row.get(name)).casefold()
             )

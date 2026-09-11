@@ -10,6 +10,7 @@ from uuid import uuid4
 from klegal_gold.assets.images import ImageAcquirer
 from klegal_gold.config import load_settings
 from klegal_gold.db.records import Records
+from klegal_gold.documents.legacy_batch import LegacyReaderBatch
 from klegal_gold.documents.observe import observe_html
 from klegal_gold.domain.identity import SourceSystem
 from klegal_gold.ingestion.inventory import InventoryCapture, collect_inventory
@@ -31,6 +32,7 @@ class Worker:
         self.queue, self.records = queue, records
         self.stop = threading.Event()
         self.worker_id = str(uuid4())
+        self.legacy_readers = LegacyReaderBatch(records)
 
     def _verify(self, job: Job) -> None:
         blob = self.records.blob(job.payload["artifact_id"])
@@ -218,6 +220,31 @@ class Worker:
             },
         )
 
+    def _stage_legacy_reader(self, job: Job) -> None:
+        settings = load_settings()
+        if settings.legacy_parquet_path is None:
+            raise ValueError("LEGACY_PARQUET_UNAVAILABLE")
+        last_beat = 0.0
+        last_drain_check = 0.0
+
+        def progress(checkpoint: dict[str, object]) -> None:
+            nonlocal last_beat, last_drain_check
+            now = time.monotonic()
+            if self.stop.is_set():
+                raise CheckpointRequested
+            if now - last_beat >= min(10, self.queue.lease_seconds / 3):
+                self.queue.worker_heartbeat(self.worker_id)
+                self.queue.heartbeat(job, checkpoint)
+                last_beat = now
+            if now - last_drain_check >= 1:
+                if self.queue.drain_status()["draining"]:
+                    raise CheckpointRequested
+                last_drain_check = now
+
+        with self.queue.db.reuse_connections(), self.records.db.reuse_connections():
+            result = self.legacy_readers.run(job, settings.legacy_parquet_path, progress)
+            self.queue.heartbeat(job, {"result_manifest": result})
+
     def run_once(self) -> bool:
         if self.stop.is_set():
             return False
@@ -226,7 +253,9 @@ class Worker:
             return False
         try:
             if job.handler_version != (
-                "legacy-import-1"
+                "legacy-reader-batch-1"
+                if job.kind == "STAGE_LEGACY_READER_BATCH"
+                else "legacy-import-1"
                 if job.kind == "IMPORT_LEGACY_BUNDLE"
                 else (
                     "asset-1"
@@ -235,7 +264,9 @@ class Worker:
                 )
             ):
                 raise ValueError("UNSUPPORTED_HANDLER_VERSION")
-            if job.kind == "IMPORT_LEGACY_BUNDLE":
+            if job.kind == "STAGE_LEGACY_READER_BATCH":
+                self._stage_legacy_reader(job)
+            elif job.kind == "IMPORT_LEGACY_BUNDLE":
                 self._import_legacy(job)
             elif job.kind == "VERIFY_ARTIFACT":
                 self._verify(job)

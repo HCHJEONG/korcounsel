@@ -67,6 +67,20 @@ def document_image(
     return Response(raw, media_type=media, headers={"X-Content-Type-Options": "nosniff"})
 
 
+@router.get("/reader/{document_id}/statutes/{article_order}/images/{image_order}")
+def statute_image(
+    document_id: str,
+    article_order: int,
+    image_order: int,
+    store: Annotated[ReaderStore, Depends(reader_store)],
+) -> Response:
+    try:
+        raw, media = store.statute_image(document_id, article_order, image_order)
+    except (ValueError, OSError):
+        raise HTTPException(404, "조문 이미지를 사용할 수 없습니다.") from None
+    return Response(raw, media_type=media, headers={"X-Content-Type-Options": "nosniff"})
+
+
 @router.get("/cases/{position}/body", response_class=HTMLResponse)
 def legacy_body(
     position: int,

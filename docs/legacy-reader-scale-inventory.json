@@ -1,0 +1,82 @@
+{
+  "version": "legacy-enrichment-inventory-1",
+  "reader_version": "enriched-reader-2",
+  "statute_parser_version": "legacy-statute-occurrence-1",
+  "input": {
+    "parquet_path": "/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet",
+    "parquet_sha256": "3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2",
+    "parquet_bytes": 1215542924,
+    "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+    "expected_rows": 89130,
+    "unchanged_after_scan": true
+  },
+  "totals": {
+    "body_images": 15448,
+    "body_tables": 11225,
+    "failed_statutes": 25937,
+    "hidden_images": 0,
+    "image_occurrences": 105793,
+    "image_target_rows": 3953,
+    "image_target_rows_without_source_id": 45,
+    "missing_src_body_images": 17,
+    "preserved_statutes": 702035,
+    "provider_ui_images": 90345,
+    "rows": 89130,
+    "rows_observed": 89130,
+    "rows_with_body_images": 3953,
+    "rows_with_body_tables": 3939,
+    "rows_with_failed_statutes": 7929,
+    "rows_with_image_occurrences": 43794,
+    "rows_with_missing_src_body_images": 3,
+    "rows_with_preserved_statutes": 84785,
+    "rows_with_provider_ui_images": 41789,
+    "rows_with_statute_occurrences": 87213,
+    "rows_with_unlinked_statutes": 86958,
+    "statute_occurrences": 1641768,
+    "table_body_images": 0,
+    "unlinked_statutes": 913796
+  },
+  "distinct_positions": 89130,
+  "distinct_original_image_urls": 8425,
+  "distinct_body_image_urls": 8423,
+  "distinct_preserved_statute_payloads": 136850,
+  "image_reference_statuses": {
+    "LEGACY_REFERENCE_REQUIRES_MAPPING": 105776,
+    "MISSING_SRC": 17
+  },
+  "statute_statuses": {
+    "LEGACY_FAILURE": 25937,
+    "PRESERVED": 702035,
+    "UNLINKED": 913796
+  },
+  "error_codes": {},
+  "artifacts": {
+    "rows.jsonl": {
+      "sha256": "ae4332ee5652cbbe3b0a01747654dc82eb1a1b1eaad130e4c908b85e8f4c8045",
+      "bytes": 60829680
+    },
+    "images.jsonl": {
+      "sha256": "cfe2b00a5b73910c014f6539cfdf2aea905052c27bd8cf376e613ef2540dc558",
+      "bytes": 90777065
+    },
+    "statutes.jsonl": {
+      "sha256": "cf09bd8ae1fc679bf0ed671b9fe92e33fdf41cf41754cdda582683428fe3f922",
+      "bytes": 930771745
+    },
+    "image-targets.jsonl": {
+      "sha256": "d5effca374825cf877b8710e35442b7105439bf83424d7005dfcc3855e79e990",
+      "bytes": 2701340
+    },
+    "errors.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Preserved HTML observations only; no current-provider, binary or DB verification",
+  "ui_classification": {
+    "rule": "exact filename allowlist",
+    "filenames": [
+      "alert_img_01.png"
+    ]
+  }
+}

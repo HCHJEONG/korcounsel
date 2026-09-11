@@ -178,7 +178,22 @@ def test_upgrade_backfills_without_mutating_history(empty_db):
         "0008_legacy_import.sql",
         "0009_case_search_text.sql",
         "0010_image_acquisition.sql",
+        "0011_legacy_reader_batches.sql",
     ]
+    with empty_db.connect() as conn:
+        extension = conn.execute(
+            "SELECT n.nspname AS schema FROM pg_extension e "
+            "JOIN pg_namespace n ON n.oid=e.extnamespace WHERE e.extname='pg_trgm'"
+        ).fetchone()
+        assert extension["schema"] == "public"
+        assert (
+            conn.execute(
+                "SELECT count(*) AS n FROM information_schema.tables "
+                "WHERE table_schema=%s AND table_name='schema_migrations'",
+                (empty_db.schema,),
+            ).fetchone()["n"]
+            == 1
+        )
     registry = Registry(empty_db)
     assert registry.snapshot() == before
     assert (

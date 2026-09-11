@@ -4,6 +4,8 @@ import re
 from hashlib import sha256
 from pathlib import Path
 
+from psycopg import sql
+
 from .session import Database
 
 MIGRATIONS = Path(__file__).resolve().parents[3] / "migrations"
@@ -23,13 +25,23 @@ def migrate(db: Database, directory: Path = MIGRATIONS, *, target: int | None = 
         raise ValueError("INVALID_MIGRATION_TARGET")
     applied = []
     with db.connect() as conn:
+        # Extension operator classes live in public. Keep the target schema first
+        # while replaying original, checksum-pinned SQL in isolated test schemas.
+        conn.execute(
+            sql.SQL("SET LOCAL search_path TO {}, public").format(sql.Identifier(db.schema))
+        )
         conn.execute("SELECT pg_advisory_xact_lock(%s)", (MIGRATION_LOCK,))
-        conn.execute("""CREATE TABLE IF NOT EXISTS schema_migrations (
+        history_table = sql.Identifier(db.schema, "schema_migrations")
+        conn.execute(
+            sql.SQL("""CREATE TABLE IF NOT EXISTS {} (
             version text PRIMARY KEY, checksum text NOT NULL,
-            applied_at timestamptz NOT NULL DEFAULT clock_timestamp())""")
+            applied_at timestamptz NOT NULL DEFAULT clock_timestamp())""").format(history_table)
+        )
         history = {
             r["version"]: r["checksum"]
-            for r in conn.execute("SELECT version,checksum FROM schema_migrations ORDER BY version")
+            for r in conn.execute(
+                sql.SQL("SELECT version,checksum FROM {} ORDER BY version").format(history_table)
+            )
         }
         if list(history) != [p.name for p in files[: len(history)]]:
             raise ValueError("UNKNOWN_OR_NONCONTIGUOUS_MIGRATION")
@@ -44,9 +56,14 @@ def migrate(db: Database, directory: Path = MIGRATIONS, *, target: int | None = 
                 continue
             if target is not None and index > target:
                 break
+            if path.name == "0009_case_search_text.sql":
+                # Install once in the shared extension schema before the unchanged
+                # migration runs; a temporary target schema must never own pg_trgm.
+                conn.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public")
             conn.execute(raw.decode("utf-8"), prepare=False)
             conn.execute(
-                "INSERT INTO schema_migrations(version,checksum) VALUES(%s,%s)", (path.name, digest)
+                sql.SQL("INSERT INTO {}(version,checksum) VALUES(%s,%s)").format(history_table),
+                (path.name, digest),
             )
             applied.append(path.name)
     return applied

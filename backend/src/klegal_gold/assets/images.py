@@ -87,6 +87,27 @@ def valid_scourt_image_url(url: str) -> bool:
     )
 
 
+def valid_lawgo_image_url(url: str) -> bool:
+    """Accept only the observed official statute-image endpoint and numeric file key."""
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query, keep_blank_values=True)
+    return (
+        parsed.scheme == "https"
+        and parsed.netloc in {"law.go.kr", "www.law.go.kr"}
+        and parsed.path == "/flDownload.do"
+        and not parsed.params
+        and not parsed.fragment
+        and set(query) == {"flSeq"}
+        and len(query["flSeq"]) == 1
+        and query["flSeq"][0].isascii()
+        and query["flSeq"][0].isdigit()
+    )
+
+
+def valid_image_url(url: str) -> bool:
+    return valid_scourt_image_url(url) or valid_lawgo_image_url(url)
+
+
 def image_metadata(raw: bytes) -> dict[str, Any]:
     if raw.startswith(b"\x89PNG\r\n\x1a\n") and len(raw) >= 24:
         width, height = struct.unpack(">II", raw[16:24])
@@ -255,7 +276,7 @@ def references_from_manifest(raw: bytes) -> list[ImageReference]:
 
 
 def fetch_image(url: str, max_bytes: int = MAX_IMAGE_BYTES) -> DownloadedImage:
-    if not valid_scourt_image_url(url):
+    if not valid_image_url(url):
         raise ValueError("UNSAFE_IMAGE_URL")
     request = Request(url, headers={"User-Agent": "KorCounsel/0.1 image-ledger"})
     try:
@@ -317,6 +338,8 @@ class ImageAcquirer:
                 skipped += 1
             else:
                 try:
+                    if not valid_image_url(url):
+                        raise ValueError("UNSAFE_IMAGE_URL")
                     downloaded = self.fetcher(
                         url, min(MAX_IMAGE_BYTES, max_total_bytes - total_bytes)
                     )

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from hashlib import sha256
 from html import escape
 from html.parser import HTMLParser
@@ -10,16 +11,25 @@ from typing import Any
 from klegal_gold.documents.observe import observe_html
 
 VERSION = "enriched-reader-2"
+STATUTE_IMAGE_VERSION = "enriched-reader-3"
 TAGS = frozenset(
     "p div span br hr table thead tbody tfoot tr td th caption colgroup col "
     "b strong i em u s sub sup h1 h2 h3 h4 h5 h6 ul ol li dl dt dd blockquote pre".split()
 )
 VOID = {"br", "hr", "col"}
 HIDDEN = {"script", "style", "iframe", "object", "embed", "svg", "math", "template", "noscript"}
+_IMAGE_START = re.compile(r"<img", re.IGNORECASE | re.ASCII)
+_ANCHOR_START = re.compile(r"<a", re.IGNORECASE | re.ASCII)
 
 
 def image_occurrences(html: str, *, source_id: str, base_url: str) -> list[dict[str, Any]]:
     """Offsets identify source HTML tags, never normalized text evidence."""
+    # HTMLParser requires a literal '<' immediately followed by the tag name.
+    # The guard admits false positives (comments, attributes, incomplete tags),
+    # but never skips an img start tag that the parser would recognize.
+    if _IMAGE_START.search(html) is None and "<!" not in html:
+        html.encode()  # Keep the stored-UTF-8 contract even without image tags.
+        return []
     observation = observe_html(html, base_url, scourt_id=source_id)
     lines = [0]
     for index, char in enumerate(html):
@@ -62,8 +72,59 @@ def image_occurrences(html: str, *, source_id: str, base_url: str) -> list[dict[
     return result
 
 
+def statute_image_occurrences(
+    html: str, *, parsed_statutes: list[dict[str, Any]] | None = None
+) -> list[dict[str, Any]]:
+    """Locate every payload image without confusing payload and body offsets."""
+    from klegal_gold.enrichment.legacy_statutes import statute_occurrences
+
+    articles = statute_occurrences(html) if parsed_statutes is None else parsed_statutes
+    body_hash = sha256(html.encode()).hexdigest()
+    result = []
+    for article in articles:
+        if not article["payload"]:
+            continue
+        for ref in image_occurrences(
+            article["payload"], source_id="", base_url="https://www.law.go.kr/"
+        ):
+            result.append(
+                {
+                    **ref,
+                    "html_line_column": list(ref["html_line_column"]),
+                    "article_order": article["order"],
+                    "article_reference_id": article["reference_id"],
+                    "payload_sha256": article["payload_sha256"],
+                    "parent_body_sha256": body_hash,
+                }
+            )
+    return result
+
+
+def validate_statute_image_links(
+    html: str,
+    refs: list[dict[str, Any]],
+    *,
+    parsed_statutes: list[dict[str, Any]] | None = None,
+) -> None:
+    if not isinstance(refs, list) or any(not isinstance(ref, dict) for ref in refs):
+        raise ValueError("INVALID_STATUTE_IMAGE_LINKS")
+    expected = statute_image_occurrences(html, parsed_statutes=parsed_statutes)
+    if len(expected) != len(refs):
+        raise ValueError("STATUTE_IMAGE_COUNT_MISMATCH")
+    for original, linked in zip(expected, refs, strict=True):
+        if any(key not in linked or linked[key] != value for key, value in original.items()):
+            raise ValueError("STATUTE_IMAGE_POSITION_MISMATCH")
+
+
 def _render_content(
-    html: str, refs: list[dict[str, Any]], document_id: str, *, statutes: bool = True
+    html: str,
+    refs: list[dict[str, Any]],
+    document_id: str,
+    *,
+    statutes: bool = True,
+    parsed_statutes: list[dict[str, Any]] | None = None,
+    statute_images: list[dict[str, Any]] | None = None,
+    image_path: str | None = None,
 ) -> str:
     """Render only escaped text, structural allowlist tags and internal image URLs."""
     parent_hash = sha256(html.encode()).hexdigest()
@@ -76,7 +137,17 @@ def _render_content(
 
     from klegal_gold.enrichment.legacy_statutes import statute_occurrences
 
-    articles = statute_occurrences(html) if statutes else []
+    if not statutes:
+        articles = []
+    elif parsed_statutes is not None:
+        articles = parsed_statutes
+    else:
+        articles = statute_occurrences(html) if _ANCHOR_START.search(html) else []
+    article_images: dict[int, list[dict[str, Any]]] = {}
+    if statute_images is not None:
+        validate_statute_image_links(html, statute_images, parsed_statutes=articles)
+        for ref in statute_images:
+            article_images.setdefault(ref["article_order"], []).append(ref)
 
     class Renderer(HTMLParser):
         def __init__(self) -> None:
@@ -88,8 +159,8 @@ def _render_content(
             self.article_open = False
 
         def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-            values = dict(attrs)
             if tag == "a" and not self.hidden and statutes:
+                values = dict(attrs)
                 if values.get("name") == "linkContJomun" or "jtable" in values:
                     number = self.article_order
                     self.article_order += 1
@@ -108,7 +179,8 @@ def _render_content(
                     ref.get("alt") or ref.get("name") or f"본문 이미지 {self.order}", quote=True
                 )
                 if ref.get("blob_hash"):
-                    src = f"/api/reader/{document_id}/images/{ref['order']}"
+                    prefix = image_path or f"/api/reader/{document_id}/images"
+                    src = f"{prefix}/{ref['order']}"
                     self.output.append(
                         f'<img src="{src}" alt="{name}" data-occurrence="{ref["order"]}">'
                     )
@@ -166,17 +238,37 @@ def _render_content(
             "<p>기존 lawgo 보강 내용입니다. "
             "판례 적용 법령 버전과 과거 취득 시각은 미확인입니다.</p>"
         )
+        rendered_payloads: dict[tuple[str, int | None], str] = {}
         for article in articles:
             order = article["order"]
             output += f'<section id="statute-{order}" class="statute-item">'
             output += f"<h3>조문 {order + 1} · {escape(article['text'])}</h3>"
             if article["status"] == "PRESERVED":
                 payload = article["payload"]
-                embedded = image_occurrences(
-                    payload, source_id="", base_url="https://www.law.go.kr/"
-                )
+                cache_key = (payload, order if statute_images is not None else None)
+                rendered = rendered_payloads.get(cache_key)
+                if rendered is None:
+                    embedded = (
+                        article_images.get(order, [])
+                        if statute_images is not None
+                        else image_occurrences(
+                            payload, source_id="", base_url="https://www.law.go.kr/"
+                        )
+                    )
+                    rendered = _render_content(
+                        payload,
+                        embedded,
+                        document_id,
+                        statutes=False,
+                        image_path=(
+                            f"/api/reader/{document_id}/statutes/{order}/images"
+                            if statute_images is not None
+                            else None
+                        ),
+                    )
+                    rendered_payloads[cache_key] = rendered
                 output += '<p class="statute-status">보강 내용 보존 · 적용 버전 미확인</p>'
-                output += _render_content(payload, embedded, document_id, statutes=False)
+                output += rendered
             elif article["status"] == "LEGACY_FAILURE":
                 output += (
                     '<p class="statute-status">과거 보강 실패: '
@@ -192,8 +284,18 @@ def _render_content(
     return output
 
 
-def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> str:
-    content = _render_content(html, refs, document_id)
+def render_document(
+    html: str,
+    refs: list[dict[str, Any]],
+    document_id: str,
+    *,
+    parsed_statutes: list[dict[str, Any]] | None = None,
+    statute_images: list[dict[str, Any]] | None = None,
+) -> str:
+    """Use the caller's just-parsed statutes when preserving the same parent HTML."""
+    content = _render_content(
+        html, refs, document_id, parsed_statutes=parsed_statutes, statute_images=statute_images
+    )
     style = (
         "body{font:17px/1.85 sans-serif;color:#1f2933;margin:24px;overflow-wrap:anywhere}"
         "img{max-width:100%;height:auto}"

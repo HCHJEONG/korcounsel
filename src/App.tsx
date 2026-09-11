@@ -193,12 +193,14 @@ export default function App() {
           </table></div>}
         </section>
         <section aria-labelledby="samples-title">
-          <h2 id="samples-title">이미지 연결 검증 표본</h2>
-          <p>현재 제공 본문을 별도 보존한 자료입니다. 과거 본문과의 동일성 확정을 뜻하지 않습니다.</p>
-          {samples.length === 0 ? <p>등록된 본문 표본이 없습니다.</p> : <ul className="reader-list">{samples.map(item => <li key={item.document_id}>
-            <button onClick={() => void openDocument({ title: item.title, url: `/api/reader/${item.document_id}/html`, note: `현재 제공 본문 별도 보존 · 이미지 등장 ${item.image_count}곳 중 ${item.acquired_count}곳 연결` })}>{item.title}</button>
-            <span>이미지 {item.acquired_count}/{item.image_count}곳 연결</span>
-          </li>)}</ul>}
+          <details className="reader-samples">
+            <summary id="samples-title">이미지 연결 검증 표본</summary>
+            <p>현재 제공 본문을 별도 보존한 자료입니다. 과거 본문과의 동일성 확정을 뜻하지 않습니다.</p>
+            {samples.length === 0 ? <p>등록된 본문 표본이 없습니다.</p> : <ul className="reader-list">{samples.map(item => <li key={item.document_id}>
+              <button onClick={() => void openDocument({ title: item.title, url: `/api/reader/${item.document_id}/html`, note: `현재 제공 본문 별도 보존 · 이미지 등장 ${item.image_count}곳 중 ${item.acquired_count}곳 연결` })}>{item.title}</button>
+              <span>이미지 {item.acquired_count}/{item.image_count}곳 연결</span>
+            </li>)}</ul>}
+          </details>
         </section>
         {selection && <section className="document-panel" aria-labelledby="document-title">
           <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); window.history.replaceState(null, '', window.location.pathname) }}>닫기</button></div>

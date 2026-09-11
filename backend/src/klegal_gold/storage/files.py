@@ -53,6 +53,9 @@ class FileStore:
         digest = sha256(raw).hexdigest()
         blob = Blob(digest, f"blobs/{digest[:2]}/{digest}", len(raw))
         path = self.path(blob.storage_key)
+        if path.exists():
+            self.verify(blob)
+            return blob
         path.parent.mkdir(parents=True, exist_ok=True)
         self.path(blob.storage_key)
         fd, temporary = tempfile.mkstemp(prefix=".pending-", dir=path.parent)

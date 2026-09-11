@@ -119,6 +119,16 @@ class Queue:
             3,
         )
 
+    def submit_legacy_reader_batch(self, request_key: str, manifest_artifact_id: str) -> Job:
+        if not manifest_artifact_id.strip():
+            raise ValueError("INVALID_LEGACY_READER_BATCH_REQUEST")
+        return self._submit(
+            request_key,
+            "STAGE_LEGACY_READER_BATCH",
+            {"manifest_artifact_id": manifest_artifact_id},
+            3,
+        )
+
     def submit_rebuild(self, request_key: str, *, max_attempts: int = 3) -> Job:
         return self._submit(request_key, "REBUILD_PROJECTION", {}, max_attempts)
 
@@ -148,7 +158,7 @@ class Queue:
                 "artifact_id" if kind == "VERIFY_ARTIFACT" else "manifest_artifact_id"
             )
             if (
-                kind in {"VERIFY_ARTIFACT", "ACQUIRE_IMAGE_BATCH"}
+                kind in {"VERIFY_ARTIFACT", "ACQUIRE_IMAGE_BATCH", "STAGE_LEGACY_READER_BATCH"}
                 and not conn.execute(
                     "SELECT 1 FROM artifacts WHERE artifact_id=%s", (payload[artifact_payload_key],)
                 ).fetchone()
@@ -163,7 +173,9 @@ class Queue:
                     kind,
                     Jsonb(payload),
                     max_attempts,
-                    "legacy-import-1"
+                    "legacy-reader-batch-1"
+                    if kind == "STAGE_LEGACY_READER_BATCH"
+                    else "legacy-import-1"
                     if kind == "IMPORT_LEGACY_BUNDLE"
                     else (
                         "asset-1"

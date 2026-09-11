@@ -1,4 +1,5 @@
 import json
+from hashlib import sha256
 from pathlib import Path
 
 import pyarrow as pa
@@ -74,3 +75,129 @@ def test_search_legacy_parquet_matches_any_string_column(tmp_path):
     assert [item.row_position for item in by_court] == [8]
 
     assert search_legacy_parquet(parquet, "없음", limit=10) == []
+
+
+def _reference_rows(path, query, limit=30):
+    """Original full Python scan as an independent compatibility oracle."""
+    normalized = query.strip().casefold()
+    if not normalized:
+        return []
+
+    def text(value):
+        if isinstance(value, dict):
+            if value.get("text") is not None:
+                value = value["text"]
+            elif value.get("integer") is not None:
+                value = value["integer"]
+            elif "value" in value:
+                value = value["value"]
+        return "" if value is None else str(value)
+
+    results = []
+    for row in pq.read_table(path).to_pylist():
+        matched = tuple(name for name, value in row.items() if normalized in text(value).casefold())
+        if matched:
+            results.append(
+                (
+                    row.get("__legacy_position", len(results)),
+                    matched[:8],
+                    sha256(text(row.get("case_txt_scraped_with_tags")).encode()).hexdigest(),
+                )
+            )
+            if len(results) >= max(1, min(limit, 100)):
+                break
+    return results
+
+
+def test_search_preserves_unicode_cell_precedence_and_every_column(tmp_path):
+    path = tmp_path / "heterogeneous.parquet"
+    schema = pa.schema(
+        [
+            ("case_txt_scraped_with_tags", pa.large_string()),
+            ("tagged", CELL),
+            ("value_only", pa.struct([("value", pa.int64())])),
+            ("list_column", pa.list_(pa.string())),
+            ("null_column", pa.null()),
+            ("number", pa.int64()),
+            ("boolean", pa.bool_()),
+            ("__legacy_position", pa.int64()),
+        ]
+    )
+    rows = [
+        {
+            "case_txt_scraped_with_tags": "Straße Σςσ İ ﬃ KELVIN K 소송 2006후4086",
+            "tagged": {"text": "precedence", "integer": 998},
+            "value_only": {"value": 77},
+            "list_column": ["목록", "2010다33"],
+            "number": -123,
+            "boolean": True,
+            "__legacy_position": 17,
+        },
+        {
+            "case_txt_scraped_with_tags": "본문",
+            "tagged": {"text": None, "integer": 998},
+            "value_only": {"value": None},
+            "__legacy_position": 8,
+        },
+        {
+            "tagged": {"original_type": "복합원문", "text": None, "integer": None},
+            "__legacy_position": 3,
+        },
+        {"__legacy_position": 4},
+    ]
+    pq.write_table(pa.Table.from_pylist(rows, schema=schema), path, row_group_size=2)
+    queries = [
+        "STRASSE",
+        "σ",
+        "SS",
+        "i̇",
+        "FFI",
+        "kelvin",
+        "소송",
+        "2006후4086",
+        "precedence",
+        "998",
+        "77",
+        "2010다33",
+        "목록",
+        "-123",
+        "true",
+        "복합원문",
+        "None",
+        "없는말",
+        "  ",
+        "  본문  ",
+    ]
+    for query in queries:
+        actual = search_legacy_parquet(path, query)
+        assert [
+            (r.row_position, r.matched_columns, r.body_hash) for r in actual
+        ] == _reference_rows(path, query), query
+
+
+def test_search_preserves_column_order_limits_and_missing_locator(tmp_path):
+    path = tmp_path / "many.parquet"
+    rows = [{f"column_{index}": "반복" for index in range(12)} for _ in range(270)]
+    pq.write_table(pa.Table.from_pylist(rows), path, row_group_size=17)
+    for limit in [-1, 0, 1, 30, 1000]:
+        results = search_legacy_parquet(path, "반복", limit=limit)
+        assert [
+            (r.row_position, r.matched_columns, r.body_hash) for r in results
+        ] == _reference_rows(path, "반복", limit)
+        assert all(r.matched_columns == tuple(f"column_{i}" for i in range(8)) for r in results)
+
+
+def test_search_fast_path_treats_regex_symbols_as_literal_text(tmp_path):
+    path = tmp_path / "literal.parquet"
+    rows = [
+        {"case_txt_scraped_with_tags": text, "__legacy_position": index}
+        for index, text in enumerate(
+            ["가.나", "가*나", "가[나]", "가\\나", "가(나)", "가 나", "가?나"]
+        )
+    ]
+    pq.write_table(pa.Table.from_pylist(rows), path)
+    for query in [".", "*", "[", "\\", "(", "가 나", "?"]:
+        results = search_legacy_parquet(path, query)
+        assert [
+            (r.row_position, r.matched_columns, r.body_hash) for r in results
+        ] == _reference_rows(path, query)

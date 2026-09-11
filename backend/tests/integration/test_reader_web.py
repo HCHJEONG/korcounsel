@@ -160,3 +160,169 @@ def test_legacy_route_uses_revision_and_rejects_wrong_row(reader_client, tmp_pat
     assert client.get(url.replace(digest, "0" * 64)).status_code == 409
     assert client.get(f"/api/cases/8/body?body_hash={digest}").status_code == 200
     assert len(store.read(revision)["statutes"]) == 1
+
+
+def statute_image_fixture(store):
+    from html import escape
+
+    from klegal_gold.documents.reader import statute_image_occurrences
+
+    payload = (
+        "<table><tr><td>앞<img src='/flDownload.do?flSeq=1'>중간"
+        "<img src='/flDownload.do?flSeq=2'>뒤</td></tr></table>"
+    )
+    link = '<a name="linkContJomun" jtable="' + escape(payload, quote=True) + '">법1조</a>'
+    body = "<p>본문<img name='main'>" + link + "다시 인용" + link + "</p>"
+    refs = statute_image_occurrences(body)
+    for ref in refs:
+        if ref["order"] == 0:
+            digest = sha256(GIF).hexdigest()
+            ref.update(
+                status="ACQUIRED",
+                blob_hash=digest,
+                acquisition={
+                    "url": ref["resolved_url"],
+                    "status": "ACQUIRED",
+                    "sha256": digest,
+                    "attempt": 1,
+                },
+            )
+        else:
+            status = "FAILED" if ref["article_order"] == 0 else "PENDING"
+            ref.update(status=status, acquisition={"url": ref["resolved_url"], "status": status})
+    kwargs = {
+        "title": "조문 표 안 이미지",
+        "source_id": "123",
+        "origin": "LEGACY_CORPUS",
+        "provenance": {"row_position": 7, "snapshot_sha256": "s"},
+        "acquisitions": {},
+    }
+    return body, refs, kwargs
+
+
+def test_statute_images_keep_old_revision_and_use_authenticated_position_routes(
+    reader_client, tmp_path, monkeypatch
+):
+    import json
+
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    client, password, _, store, db = reader_client
+    body, refs, kwargs = statute_image_fixture(store)
+    old = store.preserve(body, **kwargs)
+    old_raw = store.records.read("reader:" + old)
+    old_html = store.html(old)
+    revision = store.preserve(body, statute_images=refs, **kwargs)
+    assert revision != old
+    assert store.preserve(body, **kwargs) == old
+    assert store.preserve(body, statute_images=refs, **kwargs) == revision
+    assert store.records.read("reader:" + old) == old_raw
+    assert store.html(old) == old_html
+    assert store.read(old)["version"] == "enriched-reader-2"
+    assert "statute_images" not in store.read(old)
+    manifest = store.read(revision)
+    assert manifest["version"] == "enriched-reader-3"
+    assert len(manifest["images"]) == 1
+    assert len(manifest["statute_images"]) == 4
+    assert {ref["article_order"] for ref in manifest["statute_images"]} == {0, 1}
+    body_hash = sha256(body.encode()).hexdigest()
+    path = tmp_path / "statute-corpus.parquet"
+    table = pa.table(
+        {
+            "__legacy_position": [7, 8],
+            "case_txt_scraped_with_tags": [body, body],
+            "gmeta_contId": ["123", "123"],
+        }
+    ).replace_schema_metadata({b"legacy": json.dumps({"snapshot_sha256": "s"}).encode()})
+    pq.write_table(table, path)
+    monkeypatch.setenv("LEGACY_PARQUET_PATH", str(path))
+    prefix = f"/api/reader/{revision}/statutes"
+    assert client.get(prefix + "/0/images/0").status_code == 401
+    client.post(
+        "/api/auth/login", headers=ORIGIN, json={"username": "reader-test", "password": password}
+    )
+    url = f"/api/cases/7/body?body_hash={body_hash}"
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.headers["X-Reader-Revision"] == revision
+    assert prefix + "/0/images/0" in response.text
+    assert prefix + "/1/images/0" in response.text
+    assert "flDownload" not in response.text
+    assert "이미지 취득 실패" in response.text and "이미지 미확보" in response.text
+    assert response.text.count("<table>") == 2
+    assert client.get(url + "&reader_revision=" + revision).text == response.text
+    for order in (0, 1):
+        image = client.get(prefix + f"/{order}/images/0")
+        assert image.content == GIF and image.headers["content-type"] == "image/gif"
+        assert image.headers["cache-control"] == "no-store"
+        assert client.get(prefix + f"/{order}/images/1").status_code == 404
+    assert client.get(prefix + "/-1/images/0").status_code == 404
+    assert client.get(prefix + "/0/images/9").status_code == 404
+    assert client.get(f"/api/reader/{old}/statutes/0/images/0").status_code == 404
+    assert client.get(f"/api/reader/{revision}/images/0").status_code == 404
+    assert (
+        client.get(
+            f"/api/cases/8/body?body_hash={body_hash}&reader_revision={revision}"
+        ).status_code
+        == 409
+    )
+    client.post("/api/auth/logout", headers=ORIGIN, json={})
+    assert client.get(prefix + "/0/images/0").status_code == 401
+
+
+def test_statute_image_store_rejects_wrong_parent_payload_and_acquisition(reader_client):
+    from copy import deepcopy
+
+    _, _, _, store, _ = reader_client
+    body, refs, kwargs = statute_image_fixture(store)
+    for field, value in [
+        ("payload_sha256", "0" * 64),
+        ("parent_body_sha256", "0" * 64),
+        ("article_reference_id", "0" * 64),
+        ("article_order", 9),
+        ("html_start", 99),
+        ("original_src", "/other"),
+    ]:
+        bad = deepcopy(refs)
+        bad[0][field] = value
+        with pytest.raises(ValueError, match="STATUTE_IMAGE_POSITION"):
+            store.preserve(body, statute_images=bad, **kwargs)
+    with pytest.raises(ValueError, match="STATUTE_IMAGE_COUNT"):
+        store.preserve(body, statute_images=refs[:-1], **kwargs)
+    with pytest.raises(ValueError, match="STATUTE_IMAGE_POSITION"):
+        store.preserve(body, statute_images=list(reversed(refs)), **kwargs)
+    for field, value in [("sha256", "0" * 64), ("url", "https://other.example/")]:
+        bad = deepcopy(refs)
+        bad[0]["acquisition"][field] = value
+        with pytest.raises(ValueError, match="INVALID_STATUTE_IMAGE_ACQUISITION"):
+            store.preserve(body, statute_images=bad, **kwargs)
+    bad = deepcopy(refs)
+    del bad[0]["blob_hash"]
+    with pytest.raises(ValueError, match="STATUTE_IMAGE_BLOB_MISSING"):
+        store.preserve(body, statute_images=bad, **kwargs)
+    bad = deepcopy(refs)
+    wrong_hash = "c" * 64
+    store.records.put_artifact("reader-image:" + wrong_hash, GIF, origin="DERIVED", metadata={})
+    bad[0]["blob_hash"] = wrong_hash
+    bad[0]["acquisition"]["sha256"] = wrong_hash
+    with pytest.raises(ValueError, match="STATUTE_IMAGE_HASH"):
+        store.preserve(body, statute_images=bad, **kwargs)
+
+
+def test_statute_image_delivery_rejects_forged_payload_link(reader_client):
+    import json
+
+    client, password, _, store, _ = reader_client
+    body, refs, kwargs = statute_image_fixture(store)
+    revision = store.preserve(body, statute_images=refs, **kwargs)
+    payload = store.read(revision)
+    payload["statute_images"][0]["payload_sha256"] = "f" * 64
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()
+    forged = sha256(raw).hexdigest()
+    store.records.put_artifact("reader:" + forged, raw, origin="MANIFEST", metadata={})
+    client.post(
+        "/api/auth/login", headers=ORIGIN, json={"username": "reader-test", "password": password}
+    )
+    assert client.get(f"/api/reader/{forged}/html").status_code == 404
+    assert client.get(f"/api/reader/{forged}/statutes/0/images/0").status_code == 404

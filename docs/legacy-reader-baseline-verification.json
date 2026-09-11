@@ -1,0 +1,62 @@
+{
+  "version": "legacy-reader-coverage-2",
+  "inventory_summary_sha256": "ed472060b0626eea900aba9dab2db6ac0790506bb0c516c6ec1afd43732cad9d",
+  "inventory_rows_sha256": "ae4332ee5652cbbe3b0a01747654dc82eb1a1b1eaad130e4c908b85e8f4c8045",
+  "parquet_sha256": "3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2",
+  "snapshot_sha256": "aa3d2c57d0f647b8c078df5784be5ef3e02e8b24cf40e543e9358b7b74dc7b69",
+  "source_parquet_unchanged": true,
+  "import_rows": 89130,
+  "import_matches_inventory": true,
+  "import_unchanged": true,
+  "import_fingerprint": "529d4d61fbd6ebcaab0c571576b9a9056bb4e3dbd3b60567a5ce8452851d49b8",
+  "totals": {
+    "acquired_images": 78,
+    "acquired_statute_images": 4698,
+    "failed_statutes": 25937,
+    "historical_revisions": 761,
+    "image_occurrences": 105793,
+    "missing_statute_image_references": 0,
+    "preserved_statutes": 702035,
+    "rows": 89130,
+    "rows_missing_statute_image_references": 0,
+    "rows_staged_verified": 89130,
+    "rows_with_multiple_revisions": 673,
+    "statute_image_occurrences": 4698,
+    "statute_occurrences": 1641768,
+    "unacquired_images": 105715,
+    "unacquired_statute_images": 0,
+    "unlinked_statutes": 913796
+  },
+  "image_states": {
+    "ACQUIRED": 78,
+    "FAILED": 3,
+    "ID_MISMATCH": 37,
+    "PENDING": 105675
+  },
+  "error_codes": {},
+  "complete_reader_registration": true,
+  "all_observed_images_acquired": false,
+  "complete_statute_image_reference_coverage": true,
+  "statute_image_audit": {
+    "path": "/home/hchjeong/IntelliJProjects/korcounsel/data/legacy-statute-image-audit-20260911.json",
+    "sha256": "d65cc919a4174b59916937e82d5791422fe447ce66214bc3753f96207215a196",
+    "rows_with_images": 651,
+    "image_occurrences": 4698
+  },
+  "verify_blobs": true,
+  "unique_artifacts_checked": 315630,
+  "unique_blobs_hashed": 315630,
+  "unique_images_decoded": 526,
+  "unexpected_reader_positions": [],
+  "scope": "Registration coverage and original counts are separate from image acquisition, statute version confirmation and browser verification. Multiple revisions are history.",
+  "artifacts": {
+    "reader-coverage.jsonl": {
+      "sha256": "8531e01599c57ba3fd69db8f243ecdde44e999a40688d8e933f9da6d032608b6",
+      "bytes": 63195770
+    },
+    "reader-coverage.parquet": {
+      "sha256": "1f6ab08606a11ee37facd367d8343289446088c984e8524463ed74dc833b43a3",
+      "bytes": 7476398
+    }
+  }
+}

@@ -2,7 +2,8 @@
 
 from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Any
+from threading import local
+from typing import Any, cast
 
 import psycopg
 from psycopg.conninfo import make_conninfo
@@ -26,6 +27,7 @@ class Database:
             else dsn
         )
         self.schema = schema
+        self._sessions = local()
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "Database":
@@ -33,12 +35,44 @@ class Database:
             raise ConfigurationError("DATABASE_URL is required")
         return cls(settings.database_url.get_secret_value())
 
-    @contextmanager
-    def connect(self) -> Iterator[Connection]:
-        conninfo = make_conninfo(
+    def _connection_info(self) -> str:
+        return make_conninfo(
             self._dsn,
             connect_timeout=5,
             options=f"-c search_path={self.schema} -c statement_timeout=30000 -c lock_timeout=5000",
         )
-        with psycopg.connect(conninfo, row_factory=dict_row) as conn:
+
+    @contextmanager
+    def reuse_connections(self) -> Iterator[None]:
+        """Reuse one thread-local connection during a bounded worker operation.
+
+        Every connect() call still commits or rolls back its own transaction.
+        Nested borrowing opens a separate connection to retain that independence.
+        """
+        if getattr(self._sessions, "connection", None) is not None:
+            yield
+            return
+        with psycopg.connect(
+            self._connection_info(), row_factory=dict_row, autocommit=True
+        ) as conn:
+            self._sessions.connection = conn
+            self._sessions.borrowed = False
+            try:
+                yield
+            finally:
+                self._sessions.connection = None
+                self._sessions.borrowed = False
+
+    @contextmanager
+    def connect(self) -> Iterator[Connection]:
+        cached = cast(Connection | None, getattr(self._sessions, "connection", None))
+        if cached is not None and not getattr(self._sessions, "borrowed", False):
+            self._sessions.borrowed = True
+            try:
+                with cached.transaction():
+                    yield cached
+            finally:
+                self._sessions.borrowed = False
+            return
+        with psycopg.connect(self._connection_info(), row_factory=dict_row) as conn:
             yield conn

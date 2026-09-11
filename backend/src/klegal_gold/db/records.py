@@ -1,7 +1,7 @@
 """Persistence of immutable records and rebuildable projections."""
 
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import date
 from typing import Any, Literal
@@ -105,6 +105,69 @@ class Records:
     ) -> Blob:
         with self.db.connect() as conn:
             return self._artifact(conn, artifact_id, raw, origin, metadata, parent_id)
+
+    def put_artifacts(self, entries: Sequence[dict[str, Any]]) -> None:
+        """Commit one document's related artifacts with batched duplicate checks."""
+        if not entries:
+            return
+        expected: dict[str, dict[str, Any]] = {}
+        for entry in entries:
+            digest = content_hash(entry["raw"])
+            key = f"blobs/{digest[:2]}/{digest}"
+            value = {
+                "artifact_id": entry["artifact_id"],
+                "blob_hash": digest,
+                "origin": entry["origin"],
+                "parent_id": entry.get("parent_id"),
+                "metadata": entry["metadata"],
+                "storage_key": key,
+                "size_bytes": len(entry["raw"]),
+            }
+            if entry["artifact_id"] in expected and expected[entry["artifact_id"]] != value:
+                raise ValueError("IMMUTABLE_ARTIFACT_CONFLICT")
+            expected[entry["artifact_id"]] = value
+        query = (
+            "SELECT a.artifact_id,a.blob_hash,a.origin,a.parent_id,a.metadata,"
+            "b.storage_key,b.size_bytes FROM artifacts a JOIN blobs b "
+            "ON b.sha256=a.blob_hash WHERE a.artifact_id=ANY(%s)"
+        )
+        with self.db.connect() as conn:
+            existing = {
+                row["artifact_id"]: row for row in conn.execute(query, (list(expected),)).fetchall()
+            }
+            for artifact_id, row in existing.items():
+                if row != expected[artifact_id]:
+                    raise ValueError("IMMUTABLE_ARTIFACT_CONFLICT")
+                self.store.verify(Blob(row["blob_hash"], row["storage_key"], row["size_bytes"]))
+            missing = {e["artifact_id"]: e for e in entries if e["artifact_id"] not in existing}
+            if not missing:
+                return
+            blobs = {e["artifact_id"]: self.store.put(e["raw"]) for e in missing.values()}
+            with conn.cursor() as cursor:
+                cursor.executemany(
+                    "INSERT INTO blobs(sha256,storage_key,size_bytes) VALUES(%s,%s,%s) "
+                    "ON CONFLICT DO NOTHING",
+                    [(b.sha256, b.storage_key, b.size_bytes) for b in blobs.values()],
+                )
+                cursor.executemany(
+                    "INSERT INTO artifacts(artifact_id,blob_hash,origin,parent_id,metadata) "
+                    "VALUES(%s,%s,%s,%s,%s) ON CONFLICT DO NOTHING",
+                    [
+                        (
+                            key,
+                            blobs[key].sha256,
+                            entry["origin"],
+                            entry.get("parent_id"),
+                            Jsonb(entry["metadata"]),
+                        )
+                        for key, entry in missing.items()
+                    ],
+                )
+            saved = conn.execute(query, (list(missing),)).fetchall()
+            if len(saved) != len(missing) or any(
+                row != expected[row["artifact_id"]] for row in saved
+            ):
+                raise ValueError("IMMUTABLE_ARTIFACT_CONFLICT")
 
     def blob(self, artifact_id: str) -> Blob:
         with self.db.connect() as conn:
