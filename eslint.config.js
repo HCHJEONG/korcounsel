@@ -5,6 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 export default tseslint.config(
   { ignores: ['dist/**', 'backend/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'] },
+  { files: ['scripts/**/*.mjs', 'tests/e2e/**/*.ts'], languageOptions: { globals: globals.node } },
   js.configs.recommended, ...tseslint.configs.recommended,
   { files: ['**/*.{ts,tsx}'], languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },

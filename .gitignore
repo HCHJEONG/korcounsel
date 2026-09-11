@@ -33,3 +33,7 @@ node_modules/
 /coverage/
 playwright-report/
 test-results/
+
+# Separate local validation environments
+.venv-reader/
+.venv-win/

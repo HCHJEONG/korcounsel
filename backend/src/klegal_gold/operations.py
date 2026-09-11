@@ -255,3 +255,15 @@ def legacy_import_status(job_id: UUID) -> None:
             }
         )
     )
+
+
+@operations.command("create-account")
+@_safe
+def create_account(username: str) -> None:
+    """Explicit local account creation; no automatic seed or password in arguments."""
+    from klegal_gold.db.accounts import Accounts
+
+    password = typer.prompt("Password (12+ characters)", hide_input=True, confirmation_prompt=True)
+    db, _, _ = _services()
+    user_id = Accounts(db).create(username, password)
+    typer.echo(json.dumps({"user_id": str(user_id)}))

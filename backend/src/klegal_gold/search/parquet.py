@@ -3,6 +3,7 @@
 import json
 from dataclasses import dataclass
 from datetime import date
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +18,7 @@ class ParquetCaseSearchResult:
     row_position: int
     original_index: str
     matched_columns: tuple[str, ...]
+    body_hash: str
 
 
 def _cell_value(value: Any) -> Any:
@@ -103,8 +105,32 @@ def search_legacy_parquet(
                     row_position=position,
                     original_index=_original_index(row.get("__legacy_index")),
                     matched_columns=matched[:8],
+                    body_hash=sha256(
+                        _text(row.get("case_txt_scraped_with_tags")).encode()
+                    ).hexdigest(),
                 )
             )
             if len(results) >= safe_limit:
                 return results
     return results
+
+
+def read_legacy_body(path: Path, position: int, expected_hash: str) -> tuple[str, str]:
+    """Locate the stored row position and pin the body version selected at search time."""
+    parquet = pq.ParquetFile(path)
+    if position < 0:
+        raise ValueError("INVALID_POSITION")
+    columns = ["__legacy_position", "case_txt_scraped_with_tags", "gmeta_contId"]
+    columns = [c for c in columns if c in parquet.schema_arrow.names]
+    locator_index = parquet.schema.names.index("__legacy_position")
+    for group in range(parquet.num_row_groups):
+        stats = parquet.metadata.row_group(group).column(locator_index).statistics
+        if stats and stats.has_min_max and not stats.min <= position <= stats.max:
+            continue
+        for row in parquet.read_row_group(group, columns=columns).to_pylist():
+            if row["__legacy_position"] == position:
+                html = _text(row.get("case_txt_scraped_with_tags"))
+                if sha256(html.encode()).hexdigest() != expected_hash:
+                    raise ValueError("BODY_VERSION_CHANGED")
+                return html, _text(row.get("gmeta_contId"))
+    raise ValueError("ROW_NOT_FOUND")

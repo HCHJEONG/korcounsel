@@ -18,13 +18,13 @@ def test_manifest_preserves_resolved_name_only_and_id_mismatch():
                 "row_position": 7,
                 "src": "/old.gif",
                 "name": "A.gif",
-                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=A.gif",
+                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=A.gif",
             },
             {"source_id": "100", "name": "B.gif"},
             {
                 "source_id": "old-cont-id",
                 "name": "C.gif",
-                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=C.gif",
+                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=C.gif",
                 "id_mismatch_reason": "provider mapped through a different contId",
             },
         ]
@@ -42,15 +42,17 @@ def test_manifest_preserves_resolved_name_only_and_id_mismatch():
 
 def test_scourt_image_url_allowlist():
     assert valid_scourt_image_url(
-        "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=x.gif"
+        "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=x.gif"
     )
     assert not valid_scourt_image_url(
         "https://glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=1955787&attachImgNm=x.gif"
     )
     assert not valid_scourt_image_url(
-        "http://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=x"
+        "http://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=x"
     )
-    assert not valid_scourt_image_url("https://example.com/pgp/pgp003/downloadImgFile.on?name=x")
+    assert not valid_scourt_image_url(
+        "https://example.com/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=x"
+    )
     assert not valid_scourt_image_url("https://portal.scourt.go.kr/other?name=x")
 
 
@@ -64,3 +66,17 @@ def test_image_metadata_accepts_known_headers_and_rejects_html():
     assert image_metadata(png) == {"format": "PNG", "width": 3, "height": 4}
     with pytest.raises(ValueError, match="UNSUPPORTED_IMAGE_BYTES"):
         image_metadata(b"<html>not an image</html>")
+
+
+def test_zero_row_and_repeated_zero_occurrence_are_not_replaced():
+    raw = json.dumps(
+        {
+            "images": [
+                {"row_position": 0, "occurrence_order": 0},
+                {"row_position": 0, "occurrence_order": 0},
+            ]
+        }
+    ).encode()
+    refs = references_from_manifest(raw)
+    assert all(ref.row_position == 0 for ref in refs)
+    assert all(ref.occurrence_order == 0 for ref in refs)

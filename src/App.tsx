@@ -1,142 +1,205 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
-type Status = 'idle' | 'checking' | 'ok' | 'error'
-type SearchStatus = 'idle' | 'searching' | 'ok' | 'empty' | 'error'
-
-type CaseSearchItem = {
-  court: string | null
-  case_numbers: string[]
-  decision_date: string | null
-  row_position: number
-  original_index: string
-  matched_columns: string[]
+type CaseItem = {
+  court: string | null; case_numbers: string[]; decision_date: string | null
+  row_position: number; original_index: string; matched_columns: string[]; body_hash: string
 }
-
-type CaseSearchResponse = {
-  query: string
-  count: number
-  limit: number
-  source: string
-  results: CaseSearchItem[]
+type ReaderItem = {
+  document_id: string; title: string; source_id: string; origin: string
+  image_count: number; acquired_count: number
 }
+type Selection = { title: string; url: string; note: string }
 
 export default function App() {
-  const [status, setStatus] = useState<Status>('idle')
+  const [authenticated, setAuthenticated] = useState(false)
+  const [checking, setChecking] = useState(true)
+  const [role, setRole] = useState<string | null>(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
   const [query, setQuery] = useState('')
-  const [searchStatus, setSearchStatus] = useState<SearchStatus>('idle')
-  const [results, setResults] = useState<CaseSearchItem[]>([])
-  const [searchedQuery, setSearchedQuery] = useState('')
+  const [results, setResults] = useState<CaseItem[]>([])
+  const [samples, setSamples] = useState<ReaderItem[]>([])
+  const [busy, setBusy] = useState(false)
+  const [selection, setSelection] = useState<Selection | null>(null)
+  const [document, setDocument] = useState('')
+  const [readerStatus, setReaderStatus] = useState('')
+  const generation = useRef(0)
+  const readerRequest = useRef(0)
 
-  async function checkConnection() {
-    setStatus('checking')
+  const clearPrivate = useCallback(() => {
+    generation.current += 1
+    readerRequest.current += 1
+    setAuthenticated(false)
+    setRole(null)
+    setResults([])
+    setSamples([])
+    setSelection(null)
+    setDocument('')
+    setBusy(false)
+    setReaderStatus('')
+  }, [])
+
+  const checkSession = useCallback(async () => {
+    const own = generation.current
     try {
-      const response = await fetch('/api/health', { signal: AbortSignal.timeout(5000) })
-      const payload: unknown = await response.json()
-      if (!response.ok || typeof payload !== 'object' || payload === null ||
-          !('status' in payload) || payload.status !== 'ok' ||
-          !('service' in payload) || payload.service !== 'korcounsel-api') throw new Error('Invalid health')
-      setStatus('ok')
-    } catch {
-      setStatus('error')
-    }
-  }
+      const response = await fetch('/api/auth/session', { cache: 'no-store' })
+      if (own !== generation.current) return
+      if (response.ok) {
+        const session = await response.json() as { role: string | null }
+        if (own !== generation.current) return
+        setRole(session.role)
+        setAuthenticated(true)
+      }
+      else {
+        clearPrivate()
+        if (response.status !== 401) setMessage('인증 서비스에 연결할 수 없습니다.')
+      }
+    } catch { if (own === generation.current) { clearPrivate(); setMessage('인증 서비스에 연결할 수 없습니다.') } }
+    finally { setChecking(false) }
+  }, [clearPrivate])
 
-  async function searchCases(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => { void Promise.resolve().then(checkSession) }, [checkSession])
+
+  useEffect(() => {
+    if (!authenticated) return
+    const own = generation.current
+    const controller = new AbortController()
+    void fetch('/api/reader', { signal: controller.signal, cache: 'no-store' }).then(async response => {
+      if (own !== generation.current) return
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (!response.ok) throw new Error('Reader list unavailable')
+      const items = await response.json() as ReaderItem[]
+      if (own === generation.current) setSamples(items)
+    }).catch(error => {
+      if (!controller.signal.aborted && own === generation.current) setMessage(String(error).includes('Reader') ? '보존 본문 목록을 불러올 수 없습니다.' : '서버에 연결할 수 없습니다.')
+    })
+    const onFocus = () => { void checkSession() }
+    window.addEventListener('focus', onFocus)
+    const timer = window.setInterval(onFocus, 60000)
+    return () => { controller.abort(); window.removeEventListener('focus', onFocus); window.clearInterval(timer) }
+  }, [authenticated, checkSession, clearPrivate])
+
+  async function login(event: FormEvent) {
     event.preventDefault()
-    const trimmed = query.trim()
-    if (!trimmed) {
-      setResults([])
-      setSearchStatus('idle')
-      setSearchedQuery('')
-      return
-    }
-    setSearchStatus('searching')
-    setSearchedQuery(trimmed)
+    generation.current += 1
+    setBusy(true); setMessage('')
     try {
-      const params = new URLSearchParams({ q: trimmed, limit: '30' })
-      const response = await fetch(`/api/cases/search?${params.toString()}`, {
-        signal: AbortSignal.timeout(60000),
+      const response = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       })
-      const payload = await response.json() as CaseSearchResponse
-      if (!response.ok || !Array.isArray(payload.results)) throw new Error('Invalid search')
-      setResults(payload.results)
-      setSearchStatus(payload.results.length === 0 ? 'empty' : 'ok')
-    } catch {
-      setResults([])
-      setSearchStatus('error')
-    }
+      setPassword('')
+      if (!response.ok) { setMessage(response.status === 401 ? '아이디 또는 비밀번호를 확인하세요.' : '로그인할 수 없습니다. 서버 설정을 확인하세요.'); return }
+      generation.current += 1
+      setAuthenticated(true)
+      void checkSession()
+    } catch { setMessage('서버에 연결할 수 없습니다.') }
+    finally { setBusy(false) }
   }
 
-  return <div className="shell">
-    <header><span className="brand">KorCounsel</span><span className="environment">개발 환경</span></header>
-    <main>
-      <p className="eyebrow">한국 판례 데이터 생산 · 검수</p>
-      <h1>판례 corpus 검증 검색</h1>
-      <p className="intro">보정된 legacy Parquet snapshot을 직접 조회합니다. 현재 검색은 Parquet 각 행의 문자열 값을 대상으로 합니다.</p>
-      <section aria-labelledby="connection-title">
-        <h2 id="connection-title">서비스 연결</h2>
-        <p>백엔드 API 연결을 확인할 수 있습니다.</p>
-        <button disabled={status === 'checking'} onClick={() => void checkConnection()}>
-          {status === 'checking' ? '확인 중…' : '연결 확인'}
-        </button>
-        <p role="status" className={`status ${status}`}>
-          {status === 'idle' && '아직 연결을 확인하지 않았습니다.'}
-          {status === 'checking' && 'API 응답을 기다리고 있습니다.'}
-          {status === 'ok' && 'API에 정상적으로 연결되었습니다.'}
-          {status === 'error' && 'API에 연결할 수 없습니다. 서버 상태를 확인한 뒤 다시 시도하세요.'}
-        </p>
-      </section>
+  async function logout() {
+    setBusy(true)
+    try {
+      const response = await fetch('/api/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+      if (!response.ok) throw new Error('Logout failed')
+      clearPrivate(); setMessage('로그아웃했습니다.')
+    } catch { setMessage('로그아웃에 실패했습니다. 다시 시도하세요.'); setBusy(false) }
+  }
 
-      <section aria-labelledby="search-title" className="search-panel">
-        <h2 id="search-title">판례 검색</h2>
-        <p>예: 대법원, 서울고등법원, 2020다, 2019나456처럼 입력합니다.</p>
-        <form className="search-form" onSubmit={(event) => void searchCases(event)}>
-          <label htmlFor="case-search">검색어</label>
-          <div className="search-row">
-            <input
-              id="case-search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="법원명 또는 사건번호"
-              maxLength={200}
-            />
-            <button disabled={searchStatus === 'searching'} type="submit">
-              {searchStatus === 'searching' ? '검색 중…' : '검색'}
-            </button>
-          </div>
+  async function search(event: FormEvent) {
+    event.preventDefault()
+    if (!query.trim()) return
+    const own = ++generation.current
+    setBusy(true); setMessage('검색 중입니다.'); setResults([])
+    try {
+      const response = await fetch('/api/cases/search?' + new URLSearchParams({ q: query.trim(), limit: '30' }), { signal: AbortSignal.timeout(60000), cache: 'no-store' })
+      if (own !== generation.current) return
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (!response.ok) throw new Error('Search failed')
+      const payload = await response.json() as { results: CaseItem[] }
+      if (own !== generation.current) return
+      setResults(payload.results)
+      setMessage(payload.results.length ? `검색 결과 ${payload.results.length}건` : '일치하는 판례가 없습니다.')
+    } catch { if (own === generation.current) setMessage('검색에 실패했습니다. 다시 시도하세요.') }
+    finally { if (own === generation.current) setBusy(false) }
+  }
+
+  const openDocument = useCallback(async (next: Selection) => {
+    const docMatch = next.url.match(/^\/api\/reader\/([a-f0-9]{64})\/html$/)
+    if (docMatch) window.history.replaceState(null, '', '?document=' + docMatch[1])
+    else {
+      const route = new URL(next.url, window.location.origin)
+      const row = route.pathname.match(/^\/api\/cases\/(\d+)\/body$/)
+      if (row) window.history.replaceState(null, '', '?' + new URLSearchParams({ row: row[1], body_hash: route.searchParams.get('body_hash') ?? '' }))
+    }
+    const own = ++readerRequest.current
+    setSelection(next); setDocument(''); setReaderStatus('본문을 불러오고 있습니다.')
+    try {
+      const response = await fetch(next.url, { cache: 'no-store', signal: AbortSignal.timeout(30000) })
+      if (own !== readerRequest.current) return
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (!response.ok) throw new Error('Unavailable')
+      const html = await response.text()
+      if (own === readerRequest.current) { setDocument(html); setReaderStatus('') }
+    } catch { if (own === readerRequest.current) setReaderStatus('본문을 불러올 수 없습니다. 다시 선택해 주세요.') }
+  }, [clearPrivate])
+
+  useEffect(() => {
+    if (!authenticated) return
+    const params = new URLSearchParams(window.location.search)
+    const id = params.get('document')
+    const row = params.get('row')
+    const hash = params.get('body_hash')
+    void Promise.resolve().then(() => {
+      if (id && /^[a-f0-9]{64}$/.test(id)) void openDocument({ title: '보존 본문', url: '/api/reader/' + id + '/html', note: '현재 제공 본문을 별도 보존한 버전입니다.' })
+      else if (row && /^\d+$/.test(row) && hash && /^[a-f0-9]{64}$/.test(hash)) void openDocument({ title: '과거 보존 본문', url: '/api/cases/' + row + '/body?body_hash=' + hash, note: '과거 보존 본문입니다. 미연결 이미지는 원래 위치에 상태를 표시합니다.' })
+    })
+  }, [authenticated, openDocument])
+
+  return <div className={authenticated ? "shell" : "shell login-shell"}>
+    <header><span className="brand">KorCounsel</span>{authenticated && <div className="account-menu"><span>{role === 'admin' ? '관리자' : role === 'editor' ? '편집자' : '로그인됨'}</span><button disabled={busy} onClick={() => void logout()}>로그아웃</button></div>}</header>
+    <main>
+      <h1>{authenticated ? '판례 검색과 본문 열람' : 'KorCounsel 로그인'}</h1>
+      {checking ? <p role="status">접속 상태를 확인하고 있습니다.</p> : !authenticated ? <section className="login-panel">
+        <form onSubmit={event => void login(event)}>
+          <label htmlFor="username">아이디</label><input id="username" autoComplete="username" placeholder="아이디를 입력하세요" maxLength={100} required value={username} onChange={event => setUsername(event.target.value)} />
+          <label htmlFor="password">비밀번호</label><input id="password" type="password" autoComplete="current-password" placeholder="비밀번호를 입력하세요" maxLength={1024} required value={password} onChange={event => setPassword(event.target.value)} />
+          <button disabled={busy} type="submit">{busy ? '로그인 중…' : '로그인'}</button>
         </form>
-        <p role="status" className={`status ${searchStatus}`}>
-          {searchStatus === 'idle' && '검색어를 입력하면 Parquet을 직접 스캔해 최대 30건을 표시합니다. 없는 검색어는 시간이 더 걸릴 수 있습니다.'}
-          {searchStatus === 'searching' && '검색 결과를 불러오고 있습니다.'}
-          {searchStatus === 'ok' && `“${searchedQuery}” 검색 결과 ${results.length}건을 표시합니다.`}
-          {searchStatus === 'empty' && `“${searchedQuery}”와 일치하는 결과가 없습니다.`}
-          {searchStatus === 'error' && '검색에 실패했습니다. API와 LEGACY_PARQUET_PATH 설정을 확인하세요.'}
-        </p>
-        {results.length > 0 && <div className="result-table" aria-label="판례 검색 결과">
-          <table>
-            <thead>
-              <tr>
-                <th>행</th>
-                <th>법원</th>
-                <th>사건번호</th>
-                <th>선고일</th>
-                <th>매칭 컬럼</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((item) => <tr key={`${item.row_position}:${item.original_index}`}>
-                <td>{item.row_position.toLocaleString('ko-KR')}</td>
-                <td>{item.court ?? '미상'}</td>
-                <td>{item.case_numbers.length > 0 ? item.case_numbers.join(', ') : '미상'}</td>
-                <td>{item.decision_date ?? '미상'}</td>
-                <td>{item.matched_columns.length > 0 ? item.matched_columns.join(', ') : "-"}</td>
-              </tr>)}
-            </tbody>
-          </table>
-        </div>}
-      </section>
-      <p className="note">이 화면은 보존 import 검증용입니다. canonical 등록·gold 확정·이미지 실물 취득 상태와는 별개입니다.</p>
+        <p className="login-help">허용된 관리자 또는 편집자 계정으로 로그인하세요.</p>
+      </section> : <>
+        <section aria-labelledby="search-title">
+          <h2 id="search-title">판례 검색</h2>
+          <form onSubmit={event => void search(event)} className="search-form">
+            <label htmlFor="query">법원명 · 사건번호 · 본문 문자열</label>
+            <div className="search-row"><input id="query" required maxLength={200} value={query} onChange={event => setQuery(event.target.value)} /><button disabled={busy}>검색</button></div>
+          </form>
+          {results.length > 0 && <div className="result-table"><table>
+            <thead><tr><th>법원</th><th>사건번호</th><th>선고일</th><th>본문</th></tr></thead>
+            <tbody>{results.map(item => <tr key={item.row_position}><td>{item.court ?? '미상'}</td><td>{item.case_numbers.join(', ')}</td><td>{item.decision_date ?? '미상'}</td><td><button onClick={() => void openDocument({
+              title: item.case_numbers.join(', ') || '보존 판례',
+              url: `/api/cases/${item.row_position}/body?body_hash=${item.body_hash}`,
+              note: '과거 보존 본문입니다. 아직 연결되지 않은 이미지는 해당 위치에 미확보 상태로 표시합니다.',
+            })}>본문 열기</button></td></tr>)}</tbody>
+          </table></div>}
+        </section>
+        <section aria-labelledby="samples-title">
+          <h2 id="samples-title">이미지 연결 검증 표본</h2>
+          <p>현재 제공 본문을 별도 보존한 자료입니다. 과거 본문과의 동일성 확정을 뜻하지 않습니다.</p>
+          {samples.length === 0 ? <p>등록된 본문 표본이 없습니다.</p> : <ul className="reader-list">{samples.map(item => <li key={item.document_id}>
+            <button onClick={() => void openDocument({ title: item.title, url: `/api/reader/${item.document_id}/html`, note: `현재 제공 본문 별도 보존 · 이미지 등장 ${item.image_count}곳 중 ${item.acquired_count}곳 연결` })}>{item.title}</button>
+            <span>이미지 {item.acquired_count}/{item.image_count}곳 연결</span>
+          </li>)}</ul>}
+        </section>
+        {selection && <section className="document-panel" aria-labelledby="document-title">
+          <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); window.history.replaceState(null, '', window.location.pathname) }}>닫기</button></div>
+          <p>{selection.note}</p>
+          {readerStatus && <p role="status">{readerStatus}</p>}
+          {document && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} />}
+        </section>}
+      </>}
+      <p role="status" className="login-message">{message}</p>
     </main>
-    <footer>KorCounsel · corpus 검증 화면</footer>
   </div>
 }

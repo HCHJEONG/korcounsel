@@ -1,12 +1,14 @@
 # 이미지 URL 접근과 실물 보존 검토 — 2026-09-10
 
+**본문 열람 후속 구현 — 2026-09-11:** 실제 4건의 현재 본문에서 13개 등장 위치를 reader manifest로 보존했고 8곳은 저장 파일로 연결했다. 5곳은 실패 위치를 표시한다. 인증된 내부 API·안전한 viewer를 구현했으며 과거 corpus 자동 연결은 하지 않았다. 아래 URL 그룹 ledger 설명과 별도로 [reader 위치 계약과 검증](image-reader-validation.md)을 따른다.
+
 **전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 이후 전체 60컬럼 corrected Parquet, corrected bundle v2, 로컬 개발 PostgreSQL 보존 import, Parquet 직접 검색 UI를 완료했다. 이미지 전수 취득과 canonical 등록은 미완료다. [결과와 한계](legacy-repair-and-images-progress.md).
 
 ## 영속 ledger와 worker 취득 경로 — 2026-09-11
 
 이미지 취득을 분석용 스크립트에만 두지 않고 PostgreSQL job/worker 경로에 연결했다. migration 0010은 세 테이블을 추가한다. `image_references`는 부모 manifest hash, source_system/source_id, row_position, 원래 src, image_name, resolved_url, 등장 순서, 상태와 사유를 불변 이력으로 저장한다. `image_acquisitions`는 URL별 현재 취득 상태와 blob hash, 크기, content type, 이미지 header metadata, 마지막 오류를 저장한다. `image_acquisition_attempts`는 job별 ACQUIRED/FAILED/SKIPPED 시도를 불변 이력으로 남긴다. 같은 URL이 이미 ACQUIRED이면 새 job은 재다운로드하지 않고 SKIPPED/ALREADY_ACQUIRED attempt를 남긴다.
 
-worker job kind는 `ACQUIRE_IMAGE_BATCH`이고 handler_version은 `asset-1`이다. payload에는 보존된 image manifest artifact ID, `max_urls`, `max_total_bytes`만 들어간다. 임의 URL payload를 worker에 직접 넣지 않는다. 직접 취득 URL allowlist는 현재 portal name 방식 `portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=...`로 제한한다. 기존 8,418개 대상의 레거시 glaw 방식 `glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=...&attachImgNm=...`은 원참조로 보존하고, 현재 scourt 본문/provider mapping을 다시 관찰해 portal URL로 재해석해야 한다. 응답은 16 MiB per-image 상한, batch 총량 상한, timeout, signature/header 검사 후 SHA-256 blob으로 저장한다. HTTP 200이나 Content-Type만으로 성공 처리하지 않는다.
+worker job kind는 `ACQUIRE_IMAGE_BATCH`이고 handler_version은 `asset-1`이다. payload에는 보존된 image manifest artifact ID, `max_urls`, `max_total_bytes`만 들어간다. 임의 URL payload를 worker에 직접 넣지 않는다. 직접 취득 URL allowlist는 현재 portal 제공자 매핑 방식 `portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=...&atchImgFileNm=...`로 제한한다. 기존 8,418개 대상의 레거시 glaw 방식 `glaw.scourt.go.kr/wsjo/cm/imgDownload.do?contId=...&attachImgNm=...`은 원참조로 보존하고, 현재 scourt 본문/provider mapping을 다시 관찰해 portal URL로 재해석해야 한다. 응답은 16 MiB per-image 상한, batch 총량 상한, timeout, signature/header 검사 후 SHA-256 blob으로 저장한다. HTTP 200이나 Content-Type만으로 성공 처리하지 않는다.
 
 `reference_status`는 RESOLVED, NAME_ONLY, ID_MISMATCH, UNRESOLVED를 구분한다. name-only는 제공자 name 값은 있지만 안전한 URL을 만들 수 없는 상태이고, ID_MISMATCH는 행의 source ID와 이미지 URL/매핑의 contId가 다른 관찰이다. 둘 다 자동 성공이나 자동 병합으로 처리하지 않으며 원문 참조와 context를 보존한다.
 

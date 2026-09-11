@@ -1,10 +1,18 @@
 import json
+from uuid import UUID
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 from fastapi.testclient import TestClient
 
 from klegal_gold.web.app import create_app
+from klegal_gold.web.auth import require_user
+
+
+def authenticated_app():
+    app = create_app()
+    app.dependency_overrides[require_user] = lambda: UUID(int=1)
+    return app
 
 
 def write_parquet(path):
@@ -41,7 +49,7 @@ def test_case_search_endpoint_reads_configured_parquet(monkeypatch, tmp_path):
     parquet = tmp_path / "legacy.parquet"
     write_parquet(parquet)
     monkeypatch.setenv("LEGACY_PARQUET_PATH", str(parquet))
-    with TestClient(create_app()) as client:
+    with TestClient(authenticated_app()) as client:
         result = client.get("/api/cases/search", params={"q": "고유문구", "limit": "2"})
     assert result.status_code == 200
     assert result.json()["source"] == "LEGACY_PARQUET"
@@ -50,6 +58,6 @@ def test_case_search_endpoint_reads_configured_parquet(monkeypatch, tmp_path):
 
 
 def test_case_search_requires_query():
-    with TestClient(create_app()) as client:
+    with TestClient(authenticated_app()) as client:
         result = client.get("/api/cases/search", params={"q": "", "limit": "2"})
     assert result.status_code == 422

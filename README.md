@@ -1,5 +1,13 @@
 # KorCounsel
 
+**핵심 제품 요구사항 — 2026-09-11 사용자 확정:** 이미 보존한 89,130행과 앞으로 수집할 판례 모두를 KorCounsel 프런트에서 검색하고, scourt HTML의 문서 구조·이미지와 lawgo 법령·조문 보강 내용이 결합된 형태로 열람하게 합니다. 이 표현을 지속적으로 제공하는 것이 스크레이핑·가공의 핵심 목적입니다. 현재 통합 열람은 구현 중이며 전체 자료의 보강 완료를 뜻하지 않습니다. [요구사항·완료 기준](docs/legacy-enrichment-and-incremental.md#검색에서-완전한-보강-본문-열람까지).
+
+**PostgreSQL 설정 — 2026-09-11:** 지정 환경파일의 로컬 DB 설정을 기존 127.0.0.1:55432/korcounsel_dev에 맞췄다. 호스트 API/CLI는 DATABASE_URL, Compose API·worker·migration은 POSTGRES_*와 내부 postgres:5432를 사용한다. 실제 .env의 나머지 값과 기존 판례 데이터는 보존했다.
+
+**사이트 로그인 — 2026-09-11:** 환경변수의 관리자 1개·편집자 1개 계정만 로그인할 수 있다. 첫 로그인 때 해시 계정을 등록하므로 CLI 계정 생성은 필요하지 않다. [.env.example](.env.example)의 플레이스홀더와 [설정·실행 방법](docs/site-login.md)을 따른다. 실제 .env를 수정하거나 계정 비밀번호를 프런트에 포함하지 않는다.
+
+**이미지 포함 판례 열람 — 2026-09-11:** 로그인 후 Parquet 검색 결과에서 과거 본문을 열고, 이미지 연결 검증 표본에서 저장 이미지가 포함된 현재 제공 본문 4건을 읽을 수 있다. 개발 계정은 운영 CLI로 명시적으로 발급한다. 이번 단계는 로컬 표본 검증이며 과거 corpus 이미지 전수 연결은 후속이다. [실행 방법과 완료 범위](docs/image-reader-validation.md).
+
 전체 import 전 [text 파일 포함 관계 점검](docs/legacy-text-coverage-audit.md)을 완료했습니다. 8,482개 파일을 대조했으며 2029039 재결의 기존 행 연결·종류 표기는 별도 검토 대상입니다.
 
 기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer와 corrected Parquet snapshot을 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 보존하고, corrected bundle v2의 89,130행은 로컬 개발 PostgreSQL 보존 import까지 완료했습니다. 검증용 프론트 검색은 LEGACY_PARQUET_PATH의 corrected Parquet을 직접 읽습니다. [실행 안내와 실제 검증](docs/legacy-full-row-import.md)을 참고하세요.

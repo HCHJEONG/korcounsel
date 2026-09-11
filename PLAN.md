@@ -1,5 +1,13 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**검색→완전한 보강 본문 열람 목표 — 2026-09-11 사용자 확정:** 기존 89,130행 전체와 앞으로 수집할 신규 판례 모두를 대상으로, KorCounsel 프런트의 일반 검색·열람 경로에서 scourt HTML을 기반으로 이미지 위치에는 보존한 scourt 이미지 실물을, 조문 위치에는 해당 판례에 연결된 lawgo 법령·조문 내용을 결합하여 검색 결과 클릭 시 함께 열람하게 한다. 원본은 불변 보존하고 파생 열람 표현을 재현한다. 완료 기준은 별도 표본이 아닌 실제 검색 경로의 문단·표·반복 이미지·조문 보강 표시 및 실패/미확인 상태 검증이다. 현재는 검색 본문 열기와 별도 현재 본문 이미지 표본까지 구현했으며, 검색 corpus의 이미지·조문 통합 열람 완료는 아니다. [상세 계약](docs/legacy-enrichment-and-incremental.md#검색에서-완전한-보강-본문-열람까지).
+
+**PostgreSQL 환경 정합성 완료 — 2026-09-11:** 전체 Python/PostgreSQL 회귀 326개·ruff·mypy 및 실제/예제 환경파일의 Compose config 검증 통과. 사용자 선택에 따라 기존 DB를 유지하고 .fordeploy/aws-backup/.env의 로컬 DB 5개 항목만 127.0.0.1:55432/korcounsel_dev에 맞췄다. 관리자·편집자·AWS·기타 설정은 그대로다. DB URL 덮어쓰기 없이 연결·두 계정 로그인 및 기존 89,130행 보존을 확인했다. API/worker와 CLI의 URL 해석을 통일했고 Compose는 같은 계정으로 내부 postgres:5432에 연결한다. [설정 계약](docs/persistence-and-jobs.md#postgresql-환경변수-정합성--2026-09-11).
+
+**관리자·편집자 두 계정 접근 — 2026-09-11:** Python/PostgreSQL 회귀 321개·브라우저 검사 6개와 ruff·mypy·프런트 타입/lint/build·Compose config 검증 통과. 사용자가 지정한 KORCOUNSEL_ADMIN_ID/PASSWORD 및 KORCOUNSEL_DEV_EDITOR_ID/PASSWORD만 웹 접근을 허용한다. 로그인 전용 랜딩·플레이스홀더·서버 역할 표시와 루트 .env.example을 갱신했다. 다른 DB 계정/세션을 거절하고 비밀번호 변경·아이디 제거 시 접근을 차단한다. 실제 환경 계정의 로컬 검증은 기존 개발 DB를 명시해 수행했다. [계약·실행](docs/site-login.md).
+
+**이미지 포함 열람 표본 구현 — 2026-09-11:** 최종 Python/PostgreSQL 회귀 315개·desktop/mobile 브라우저 검사 4개 통과, ruff·mypy·프런트 타입/lint/build 통과. 실제 현재 제공 본문 4건을 불변 reader manifest로 등록했다. 이미지 등장 13곳 중 8곳은 취득 파일로 연결하고 5곳은 실패 상태를 표시한다. Parquet 검색→hash 고정 과거 본문 열기, 별도 현재 본문 표본→저장 이미지 표시, PostgreSQL 로그인·세션과 내부 이미지 제공을 구현했다. 과거/현재 본문 자동 연결·전수 취득·AWS 변경은 하지 않았다. [구현·실행·검증](docs/image-reader-validation.md).
+
 **이미지 작업의 최종 목표 — 2026-09-11 사용자 확정:** 판례 본문을 열면 다운로드해 보존한 이미지가 원래 등장 위치에 표시되어야 한다. 다음 우선 검증은 실제 소수 판례의 위치 추출→현재 매핑 확인→취득→인증된 내부 이미지 제공→안전한 본문 렌더링을 끝까지 연결하는 것이다. 반복 등장·표 안 이미지·실패 위치 표시 및 외부 제공자 접속 없는 열람을 브라우저에서 검증한 뒤 전수 확대한다. 현재 검색은 목록 조회 단계이며 이미지 포함 본문 열람은 미완료다. [계약](docs/image-preservation-review.md).
 
 **전수 corrected Parquet 및 검증 검색 — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. corrected bundle v2를 기존 import worker 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. 검증용 프론트 UI는 LEGACY_PARQUET_PATH가 가리키는 corrected Parquet을 pyarrow로 직접 스캔해 문자열 검색한다. DuckDB와 Polars는 아직 선택하지 않았다. 이미지 전수 취득·canonical 등록은 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md), [검색 방식](docs/legacy-full-row-import.md#parquet-직접-검색-ui--2026-09-11).

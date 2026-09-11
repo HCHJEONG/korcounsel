@@ -19,7 +19,12 @@ class Database:
 
         if not re.fullmatch(r"[a-z][a-z0-9_]*", schema):
             raise ValueError("INVALID_DATABASE_SCHEMA")
-        self._dsn = dsn
+        # Accept the driver-qualified URL already used by the project's environment file.
+        self._dsn = (
+            "postgresql://" + dsn.removeprefix("postgresql+psycopg://")
+            if dsn.startswith("postgresql+psycopg://")
+            else dsn
+        )
         self.schema = schema
 
     @classmethod

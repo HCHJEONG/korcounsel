@@ -72,7 +72,12 @@ def valid_scourt_image_url(url: str) -> bool:
     return (
         parsed.netloc == "portal.scourt.go.kr"
         and parsed.path == "/pgp/pgp003/downloadImgFile.on"
-        and bool(query.get("name", [""])[0].strip())
+        and query.get("pgmId") == ["PGP1011M04"]
+        and len(query.get("jisCntntsSrno", [])) == 1
+        and query["jisCntntsSrno"][0].isascii()
+        and query["jisCntntsSrno"][0].isdigit()
+        and len(query.get("atchImgFileNm", [])) == 1
+        and bool(query["atchImgFileNm"][0].strip())
     )
 
 
@@ -196,8 +201,10 @@ def references_from_manifest(raw: bytes) -> list[ImageReference]:
                 manifest_hash=manifest_hash,
                 source_system=source_system,
                 source_id=source_id,
-                row_position=_int_or_none(item.get("row_position") or item.get("position")),
-                occurrence_order=_int_or_none(item.get("occurrence_order")) or order,
+                row_position=_int_or_none(item.get("row_position", item.get("position"))),
+                occurrence_order=(
+                    order if item.get("occurrence_order") is None else int(item["occurrence_order"])
+                ),
                 original_src=_scalar(item.get("original_src") or item.get("src")),
                 image_name=image_name,
                 resolved_url=resolved_url,

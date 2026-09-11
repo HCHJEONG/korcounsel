@@ -17,3 +17,6 @@ dist
 *.backup
 *.pem
 *.key
+
+.venv-reader
+.venv-win

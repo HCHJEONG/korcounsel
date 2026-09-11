@@ -30,14 +30,14 @@ def test_image_batch_worker_persists_refs_attempts_and_blobs(db, tmp_path, monke
                 "source_id": "100",
                 "row_position": 3,
                 "name": "ok.gif",
-                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=ok.gif",
+                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=ok.gif",
             },
             {"source_system": "scourt", "source_id": "100", "name": "name-only.gif"},
             {
                 "source_system": "scourt",
                 "source_id": "old",
                 "name": "mismatch.gif",
-                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=mismatch.gif",
+                "resolved_url": "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=mismatch.gif",
                 "id_mismatch": True,
             },
         ]
@@ -86,7 +86,7 @@ def test_image_batch_worker_persists_refs_attempts_and_blobs(db, tmp_path, monke
 def test_image_batch_reuses_acquired_url_on_retry_job(db, tmp_path, monkeypatch):
     records = Records(db, FileStore(tmp_path))
     queue = Queue(db, lease_seconds=5)
-    url = "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?name=ok.gif"
+    url = "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=ok.gif"
     records.put_artifact(
         "image-manifest:test",
         json.dumps({"image_references": [{"source_id": "100", "resolved_url": url}]}).encode(),

@@ -1,5 +1,7 @@
 # PostgreSQL 저장·migration·worker — Step 2A
 
+**본문·이미지 열람 artifact — 2026-09-11:** 기존 artifacts/blobs 및 app_users/app_sessions를 재사용하여 reader HTML·mapping/취득 ledger 근거·개별 위치 manifest·이미지 bytes를 보존하고 인증 후 제공한다. reader의 위치별 manifest와 기존 URL별 취득 ledger의 통합·전수 확대는 후속이다. [구현 계약](image-reader-validation.md).
+
 **추가 구현:** migration 0008의 legacy_bundle_rows와 IMPORT_LEGACY_BUNDLE handler가 전체 컬럼 행 보존·격리·lease 확인·재개를 수행한다. [FULL_ROW 계약과 검증](legacy-full-row-import.md).
 
 **후속 구현 완료 — 2026-09-10:** DecisionKey·출처 독립 ID·Registry.register/find_decision·migration 0007을 구현하고 전체 252개 회귀를 통과했다. 아래 과거 시점의 미구현 기록은 [현재 구현과 남은 범위](decision-identity-implementation.md)로 보완한다. 기존 원본·이벤트·release를 일괄 변경하지 않았다.
@@ -131,3 +133,16 @@ docker compose --env-file .fordeploy/compose.env.example exec worker klegal ops 
 [Compose 실측 보고서](step2a-compose-verification.json)는 로컬 개발 DB에 명확히 표시한 합성 artifact/job만 등록한 결과다. 이 합성 기록은 개발 DB에 남으며 corpus import 건수로 세지 않는다. 운영 DB import·full corpus 변환·실제 수집·Parquet export·전체 DB+artifact 재해복구·운영 권한 분리·AWS/TLS/예약은 미실행이다. 사용자/세션 repository는 준비했지만 HTTP 인증·CSRF·로그인 제한·화면 구현은 아직 없다. 비공개 작업 HTTP route를 새로 노출하지 않았다.
 
 2026-09-10 최종 검증: uv locked sync·ruff check/format·mypy, pytest **140건**(실제 PostgreSQL integration **30건**) 통과. 기존 upstream warning 2건. wheel 설치본의 migration SQL 4개, Compose build/config·migration 적용/재실행·API/worker health·frontend/API HTTP 200·합성 작업 처리·drain 차단을 확인했다. [검증 기록](step2a-verification.json). 로컬 runtime은 resume 상태로 worker가 가동 중이며 AWS 변경·전체 corpus import는 하지 않았다.
+
+## PostgreSQL 환경변수 정합성 — 2026-09-11
+
+사용자는 기존 DB 유지 및 실제 .env의 해당 부분만 수정을 선택했다. .fordeploy/aws-backup/.env의 DATABASE_URL, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, POSTGRES_PORT를 현재 읽기 전용 접속에 성공한 기존 로컬 DB에 맞췄다. 최종 호스트 endpoint는 127.0.0.1:55432/korcounsel_dev다. 대상 외 모든 환경변수의 값이 변경되지 않았음을 비교했다. 계정값과 비밀번호는 보고서에 기록하지 않는다.
+
+- 호스트 실행: 명시한 KLEGAL_ENV_FILE의 DATABASE_URL을 우선 사용한다. postgresql+psycopg://도 연결 adapter에서 지원한다.
+- URL이 없으면 POSTGRES_HOST/PORT/USER/PASSWORD/DB로 연결 정보를 만든다. 사용자·비밀번호·DB명은 함께 있어야 하며 비밀번호의 공백·따옴표·특수문자는 psycopg의 매개변수 조립으로 보존한다.
+- Compose API·worker·migration: 호스트용 DATABASE_URL을 주입하지 않고, 동일한 POSTGRES_USER/PASSWORD/DB를 내부 주소 postgres:5432에 연결한다. 호스트 공개 포트 55432와 컨테이너 내부 5432는 다르다.
+- klegal check-db도 API·worker와 같은 Database 경계를 사용하며 읽기 전용 SELECT만 수행한다. 기존 별도 URL 해석 경로의 불일치를 제거했다.
+- 수정한 실제 .env만으로 연결 및 관리자·편집자 로그인/역할/logout을 검증했고 판례 원행 위치 89,130개를 확인했다. 현재 WEB_ORIGIN은 HTTPS이므로 TestClient도 동일 origin과 Secure cookie 조건을 사용했다. 이 검증은 로컬 API/DB 검사이며 AWS 네트워크 접속·배포가 아니다.
+- PostgreSQL 서버의 비밀번호·DB명·볼륨·포트를 바꾸거나 DB를 재생성하지 않았다. Compose 설정 검증은 수행했지만 서비스 재배포·AWS 변경은 수행하지 않았다.
+
+최종 검증: 전체 Python/PostgreSQL 회귀 326개, ruff·mypy, 실제/예제 환경파일 Compose config 통과. 실제 .env만 지정한 klegal check-db는 Database reachable을 반환했다.

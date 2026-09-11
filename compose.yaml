@@ -17,8 +17,17 @@ services:
     image: korcounsel-backend:scaffold
     build: ./backend
     environment:
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
       DATA_DIR: /data
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://127.0.0.1:8080}
+      KORCOUNSEL_ADMIN_ID: ${KORCOUNSEL_ADMIN_ID:-}
+      KORCOUNSEL_ADMIN_PASSWORD: ${KORCOUNSEL_ADMIN_PASSWORD:-}
+      KORCOUNSEL_DEV_EDITOR_ID: ${KORCOUNSEL_DEV_EDITOR_ID:-}
+      KORCOUNSEL_DEV_EDITOR_PASSWORD: ${KORCOUNSEL_DEV_EDITOR_PASSWORD:-}
     volumes:
       - case_data:/data
     depends_on:
@@ -54,7 +63,11 @@ services:
       timeout: 5s
       retries: 4
     environment:
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
       DATA_DIR: /data
     volumes:
       - case_data:/data
@@ -67,7 +80,11 @@ services:
     profiles: ["tools"]
     command: ["klegal", "ops", "migrate"]
     environment:
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
     depends_on:
       postgres:
         condition: service_healthy

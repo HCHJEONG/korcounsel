@@ -19,6 +19,7 @@
     "src",
     "vite.config.ts",
     "tests/e2e",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "playwright.reader.config.ts"
   ]
 }

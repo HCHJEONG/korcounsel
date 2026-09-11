@@ -173,7 +173,12 @@ def test_upgrade_backfills_without_mutating_history(empty_db):
     migrate(empty_db, target=6)
     old = seed_old_identity(empty_db)
     before = Registry(empty_db).snapshot()
-    assert migrate(empty_db) == ["0007_decision_keys.sql", "0008_legacy_import.sql"]
+    assert migrate(empty_db) == [
+        "0007_decision_keys.sql",
+        "0008_legacy_import.sql",
+        "0009_case_search_text.sql",
+        "0010_image_acquisition.sql",
+    ]
     registry = Registry(empty_db)
     assert registry.snapshot() == before
     assert (
