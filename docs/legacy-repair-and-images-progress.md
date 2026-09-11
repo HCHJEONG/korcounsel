@@ -91,6 +91,10 @@
 
 corrected Parquet을 기존 full-row/DB import 경로에 연결하고 로컬 개발 PostgreSQL 보존 import까지 완료했다. 다음은 이미지별 영속 ledger와 worker 취득·재시도 연결, 8,418 URL 대상의 제한된 batch 확대, name-only/ID 불일치 예외 처리, 그리고 canonical 연결 후보 검토다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다.
 
+## Parquet 직접 검색 UI — 2026-09-11
+
+프론트 검증 검색은 PostgreSQL projection이 아니라 corrected Parquet snapshot을 직접 읽는다. FastAPI /api/cases/search는 LEGACY_PARQUET_PATH의 파일을 pyarrow batch scan으로 읽고, 각 행의 문자열화 가능한 컬럼 전체에서 단순 포함 검색을 수행한다. 실제 corrected Parquet에서 없는 검색어 0건과 대법원 3건 응답을 확인했다. 없는 검색어는 89,130행 전체를 끝까지 훑으므로 느릴 수 있다. DuckDB와 Polars는 아직 선택하지 않았다.
+
 ## Corrected bundle v2와 로컬 PostgreSQL import — 2026-09-11
 
 보정된 Parquet data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet을 기존 legacy-full-row-bundle-1 CAS manifest로 변환했다. 최종 산출물은 data/corrected-legacy-bundle-20260911-v2이며 manifest hash는 c3e0ddeb7a23d0896a93c96c47aa1edd3664071a325be29287fa722c32be116b다. docs/corrected-legacy-bundle-export.json에 변환 보고서를 남겼다. v1 bundle은 locator original_index 문제를 고친 v2로 대체한다.

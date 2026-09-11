@@ -3,7 +3,7 @@ name = "korean-legal-gold"
 version = "0.1.0"
 description = "KorCounsel legal dataset factory"
 requires-python = ">=3.12,<3.13"
-dependencies = ["pydantic>=2.13,<3", "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic-settings>=2.6,<3", "psycopg[binary]>=3.2,<4", "typer>=0.15,<1"]
+dependencies = ["pydantic>=2.13,<3", "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic-settings>=2.6,<3", "psycopg[binary]>=3.2,<4", "typer>=0.15,<1", "pyarrow>=25,<26"]
 [project.scripts]
 klegal = "klegal_gold.cli:app"
 [build-system]

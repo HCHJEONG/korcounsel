@@ -158,4 +158,16 @@ uv run python scripts/verify_legacy_import_sample.py \
 
 ## 다음 범위
 
-89,130행 전체 export/import의 시간·메모리·디스크 측정과 전체 건수 reconciliation은 아직 실행하지 않았다. 다음은 표본의 재판 종류·병합 번호·기존 출처 연결 충돌을 검토해 등록 경로를 연결하고 전체 처리 규모를 확인하는 단계다. 과거/현재 번호 후보의 동일성 검토, 법률 본문 구조화, 보강 재취득, AWS 변경은 이번 범위에 포함하지 않았다.
+89,130행 전체 corrected Parquet 생성, corrected bundle v2 변환, 로컬 개발 PostgreSQL 보존 import, Parquet 직접 검색 UI 연결은 완료했다. 다음은 Parquet 검색을 실제 검수 흐름에 연결해 행 상세 보기와 원문 확인을 붙이고, 표본의 재판 종류·병합 번호·기존 출처 연결 충돌을 검토해 canonical 등록 경로를 연결하는 단계다. 과거/현재 번호 후보의 동일성 검토, 법률 본문 구조화, 이미지 실물 전수 취득, AWS 운영 반영은 별도 범위다.
+
+## Parquet 직접 검색 UI — 2026-09-11
+
+검증용 UI 검색은 DB projection이 아니라 corrected Parquet snapshot을 직접 읽는 방식으로 구현한다. FastAPI는 LEGACY_PARQUET_PATH가 가리키는 Parquet 파일을 pyarrow batch scan으로 읽고, 각 행의 문자열화 가능한 컬럼 전체에서 단순 포함 검색을 수행한다. 결과에는 row_position, original_index, court_name, case_no/case_full_no, decision_date, matched_columns를 반환한다.
+
+이 방식은 현재 89,130행 규모의 원본 snapshot 검증에는 충분히 단순하고 명확하다. DuckDB나 Polars는 아직 선택하지 않았다. DuckDB는 SQL 집계·조인·index 성격의 ad hoc 분석이 커질 때, Polars는 DataFrame 분석 파이프라인이 필요할 때 별도로 검토한다. 배포 시에는 Parquet 파일을 함께 배치하고 LEGACY_PARQUET_PATH를 절대경로로 지정하면 같은 검색 UI를 사용할 수 있다. 현재 구현은 처음부터 끝까지 스캔하는 단순 포함 검색이므로, 없는 검색어 또는 뒤쪽 행에서만 등장하는 검색어는 느릴 수 있다. 이 느림은 원본 snapshot을 직접 확인한다는 대가이며, 빠른 상시 서비스 검색이 필요해지면 PostgreSQL search_text index, DuckDB SQL 조회, Polars 분석 경로를 별도 기준으로 비교한다.
+
+## DB projection 검색 경로와 Parquet 직접 검색의 관계 — 2026-09-11
+
+PostgreSQL projection 검색은 운영 서비스의 빠른 조회와 검토 화면에 유용하다. migration 0009는 case_projection.search_text와 pg_trgm GIN index를 추가하는 경로이며, 테스트 schema에서도 안정적으로 동작하도록 opclass를 public.gin_trgm_ops로 명시했다. 다만 이번 검증 UI의 기준 입력은 corrected Parquet 자체다. 따라서 현재 프론트 검색 API는 DB projection을 보조 근거로 사용하지 않고 LEGACY_PARQUET_PATH의 Parquet 파일을 직접 읽는다.
+
+이 구분을 유지한다. Parquet 직접 검색 결과는 snapshot row_position/original_index와 matched_columns를 통해 “현재 Parquet에 실제 들어간 값”을 확인하는 용도다. DB projection 검색 결과는 import 이후 서비스 조회 상태를 확인하는 용도다. 두 결과가 다르면 Parquet snapshot, bundle import, projection rebuild 중 어느 단계에서 차이가 생겼는지 별도로 조사한다.

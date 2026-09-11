@@ -1,6 +1,6 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-**전수 corrected Parquet — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. 이미지 전수 취득·canonical 등록은 미완료다. corrected bundle v2를 기존 import worker 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. [결과와 한계](docs/legacy-repair-and-images-progress.md).
+**전수 corrected Parquet 및 검증 검색 — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. corrected bundle v2를 기존 import worker 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. 검증용 프론트 UI는 LEGACY_PARQUET_PATH가 가리키는 corrected Parquet을 pyarrow로 직접 스캔해 문자열 검색한다. DuckDB와 Polars는 아직 선택하지 않았다. 이미지 전수 취득·canonical 등록은 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md), [검색 방식](docs/legacy-full-row-import.md#parquet-직접-검색-ui--2026-09-11).
 
 이하 표본 조사·미실행 표시는 당시 이력이며 최신 완료 범위는 위 보고서를 따른다.
 
@@ -12,13 +12,13 @@
 
 **날짜 로직 조사 — 2026-09-10:** 기존 date 함수의 parser.parser/parse 오호출을 재현했다. 146행 중 145행은 호출 수정으로 날짜 추출, 나머지 군사법원 1행은 사건번호 regex 오인식이며 기존 datetime도 2072-01-01 오류 표식이다. closing_argument는 date 30개·no_info 116개 모두 기존값과 일치했다. 다음 우선 작업은 기존 로직 보완·날짜 전수 대조이며 원본 수정·전수 복구는 아직 하지 않았다. [조사 근거](docs/legacy-date-logic-audit.md).
 
-**Parquet 검증 완료 — 2026-09-10:** 89,130행×60컬럼의 최상위 타입 전수 조사와 실제 146행 표본의 Python·Node 왕복 검증을 통과했다. 자동 변환은 혼합형 컬럼에서 실패하며 명시 schema가 필요하다. 표본 8,615셀은 값 보존, 145셀은 OPAQUE 원본 참조다. 전수 exporter·worker Parquet 입력·전체 적재는 후속이다. [실측·재현·한계](docs/legacy-parquet-validation.md).
+**Parquet 검증 완료 — 2026-09-10:** 89,130행×60컬럼의 최상위 타입 전수 조사와 실제 146행 표본의 Python·Node 왕복 검증을 통과했다. 자동 변환은 혼합형 컬럼에서 실패하며 명시 schema가 필요하다. 표본 8,615셀은 값 보존, 145셀은 OPAQUE 원본 참조다. 이후 전수 corrected Parquet export, bundle 변환, 로컬 DB 보존 import, Parquet 직접 검색 UI 연결을 완료했다. [실측·재현·한계](docs/legacy-parquet-validation.md).
 
-**전체 import 전 점검:** text 8,482개 중 7,989개는 newline 변환 후 저장값과 일치, 기본 본문 491개도 저장된 보강본에 대응한다. ID 미연결 2029039 두 파일은 기존 6429행과 동일 재결 후보다. 전체 import는 아직 실행하지 않았다. [점검 결과](docs/legacy-text-coverage-audit.md).
+**전체 import 전 점검:** text 8,482개 중 7,989개는 newline 변환 후 저장값과 일치, 기본 본문 491개도 저장된 보강본에 대응한다. ID 미연결 2029039 두 파일은 기존 6429행과 동일 재결 후보다. corrected bundle 기준 전체 보존 import는 로컬 개발 PostgreSQL에서 완료했으며, 이 문서의 과거 미실행 표시는 당시 이력이다. [점검 결과](docs/legacy-text-coverage-audit.md).
 
 **전수 저장 매체 결정:** 원본 pickle은 역사적 Python object graph 보존본으로 유지하고, Parquet은 60컬럼 전수의 이식 가능한 snapshot, PostgreSQL은 검색 projection·registry·job·검토 이력에 사용한다. Node는 제한적인 Parquet 점검에 사용할 수 있으나 React가 대형 파일을 직접 읽지는 않는다. 실제 schema·OPAQUE 표현·Python/Node round-trip을 표본 검증한 뒤 전수 변환한다. [설계와 판단 근거](docs/legacy-full-row-import.md#저장-매체-결정-pickle-parquet-postgresql).
 
-**최신 구현:** 기존 DataFrame 재사용 FULL_ROW export·단일 worker importer·행별 격리/재개 ledger·migration 0008을 구현했다. 실제 15행×60컬럼 표본과 전체 281개 회귀 검증 완료. [현재 범위](docs/legacy-full-row-import.md). 89,130행 전체 실행·canonical 연결 확정은 후속이다.
+**최신 구현:** 기존 DataFrame 재사용 FULL_ROW export·단일 worker importer·행별 격리/재개 ledger·migration 0008을 구현했고, corrected bundle v2의 89,130행 로컬 보존 import까지 완료했다. canonical 연결 확정은 후속이다. [현재 범위](docs/legacy-full-row-import.md).
 
 **최신 구현:** 재판결과 키·출처 독립 canonical 등록·legacy mapper 0.2.0·migration 0007 및 실제 PostgreSQL 회귀를 완료했다. [상세와 한계](docs/decision-identity-implementation.md). 다음은 FULL_ROW 보존 import와 표본 연결 검토다.
 

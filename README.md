@@ -2,15 +2,15 @@
 
 전체 import 전 [text 파일 포함 관계 점검](docs/legacy-text-coverage-audit.md)을 완료했습니다. 8,482개 파일을 대조했으며 2029039 재결의 기존 행 연결·종류 표기는 별도 검토 대상입니다.
 
-기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer를 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 행 파일로 export하고 단일 worker가 보존·격리·재개합니다. [실행 안내와 실제 표본 검증](docs/legacy-full-row-import.md)을 참고하세요.
+기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer와 corrected Parquet snapshot을 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 보존하고, corrected bundle v2의 89,130행은 로컬 개발 PostgreSQL 보존 import까지 완료했습니다. 검증용 프론트 검색은 LEGACY_PARQUET_PATH의 corrected Parquet을 직접 읽습니다. [실행 안내와 실제 검증](docs/legacy-full-row-import.md)을 참고하세요.
 
-현재 재판결과 키(법원 명칭+사건번호+재판 종류), 출처 독립 canonical 등록, legacy mapper 0.2.0과 로컬 migration 0007을 구현했습니다. [사용 계약·검증·다음 단계](docs/decision-identity-implementation.md)를 참고하세요. 전체 corpus import와 자동 동일성 판정은 후속입니다.
+현재 재판결과 키(법원 명칭+사건번호+재판 종류), 출처 독립 canonical 등록, legacy mapper 0.2.0과 로컬 migration 0007을 구현했습니다. [사용 계약·검증·다음 단계](docs/decision-identity-implementation.md)를 참고하세요. 전체 corpus의 canonical 연결 확정과 자동 동일성 판정은 후속입니다.
 
 공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
 
-현재 **Step 1·Step 2 데이터 계약·Step 2A 로컬 저장/worker 검증 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. PostgreSQL migration, 기록 저장, 식별 연결 이력과 단일 worker가 동작합니다. 로그인·실제 판례 수집·자동 canonical 매칭·gold 생산은 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
+현재 **Step 1·Step 2 데이터 계약·Step 2A 로컬 저장/worker 검증·corrected Parquet 검색 UI 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. PostgreSQL migration, 기록 저장, 식별 연결 이력과 단일 worker가 동작합니다. 로그인·실제 판례 수집·자동 canonical 매칭·gold 생산은 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
 
-legacy 보존 모델은 과거 취득시각·HTTP hash를 만들지 않고 기존 필드와 행 locator를 유지합니다. 실제 metadata 15행과 저장 HTML 4개를 검증했으며 전체 corpus/DB import는 후속입니다. [import 계약과 표본 재현](docs/legacy-import-contract.md)을 참고하세요.
+legacy 보존 모델은 과거 취득시각·HTTP hash를 만들지 않고 기존 필드와 행 locator를 유지합니다. 실제 metadata 15행과 저장 HTML 4개를 검증했고, 이후 corrected bundle v2 기준 89,130행의 로컬 개발 DB 보존 import를 완료했습니다. [import 계약과 표본 재현](docs/legacy-import-contract.md), [전수 보존·검색 계약](docs/legacy-full-row-import.md)을 참고하세요.
 
 저장·작업 실행·재시작 복구와 검증 범위는 [Step 2A 운영 안내](docs/persistence-and-jobs.md)에 있습니다.
 
@@ -53,7 +53,19 @@ uv run uvicorn klegal_gold.web.app:app --host 127.0.0.1 --port 8000 --reload
 pnpm dev
 ```
 
-브라우저에서 http://127.0.0.1:5173 에 접속해 연결 확인을 누릅니다. Vite가 /api를 로컬 FastAPI로 전달합니다. 현재 개발 화면에는 실제 판례·인증 기능이 없습니다.
+브라우저에서 http://127.0.0.1:5173 에 접속해 연결 확인을 누릅니다. Vite가 /api를 로컬 FastAPI로 전달합니다. corrected Parquet 검색을 쓰려면 백엔드 실행 전에 LEGACY_PARQUET_PATH를 절대경로로 지정합니다. 예: LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet. 현재 검색은 Parquet 전체 컬럼의 문자열 값을 직접 스캔하므로 없는 검색어는 시간이 걸릴 수 있습니다.
+
+## Parquet 검증 검색
+
+프론트의 판례 검색 화면은 FastAPI의 /api/cases/search를 호출합니다. 현재 endpoint는 PostgreSQL이 아니라 LEGACY_PARQUET_PATH가 가리키는 corrected Parquet snapshot을 pyarrow로 직접 읽습니다. 이 검색은 snapshot 검증을 위한 것이며 결과에는 row_position, original_index, 법원, 사건번호, 선고일, 매칭 컬럼명이 포함됩니다.
+
+```bash
+cd backend
+LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet \
+  uv run uvicorn klegal_gold.web.app:app --host 127.0.0.1 --port 8000 --reload
+```
+
+DuckDB와 Polars는 아직 채택하지 않았습니다. 89,130행 규모의 단순 검증 검색은 pyarrow batch scan으로 시작하고, 빠른 반복 검색·SQL 집계·여러 Parquet 조인이 필요해지면 DuckDB를, DataFrame 분석 파이프라인이 필요해지면 Polars를 별도 검토합니다. 운영 배포에서도 Parquet 파일을 배치하고 LEGACY_PARQUET_PATH만 지정하면 같은 UI를 사용할 수 있습니다.
 
 ## Compose 전체 실행
 
@@ -89,6 +101,7 @@ DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korc
 - 사용자가 제공한 .fordeploy/aws-backup/.env는 그대로 보존하며 이번 scaffold 검증에 로드하지 않았습니다.
 - DATA_DIR은 절대 경로입니다. 로컬 기본값은 레포 data/이며 작업 디렉터리 변경에 영향받지 않습니다. 설정을 읽는 것만으로 파일을 생성하지 않습니다.
 - DATABASE_URL은 PostgreSQL 연결 문자열입니다. 미설정이면 health는 응답하지만 check-db는 실패합니다.
+- LEGACY_PARQUET_PATH는 corrected Parquet 검증 검색에 사용할 절대 경로입니다. 미설정이면 검색 endpoint는 빈 결과와 source=UNCONFIGURED를 반환합니다.
 - root .env.example은 공개 프런트 설정 안내, backend/.env.example은 백엔드 설정 예시입니다. 프런트에 DB·API secret을 넣지 않습니다.
 
 fetch/normalize/structure/build-gold/validate/stats는 후속 구현 명령입니다. 현재 CLI에 존재하지 않습니다.
@@ -114,7 +127,7 @@ uv run pytest
 KLEGAL_TEST_DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_dev' uv run pytest --cov=klegal_gold
 ```
 
-최신 Python 검증: pytest 84건(로컬 PostgreSQL 포함), ruff·mypy 통과. Step 1 당시 UI 검증: desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건 중 optional editorial 3종을 domain 테스트에 연결했습니다. 전체 parser/resolver 검증을 완료했다는 뜻은 아닙니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
+최신 Python 검증: Parquet 검색 unit 12건과 DB 검색 integration 1건 통과, ruff·프론트 typecheck/build 통과. 과거 전체 검증 이력: pytest 84건(로컬 PostgreSQL 포함), ruff·mypy 통과. Step 1 당시 UI 검증: desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건 중 optional editorial 3종을 domain 테스트에 연결했습니다. 전체 parser/resolver 검증을 완료했다는 뜻은 아닙니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
 
 ## 설계·조사 문서
 

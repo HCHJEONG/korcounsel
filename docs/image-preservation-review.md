@@ -1,6 +1,6 @@
 # 이미지 URL 접근과 실물 보존 검토 — 2026-09-10
 
-**전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 전체 60컬럼 최종 Parquet·이미지 전수 취득·DB import는 미완료다. [결과와 한계](legacy-repair-and-images-progress.md).
+**전수 검증 후속 — 2026-09-10:** 89,130행 날짜 교정 후보와 이미지 inventory를 생성했다. 선고일 89,130행, 변론종결일 13,518행 READY이며 복수 날짜 45행은 적용 보류다. 교정 변경분 Parquet의 Python·Node 전수 왕복을 검증했고 현재 이미지 38 URL의 bytes를 취득했다. 이후 전체 60컬럼 corrected Parquet, corrected bundle v2, 로컬 개발 PostgreSQL 보존 import, Parquet 직접 검색 UI를 완료했다. 이미지 전수 취득과 canonical 등록은 미완료다. [결과와 한계](legacy-repair-and-images-progress.md).
 
 ## 실측과 한계
 

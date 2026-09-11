@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     data_dir: Path = Field(default_factory=lambda: Path(__file__).resolve().parents[3] / "data")
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     database_url: SecretStr | None = None
+    legacy_parquet_path: Path | None = None
     law_open_api_oc: SecretStr | None = None
     law_go_kr_oc: SecretStr | None = None
 
@@ -25,6 +26,8 @@ class Settings(BaseSettings):
     def validate_settings(self) -> "Settings":
         if not self.data_dir.is_absolute():
             raise ValueError("DATA_DIR must be absolute")
+        if self.legacy_parquet_path is not None and not self.legacy_parquet_path.is_absolute():
+            raise ValueError("LEGACY_PARQUET_PATH must be absolute")
         if self.law_open_api_oc is not None and self.law_go_kr_oc is not None:
             if self.law_open_api_oc.get_secret_value() != self.law_go_kr_oc.get_secret_value():
                 raise ValueError("Conflicting API credential aliases")
