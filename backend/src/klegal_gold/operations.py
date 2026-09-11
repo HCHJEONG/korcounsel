@@ -14,6 +14,10 @@ from klegal_gold.config import load_settings
 from klegal_gold.db.migrate import migrate
 from klegal_gold.db.records import Records
 from klegal_gold.db.session import Database
+from klegal_gold.domain.inventory import InventorySnapshot
+from klegal_gold.ingestion.delta import InventoryDelta, compare_inventory, detail_fetch_candidates
+from klegal_gold.ingestion.document_images import image_manifest_from_observation
+from klegal_gold.ingestion.legacy_catalog import LegacySourceCatalog, scourt_catalog
 from klegal_gold.jobs.queue import Queue
 from klegal_gold.jobs.worker import Worker
 from klegal_gold.storage.files import FileStore
@@ -136,6 +140,46 @@ def submit_law_detail(request_key: str, source_id: str) -> None:
     typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
 
 
+@operations.command("plan-inventory-delta")
+@_safe
+def plan_inventory_delta(
+    current_snapshot_id: str,
+    legacy_catalog_artifact_id: str,
+    baseline_snapshot_id: str | None = None,
+) -> None:
+    """Compare preserved inventory snapshots before any detail jobs are submitted."""
+    _, records, _ = _services()
+    current = InventorySnapshot.model_validate_json(
+        records.read("inventory:" + current_snapshot_id)
+    )
+    baseline = (
+        InventorySnapshot.model_validate_json(records.read("inventory:" + baseline_snapshot_id))
+        if baseline_snapshot_id is not None
+        else None
+    )
+    catalog = LegacySourceCatalog.from_payload(
+        json.loads(records.read(legacy_catalog_artifact_id))
+    )
+    if current.source.value != catalog.source:
+        raise ValueError("LEGACY_CATALOG_SOURCE_MISMATCH")
+    delta = compare_inventory(current, baseline, legacy_source_ids=catalog.source_ids)
+    artifact_id = records.save_inventory_delta(delta)
+    candidates = detail_fetch_candidates(delta)
+    counts: dict[str, int] = {}
+    for entry in delta.entries:
+        counts[entry.kind] = counts.get(entry.kind, 0) + 1
+    typer.echo(
+        json.dumps(
+            {
+                "artifact_id": artifact_id,
+                "counts": counts,
+                "detail_candidate_count": len(candidates),
+                "absence_is_confirmed": delta.absence_is_confirmed,
+            }
+        )
+    )
+
+
 @operations.command("submit-scourt-detail")
 @_safe
 def submit_scourt_detail(request_key: str, source_id: str) -> None:
@@ -143,6 +187,39 @@ def submit_scourt_detail(request_key: str, source_id: str) -> None:
     _, _, queue = _services()
     job = queue.submit_scourt_detail(request_key, source_id)
     typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("submit-delta-scourt-details")
+@_safe
+def submit_delta_scourt_details(
+    request_key_prefix: str,
+    delta_artifact_id: str,
+    max_details: int = 50,
+) -> None:
+    """Register a bounded, idempotent subset of NEW/CHANGED scourt detail work."""
+    if not 1 <= max_details <= 50:
+        raise ValueError("INVALID_DETAIL_BATCH_LIMIT")
+    _, records, queue = _services()
+    delta = InventoryDelta.from_payload(json.loads(records.read(delta_artifact_id)))
+    if delta.source != "scourt":
+        raise ValueError("NOT_SCOURT_INVENTORY_DELTA")
+    candidates = detail_fetch_candidates(delta)[:max_details]
+    jobs = [
+        queue.submit_scourt_detail(
+            f"{request_key_prefix}:{delta.current_snapshot_id}:{source_id}", source_id
+        )
+        for source_id in candidates
+    ]
+    typer.echo(
+        json.dumps(
+            {
+                "delta_artifact_id": delta_artifact_id,
+                "registered": len(jobs),
+                "candidate_count": len(detail_fetch_candidates(delta)),
+                "job_ids": [str(job.job_id) for job in jobs],
+            }
+        )
+    )
 
 
 @operations.command("submit-scourt-inventory")
@@ -165,6 +242,65 @@ def submit_legacy_import(request_key: str, manifest_hash: str) -> None:
     _, _, queue = _services()
     job = queue.submit_legacy_import(request_key, manifest_hash)
     typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("preserve-legacy-scourt-catalog")
+@_safe
+def preserve_legacy_scourt_catalog(path: Path) -> None:
+    """Preserve verified legacy contId baseline; does not run a source inventory."""
+    _, records, _ = _services()
+    catalog = scourt_catalog(path)
+    artifact_id = "legacy-source-catalog:" + catalog.parquet_sha256
+    blob = records.put_artifact(
+        artifact_id,
+        catalog.encoded(),
+        origin="MANIFEST",
+        metadata={
+            "kind": "LEGACY_SCOURT_SOURCE_CATALOG",
+            "parquet_sha256": catalog.parquet_sha256,
+            "rows_scanned": catalog.rows_scanned,
+            "source_id_count": len(catalog.source_ids),
+            "rejected_values": catalog.rejected_values,
+        },
+    )
+    typer.echo(
+        json.dumps(
+            {
+                "artifact_id": artifact_id,
+                "sha256": blob.sha256,
+                "rows_scanned": catalog.rows_scanned,
+                "source_id_count": len(catalog.source_ids),
+                "rejected_values": catalog.rejected_values,
+            }
+        )
+    )
+
+
+@operations.command("preserve-document-image-manifest")
+@_safe
+def preserve_document_image_manifest(source_id: str, observation_artifact_id: str) -> None:
+    """Derive image references from one preserved scourt document observation."""
+    _, records, _ = _services()
+    payload = json.loads(records.read(observation_artifact_id))
+    observation = payload.get("observation") if isinstance(payload, dict) else None
+    if not isinstance(observation, dict):
+        raise ValueError("INVALID_DOCUMENT_OBSERVATION")
+    manifest = image_manifest_from_observation(
+        observation, source_id=source_id, parent_artifact_id=observation_artifact_id
+    )
+    manifest_id = "image-manifest:document:" + observation_artifact_id.rsplit(":", 1)[-1]
+    references = manifest["image_references"]
+    assert isinstance(references, list)
+    blob = records.put_artifact(
+        manifest_id, json.dumps(manifest, sort_keys=True).encode(), origin="MANIFEST",
+        metadata={"kind": "DOCUMENT_IMAGE_REFERENCE_MANIFEST"},
+    )
+    typer.echo(
+        json.dumps(
+            {"artifact_id": manifest_id, "sha256": blob.sha256,
+             "references": len(references)}
+        )
+    )
 
 
 @operations.command("preserve-image-manifest")

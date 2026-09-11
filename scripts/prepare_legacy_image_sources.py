@@ -90,27 +90,58 @@ def fetch_failure_kind(records, job_id, source_id):
         ).fetchone()
         if cached:
             return json.loads(records.read(cached["artifact_id"]))["status"]
-        # Older jobs have no row result. Search their immutable receipts without
-        # a global newest-N cutoff that could misclassify historical NOT_FOUND.
+        # New receipts have an explicit job key. Legacy receipt JSON is only
+        # inspected inside this job's recorded execution intervals, never across
+        # the complete historical artifact store.
         receipts = conn.execute(
-            "SELECT artifact_id,parent_id FROM artifacts "
-            "WHERE metadata->>'kind'='HTTP_ATTEMPT' ORDER BY created_at DESC"
+            "SELECT a.artifact_id,a.parent_id,a.created_at,a.metadata->>'run_id' AS run_id "
+            "FROM artifacts a WHERE a.metadata->>'kind'='HTTP_ATTEMPT' AND ("
+            "a.metadata->>'run_id'=%s OR (a.metadata->>'run_id' IS NULL AND EXISTS ("
+            "SELECT 1 FROM job_attempts ja WHERE ja.job_id=%s "
+            "AND a.created_at>=ja.started_at "
+            "AND a.created_at<=COALESCE(ja.finished_at,clock_timestamp())))) "
+            "ORDER BY a.created_at DESC,a.artifact_id DESC",
+            (str(job_id), job_id),
         ).fetchall()
+        latest_attempt = conn.execute(
+            "SELECT started_at,finished_at FROM job_attempts WHERE job_id=%s "
+            "ORDER BY attempt DESC LIMIT 1",
+            (job_id,),
+        ).fetchone()
+    classification = None
     for row in receipts:
         receipt = json.loads(records.read(row["artifact_id"]))
+        if not isinstance(receipt, dict):
+            raise ValueError("INVALID_HTTP_ATTEMPT_RECEIPT")
         if receipt.get("run_id") != str(job_id):
+            if row["run_id"] is not None:
+                raise ValueError("HTTP_RECEIPT_RUN_ID_MISMATCH")
             continue
+        # Read and verify outside the JSON parsing fallback: a missing/corrupt
+        # related artifact must not be reported as an ordinary source failure.
+        raw = records.read(row["parent_id"])
         try:
-            response = json.loads(records.read(row["parent_id"]))
-        except (ValueError, UnicodeDecodeError):
-            continue
-        if (
-            isinstance(response, dict)
-            and isinstance(response.get("data"), dict)
-            and response["data"].get("result") == "notExtist"
-        ):
-            return "SOURCE_NOT_FOUND"
-    return "SOURCE_FETCH_FAILED"
+            response = json.loads(raw)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            response = None
+        in_latest_attempt = latest_attempt is None or (
+            row["created_at"] >= latest_attempt["started_at"]
+            and (
+                latest_attempt["finished_at"] is None
+                or row["created_at"] <= latest_attempt["finished_at"]
+            )
+        )
+        if classification is None and in_latest_attempt:
+            # Receipts are newest first. Old NOT_FOUND may not hide a newer
+            # empty-body/structure failure or an attempt without any response.
+            classification = (
+                "SOURCE_NOT_FOUND"
+                if isinstance(response, dict)
+                and isinstance(response.get("data"), dict)
+                and response["data"].get("result") == "notExtist"
+                else "SOURCE_FETCH_FAILED"
+            )
+    return classification or "SOURCE_FETCH_FAILED"
 
 
 def prepare(records, targets, *, inventory_hash, max_sources):

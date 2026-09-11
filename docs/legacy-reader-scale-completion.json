@@ -1,0 +1,52 @@
+{
+  "version": "legacy-reader-expansion-completion-1",
+  "status": "EXPANSION_APPLIED_WITH_EXPLICIT_GAPS",
+  "rows_registered_and_verified": 89130,
+  "registration_errors": 0,
+  "body_image_positions_acquired": 7561,
+  "body_ordinary_image_positions_total": 10877,
+  "body_ordinary_image_positions_remaining": 3316,
+  "statute_image_positions_acquired": 4698,
+  "statute_image_positions_total": 4698,
+  "preserved_statute_positions": 702035,
+  "legacy_statute_failure_positions": 25937,
+  "unlinked_statute_positions": 913796,
+  "provider_static_symbol_positions": 94916,
+  "all_observed_images_acquired": false,
+  "statute_versions_confirmed": false,
+  "original_parquet_and_import_unchanged": true,
+  "restored_registered_blobs": 178314,
+  "restored_bytes": 14813884622,
+  "registered_blob_paths_verified": 529551,
+  "registered_blob_path_problems": 0,
+  "python_tests_passed": 688,
+  "browser_tests_passed": 28,
+  "browser_scenarios": 14,
+  "local_app_url": "http://127.0.0.1:8080",
+  "local_health": 200,
+  "queued_or_running_jobs": 0,
+  "draining": false,
+  "aws_changed": false,
+  "evidence": {
+    "coverage": {
+      "path": "data/legacy-reader-coverage-20260911-final-v1/summary.json",
+      "sha256": "0679023fbb530ded4601f4b1e9aed969b961ddec3faa08f311bb70cd6df571d1"
+    },
+    "recovery": {
+      "path": "data/legacy-reader-scale-20260911-v1/registered-blob-exact-recovery-final-20260911.json",
+      "sha256": "63eba3edb7ac5e4c8ea2e389be5277e3d94ea223326c9d6447d0c03e77948862"
+    },
+    "python_checks": {
+      "path": "data/legacy-reader-scale-20260911-v1/exact-blob-recovery-final-checks.json",
+      "sha256": "090a21ecb8d8000fa0ae7b2f985c968f1b514c001bf4122130b2110498844b94"
+    },
+    "runtime": {
+      "path": "data/legacy-reader-scale-20260911-v1/compose-storage-runtime-verification-v2.json",
+      "sha256": "7bbfd8f81f605966df1dc8360da1cf91dd7a734d7745330db87bbaef575215f7"
+    },
+    "proxy_restart": {
+      "path": "data/legacy-reader-scale-20260911-v1/compose-api-recreate-proxy-after.json",
+      "sha256": "0adb2f9997fae3e335e879be9ec5e94d77657f0cce52a3d4befa06ecf9339db7"
+    }
+  }
+}

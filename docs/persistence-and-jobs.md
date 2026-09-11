@@ -146,3 +146,8 @@ docker compose --env-file .fordeploy/compose.env.example exec worker klegal ops 
 - PostgreSQL 서버의 비밀번호·DB명·볼륨·포트를 바꾸거나 DB를 재생성하지 않았다. Compose 설정 검증은 수행했지만 서비스 재배포·AWS 변경은 수행하지 않았다.
 
 최종 검증: 전체 Python/PostgreSQL 회귀 326개, ruff·mypy, 실제/예제 환경파일 Compose config 통과. 실제 .env만 지정한 klegal check-db는 Database reachable을 반환했다.
+
+
+## 호스트·Compose 파일 저장소 통일 — 2026-09-11
+
+동일 PostgreSQL의 `blobs.storage_key`는 하나의 공통 FileStore를 기준으로 해석한다. Compose API/worker의 `/data`는 `LOCAL_DATA_DIR`(기본 레포 `./data`)에 연결한다. 호스트 실행은 같은 폴더의 절대 경로를 `DATA_DIR`로 지정한다. 컨테이너의 비-root UID/GID는 해당 호스트 폴더 소유자와 맞춘다. PostgreSQL 볼륨과 기존 `korcounsel_case_data` 보존본은 삭제하지 않는다. 기존 bundle FileStore와 Docker 볼륨에 따로 있던 등록 bytes는 원래 SHA-256·크기를 확인해 공통 경로에 복사하며 DB pointer나 원본을 재생성하지 않는다. 복구 실측과 전수 coverage는 [보강 열람 확대](legacy-reader-scale.md)에 기록한다.

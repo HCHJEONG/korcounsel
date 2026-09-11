@@ -261,7 +261,7 @@ test('normal search combines acquired scourt and lawgo images 2020두49850', asy
   await frame.locator('#citation-3').click()
   const article = frame.locator('#statute-3')
   await expect(article).toContainText('적용 버전 미확인')
-  await article.locator('img').first().scrollIntoViewIfNeeded()
+  await article.locator('img').first().evaluate(image => image.scrollIntoView({ block: 'center' }))
   await page.screenshot({ path: `test-results/dual-source-statute-2020두49850-${test.info().project.name}.png`, fullPage: true })
   await page.locator('iframe[title="판례 본문"]').screenshot({ path: `test-results/dual-source-detail-2020두49850-${test.info().project.name}.png` })
   await article.getByRole('link', { name: '원래 인용 위치로 돌아가기' }).click()
@@ -282,4 +282,70 @@ test('normal search combines acquired scourt and lawgo images 2020두49850', asy
   await expect(page.getByRole('heading', { name: 'KorCounsel 로그인' })).toBeVisible()
   await expect(page.locator('iframe')).toHaveCount(0)
   for (const path of [paths[0], paths[1]]) expect((await page.request.get(path)).status()).toBe(401)
+})
+
+test('normal search displays verified image name changes and holds unmatched image 95후1944', async ({ page }) => {
+  test.setTimeout(180000)
+  const external: string[] = []
+  await page.route('**/*', async route => {
+    const url = new URL(route.request().url())
+    if (!['127.0.0.1', 'localhost'].includes(url.hostname)) {
+      external.push(url.href)
+      await route.abort()
+    } else await route.continue()
+  })
+  await login(page)
+  await page.getByLabel('법원명 · 사건번호 · 본문 문자열').fill('95후1944')
+  await page.getByRole('button', { name: '검색', exact: true }).click()
+  const row = page.locator('tbody tr').filter({ hasText: '대법원 1996. 10. 11. 선고 95후1944 판결' })
+  await expect(row).toBeVisible({ timeout: 45000 })
+  await row.getByRole('button', { name: '본문 열기' }).click()
+  const frame = page.frameLocator('iframe[title="판례 본문"]')
+  const images = frame.locator('img')
+  await expect(images).toHaveCount(2)
+  await expect(frame.locator('.statute-item')).toHaveCount(11)
+  const held = frame.locator('.missing-image').filter({ hasText: '이미지 연결 미확정' })
+  await expect(held).toHaveCount(1)
+  await expect(page.locator('.reader-samples')).not.toHaveAttribute('open', '')
+  const revision = new URL(page.url()).searchParams.get('reader_revision')
+  expect(revision).toMatch(/^[a-f0-9]{64}$/)
+  expect(new URL(page.url()).searchParams.get('row')).toBe('45898')
+  const expectedPaths = [0, 1].map(order => `/api/reader/${revision}/images/${order}`)
+  expect(await images.evaluateAll(items => items.map(item => ({
+    path: new URL((item as HTMLImageElement).src).pathname,
+    order: item.getAttribute('data-occurrence'),
+  })))).toEqual(expectedPaths.map((path, order) => ({ path, order: String(order) })))
+  await expect.poll(() => images.evaluateAll(items => items.map(item => {
+    const image = item as HTMLImageElement
+    return [image.naturalWidth, image.naturalHeight]
+  }))).toEqual([[334, 233], [283, 240]])
+  // Positions 0/1 have exact name and context proofs; position 2 remains unlinked.
+  expect(await frame.locator('img, .missing-image').evaluateAll(items =>
+    items.slice(0, 3).map(item => item.tagName))).toEqual(['IMG', 'IMG', 'SPAN'])
+  await images.first().evaluate(image => image.scrollIntoView({ block: 'center' }))
+  await page.screenshot({ path: `test-results/name-rule-body-95후1944-${test.info().project.name}.png`, fullPage: true })
+  await page.locator('iframe[title="판례 본문"]').screenshot({ path: `test-results/name-rule-detail-95후1944-${test.info().project.name}.png` })
+  await held.scrollIntoViewIfNeeded()
+  await page.screenshot({ path: `test-results/name-rule-unlinked-95후1944-${test.info().project.name}.png`, fullPage: true })
+  for (const path of expectedPaths) {
+    const response = await page.request.get(path)
+    expect(response.status()).toBe(200)
+    expect(response.headers()['content-type']).toBe('image/gif')
+  }
+  const heldPath = `/api/reader/${revision}/images/2`
+  expect((await page.request.get(heldPath)).status()).toBe(404)
+  await page.reload()
+  await expect(images).toHaveCount(2)
+  await expect(held).toHaveCount(1)
+  await expect.poll(() => images.evaluateAll(items => items.every(item =>
+    (item as HTMLImageElement).complete && (item as HTMLImageElement).naturalWidth > 0))).toBe(true)
+  expect(new URL(page.url()).searchParams.get('reader_revision')).toBe(revision)
+  expect(await images.evaluateAll(items => items.map(item =>
+    new URL((item as HTMLImageElement).src).pathname))).toEqual(expectedPaths)
+  expect(external).toEqual([])
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await page.getByRole('button', { name: '로그아웃', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'KorCounsel 로그인' })).toBeVisible()
+  await expect(page.locator('iframe')).toHaveCount(0)
+  for (const path of [...expectedPaths, heldPath]) expect((await page.request.get(path)).status()).toBe(401)
 })

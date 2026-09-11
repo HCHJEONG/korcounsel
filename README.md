@@ -1,30 +1,14 @@
 # KorCounsel
 
-기존 89,130행의 전수 보강 확대를 진행하고 있습니다. 현재 집계와 실행 상태는 [전수 보강 보고서](docs/legacy-reader-scale.md), 중단·재개와 이미지 취득 절차는 [배치 계약](docs/legacy-reader-batches.md)을 참조하세요.
+공개 한국 판례를 출처·원본·변경 이력까지 추적하며 검색하고 검수하는 비공개 업무 앱입니다. React·FastAPI·PostgreSQL·별도 worker를 한 저장소에서 관리합니다.
 
-일반 검색 결과의 본문에서 보존된 lawgo 조문 내용을 확인할 수 있습니다. 기존 8개 판례에는 보강 manifest를 등록했고 검증된 이미지 5개 등장 위치를 연결했습니다. 미확보·미연결·과거 보강 실패 및 적용 법령 버전 미확인을 구분합니다. [현재 표본과 실행 방법](docs/legacy-reader-enrichment.md)을 참고하세요. 전체 이미지 연결 완료는 아닙니다.
+기존 **89,130행 전체**에 일반 검색의 보강 reader를 적용하고 전수 검증했습니다. scourt의 보존 HTML 구조에 본문 이미지 실물 **7,561위치**, lawgo 조문 내부 이미지 **4,698위치**를 연결했습니다. 저장된 조문 내용과 미취득·미연결·과거 보강 실패·적용 법령 버전 미확인 상태를 함께 표시합니다. [전수 결과와 남은 항목](docs/legacy-reader-scale.md), [화면·회귀 검증](docs/legacy-reader-scale-qa.md), [배치와 재개](docs/legacy-reader-batches.md)를 참고하세요. 모든 이미지 취득이나 법령 버전 확인이 완료됐다는 뜻은 아닙니다.
 
-**핵심 제품 요구사항 — 2026-09-11 사용자 확정:** 이미 보존한 89,130행과 앞으로 수집할 판례 모두를 KorCounsel 프런트에서 검색하고, scourt HTML의 문서 구조·이미지와 lawgo 법령·조문 보강 내용이 결합된 형태로 열람하게 합니다. 이 표현을 지속적으로 제공하는 것이 스크레이핑·가공의 핵심 목적입니다. 현재 통합 열람은 구현 중이며 전체 자료의 보강 완료를 뜻하지 않습니다. [요구사항·완료 기준](docs/legacy-enrichment-and-incremental.md#검색에서-완전한-보강-본문-열람까지).
+pickle은 동결 원본으로 유지하고, 전체 60컬럼 corrected Parquet과 기존 PostgreSQL FULL_ROW 보존 import를 계승합니다. 현재 검색은 `LEGACY_PARQUET_PATH`의 Parquet을 FastAPI가 직접 읽으며, 이미지·보강 이력은 PostgreSQL과 공통 `data/`의 불변 파일에 연결됩니다. [보존·검색 계약](docs/legacy-full-row-import.md), [저장 루트 복구](docs/exact-blob-store-recovery.md)를 따릅니다.
 
-**PostgreSQL 설정 — 2026-09-11:** 지정 환경파일의 로컬 DB 설정을 기존 127.0.0.1:55432/korcounsel_dev에 맞췄다. 호스트 API/CLI는 DATABASE_URL, Compose API·worker·migration은 POSTGRES_*와 내부 postgres:5432를 사용한다. 실제 .env의 나머지 값과 기존 판례 데이터는 보존했다.
+환경변수로 지정한 관리자 1개·편집자 1개만 로그인할 수 있습니다. 첫 로그인에서 안전한 비밀번호 해시를 등록하며 자체 회원가입은 제공하지 않습니다. [.env.example](.env.example)과 [계정 설정](docs/site-login.md)을 참고하세요. 같은 DB를 사용하는 호스트와 Compose는 같은 파일 저장소를 사용해야 합니다. 호스트 연결은 `127.0.0.1:55432/korcounsel_dev`, Compose 내부 연결은 `postgres:5432`이며 [저장·worker 운영 계약](docs/persistence-and-jobs.md)에 설명합니다.
 
-**사이트 로그인 — 2026-09-11:** 환경변수의 관리자 1개·편집자 1개 계정만 로그인할 수 있다. 첫 로그인 때 해시 계정을 등록하므로 CLI 계정 생성은 필요하지 않다. [.env.example](.env.example)의 플레이스홀더와 [설정·실행 방법](docs/site-login.md)을 따른다. 실제 .env를 수정하거나 계정 비밀번호를 프런트에 포함하지 않는다.
-
-**이미지 포함 판례 열람 — 2026-09-11:** 로그인 후 Parquet 검색 결과에서 과거 본문을 열고, 이미지 연결 검증 표본에서 저장 이미지가 포함된 현재 제공 본문 4건을 읽을 수 있다. 개발 계정은 운영 CLI로 명시적으로 발급한다. 이번 단계는 로컬 표본 검증이며 과거 corpus 이미지 전수 연결은 후속이다. [실행 방법과 완료 범위](docs/image-reader-validation.md).
-
-전체 import 전 [text 파일 포함 관계 점검](docs/legacy-text-coverage-audit.md)을 완료했습니다. 8,482개 파일을 대조했으며 2029039 재결의 기존 행 연결·종류 표기는 별도 검토 대상입니다.
-
-기존 pickle의 DataFrame을 재사용하는 FULL_ROW importer와 corrected Parquet snapshot을 구현했습니다. 본문·보강 HTML을 포함한 전체 컬럼을 보존하고, corrected bundle v2의 89,130행은 로컬 개발 PostgreSQL 보존 import까지 완료했습니다. 검증용 프론트 검색은 LEGACY_PARQUET_PATH의 corrected Parquet을 직접 읽습니다. [실행 안내와 실제 검증](docs/legacy-full-row-import.md)을 참고하세요.
-
-현재 재판결과 키(법원 명칭+사건번호+재판 종류), 출처 독립 canonical 등록, legacy mapper 0.2.0과 로컬 migration 0007을 구현했습니다. [사용 계약·검증·다음 단계](docs/decision-identity-implementation.md)를 참고하세요. 전체 corpus의 canonical 연결 확정과 자동 동일성 판정은 후속입니다.
-
-공개 한국 판례를 출처·원본·변경 이력까지 추적 가능한 쟁점 데이터로 생산하고 검수하는 비공개 웹 앱입니다.
-
-현재 **Step 1·Step 2 데이터 계약·Step 2A 로컬 저장/worker 검증·corrected Parquet 검색 UI 완료** 상태입니다. 프런트 개발 화면, FastAPI health, 설정 검증 CLI, PostgreSQL 연결 및 Compose 구성이 동작합니다. PostgreSQL migration, 기록 저장, 식별 연결 이력과 단일 worker가 동작합니다. 로그인·실제 판례 수집·자동 canonical 매칭·gold 생산은 아직 구현하지 않았습니다. AWS 배포·도메인·운영 예약도 아직 적용하지 않았습니다.
-
-legacy 보존 모델은 과거 취득시각·HTTP hash를 만들지 않고 기존 필드와 행 locator를 유지합니다. 실제 metadata 15행과 저장 HTML 4개를 검증했고, 이후 corrected bundle v2 기준 89,130행의 로컬 개발 DB 보존 import를 완료했습니다. [import 계약과 표본 재현](docs/legacy-import-contract.md), [전수 보존·검색 계약](docs/legacy-full-row-import.md)을 참고하세요.
-
-저장·작업 실행·재시작 복구와 검증 범위는 [Step 2A 운영 안내](docs/persistence-and-jobs.md)에 있습니다.
+재판결과 업무키와 출처 독립 canonical 등록 모델은 구현했지만, 전체 corpus의 canonical 연결 확정·신규/변경 수집 자동 운영·쟁점/답변/근거 구조화와 검수/GOLD 생산은 후속입니다. AWS 배포·도메인·운영 예약은 이번 로컬 확장에 포함하지 않았습니다. 전체 실행 순서는 [PLAN.md](PLAN.md), UX 기준은 [DESIGN.md](DESIGN.md)를 따릅니다.
 
 ## 폴더 원칙
 
@@ -34,7 +18,7 @@ README는 루트에 하나만 둡니다. 루트 React 프로젝트, backend/의 
 | --- | --- |
 | src/ | React 19 + Vite + TypeScript |
 | backend/src/klegal_gold/ | FastAPI·CLI·설정·DB, 후속 pipeline |
-| backend/tests/ | Python 테스트와 기존 합성 fixture 53건 |
+| backend/tests/ | Python 단위·통합·회귀 테스트와 fixture |
 | tests/e2e/ | 실제 API 연동 desktop/mobile 브라우저 테스트 |
 | docs/ | 설계·조사·개발 안내 |
 | .fordeploy/ | Dockerfile·Nginx·배포 설정 |
@@ -85,13 +69,22 @@ DuckDB와 Polars는 아직 채택하지 않았습니다. 89,130행 규모의 단
 
 ## Compose 전체 실행
 
+현재 corpus를 가진 로컬 DB와 제공된 계정을 사용하려면 명시적인 환경파일로 실행합니다. 이 명령은 기존 DB·파일을 초기화하거나 migration을 재실행하지 않습니다.
+
+```bash
+WEB_ORIGIN=http://127.0.0.1:8080 \
+  docker compose --env-file .fordeploy/aws-backup/.env -f compose.yaml -f compose.dev.yaml up -d --wait api worker web
+```
+
+검증된 로컬 앱은 [http://127.0.0.1:8080](http://127.0.0.1:8080)에서 열 수 있습니다. 아래 예제 환경파일은 새 폐기용 개발 환경을 준비할 때 사용하며, 기존 DB의 계정 설정과 섞지 않습니다.
+
 ```bash
 docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml build api web
 docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml run --rm migrate
 docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f compose.dev.yaml up -d --wait api worker web
 ```
 
-http://127.0.0.1:8080 에서 Nginx→FastAPI 연결을 확인합니다. api는 PostgreSQL 준비 후 시작하며 health는 API 생존 여부만 뜻합니다. postgres는 named volume, API/worker의 파일은 별도 case_data named volume을 사용합니다. 로컬 data/와 컨테이너 /data 볼륨은 별개의 저장소입니다.
+http://127.0.0.1:8080 에서 Nginx→FastAPI 연결을 확인합니다. api는 PostgreSQL 준비 후 시작하며 health는 API 생존 여부만 뜻합니다. Compose에서 API를 명시적으로 갱신·재시작하면 web도 재시작해 Nginx가 현재 API 주소를 다시 읽도록 `depends_on.api.restart`를 지정했습니다. PostgreSQL은 기존 named volume을 유지하고, API/worker는 호스트 `./data`를 컨테이너 `/data`에 함께 연결합니다. 같은 DB를 쓰는 호스트 API/CLI도 레포 `data/`를 `DATA_DIR`로 지정해야 합니다. 기존 `korcounsel_case_data` 볼륨은 원본 보존용으로 남겨 두며 삭제하지 않습니다.
 
 ```bash
 # 실제 worker의 생존 확인
@@ -101,6 +94,8 @@ docker compose --env-file .fordeploy/compose.env.example -f compose.yaml -f comp
 ```
 
 compose.env.example의 비밀번호는 폐기 가능한 로컬 개발 전용입니다. 운영에 사용하지 않습니다. 현재 포트는 localhost에만 열려 있으며 TLS·운영 secret·백업·자동 재시작과 배포 절차는 Step 11B에서 완성합니다. migration은 Step 2A에서 추가했으며 운영 DB 역할 분리·TLS는 후속입니다.
+
+Compose의 `LOCAL_DATA_DIR`은 기본 `./data`이며 필요한 경우 실제 공통 저장소의 절대 경로로 지정합니다. `LOCAL_UID`/`LOCAL_GID`는 그 폴더 소유자의 `id -u`/`id -g` 값으로 맞춥니다(기본 1000:1000). 컨테이너는 해당 비-root 사용자로 실행하며 기존 파일 소유자를 일괄 변경하지 않습니다. `LEGACY_PARQUET_CONTAINER_PATH`는 컨테이너 내부 경로로 기본 `/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet`입니다. 호스트용 `LEGACY_PARQUET_PATH`와 구분합니다. 로그인 검증 시 `WEB_ORIGIN`은 실제 접속 주소인 `http://127.0.0.1:8080`에 맞춥니다.
 
 ## 설정과 CLI
 
@@ -114,7 +109,7 @@ DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korc
 ```
 
 - LAW_OPEN_API_OC와 LAW_GO_KR_OC는 alias이며 값이 다르면 오류입니다. 실제 값은 출력하지 않습니다.
-- 사용자가 제공한 .fordeploy/aws-backup/.env는 그대로 보존하며 이번 scaffold 검증에 로드하지 않았습니다.
+- 사용자가 제공한 `.fordeploy/aws-backup/.env`는 명시적으로 로컬 검증에 사용할 수 있습니다. 값은 출력하지 않으며 이번 보강 확대에서 변경하지 않았습니다.
 - DATA_DIR은 절대 경로입니다. 로컬 기본값은 레포 data/이며 작업 디렉터리 변경에 영향받지 않습니다. 설정을 읽는 것만으로 파일을 생성하지 않습니다.
 - DATABASE_URL은 PostgreSQL 연결 문자열입니다. 미설정이면 health는 응답하지만 check-db는 실패합니다.
 - LEGACY_PARQUET_PATH는 corrected Parquet 검증 검색에 사용할 절대 경로입니다. 미설정이면 검색 endpoint는 빈 결과와 source=UNCONFIGURED를 반환합니다.

@@ -69,6 +69,7 @@ class ReaderStore:
                         raise ValueError("MISSING_IMAGE_LINK_EVIDENCE")
                     validate_image(self.records.read("reader-image:" + linked["blob_hash"]))
             refs = linked_images
+        self.validate_name_links(html, refs, title=title, source_id=source_id)
         raw = html.encode()
         html_hash = sha256(raw).hexdigest()
         parent_id = "reader-html:" + html_hash
@@ -158,6 +159,96 @@ class ReaderStore:
         }
         self.records.put_artifacts(list(entries.values()))
         return document_id
+
+    def validate_name_links(
+        self, html: str, refs: list[dict[str, Any]], *, title: str, source_id: str
+    ) -> None:
+        """Recompute only the new name-display proofs; prior exact link versions stay intact."""
+        from klegal_gold.documents.image_links import NAME_LINK_VERSION, link_legacy_images
+
+        grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        metadata_bound: set[tuple[str, str]] = set()
+        for ref in refs:
+            proof = ref.get("link_evidence", {})
+            if "name_comparison" not in proof and proof.get("version") != NAME_LINK_VERSION:
+                continue
+            if proof.get("version") != NAME_LINK_VERSION or not isinstance(
+                proof.get("name_comparison"), dict
+            ):
+                raise ValueError("INVALID_IMAGE_NAME_LINK")
+            current_hash = proof.get("current_html_sha256", "")
+            if not isinstance(current_hash, str) or not re.fullmatch("[0-9a-f]{64}", current_hash):
+                raise ValueError("INVALID_IMAGE_NAME_LINK")
+            comparison = proof.get("title_comparison")
+            if comparison is None:
+                binding = proof["name_comparison"].get("source_title_binding")
+                if not isinstance(binding, dict):
+                    raise ValueError("INVALID_IMAGE_NAME_LINK")
+                current_title = binding.get("current_title")
+                if isinstance(current_title, str) and (
+                    current_title != title or binding.get("current_header") != current_title
+                ):
+                    metadata_bound.add((current_hash, current_title))
+            else:
+                current_title = (
+                    comparison.get("current_title") if isinstance(comparison, dict) else None
+                )
+            if not isinstance(current_title, str):
+                raise ValueError("INVALID_IMAGE_NAME_LINK")
+            grouped.setdefault((current_hash, current_title), []).append(ref)
+        for (current_hash, current_title), selected in grouped.items():
+            if (current_hash, current_title) in metadata_bound:
+                self._validate_current_name_title(current_hash, current_title, source_id)
+            raw = self.records.read("reader-html:" + current_hash)
+            if sha256(raw).hexdigest() != current_hash:
+                raise ValueError("CURRENT_BODY_HASH_MISMATCH")
+            current_html = raw.decode()
+            current = {
+                "source_id": source_id,
+                "title": current_title,
+                "html_sha256": current_hash,
+                "images": image_occurrences(
+                    current_html, source_id=source_id, base_url="https://portal.scourt.go.kr/"
+                ),
+            }
+            expected = link_legacy_images(
+                html, current_html, current, source_id=source_id, title=title
+            )
+            for ref in selected:
+                order = ref.get("order")
+                if (
+                    type(order) is not int
+                    or not 0 <= order < len(expected)
+                    or ref.get("reference_id") != expected[order]["reference_id"]
+                    or ref.get("name") != expected[order]["name"]
+                    or ref.get("original_src") != expected[order]["original_src"]
+                    or ref["link_evidence"] != expected[order].get("link_evidence")
+                ):
+                    raise ValueError("INVALID_IMAGE_NAME_LINK")
+
+    def _validate_current_name_title(self, html_hash: str, title: str, source_id: str) -> None:
+        """Bind newly accepted spacing differences to stored current-reader metadata."""
+        parent_id = "reader-html:" + html_hash
+        with self.records.db.connect() as conn:
+            row = conn.execute(
+                "SELECT artifact_id FROM artifacts WHERE parent_id=%s "
+                "AND metadata->>'kind'='READER_DOCUMENT' "
+                "AND metadata->>'origin'='CURRENT_SOURCE' "
+                "AND metadata->>'source_id'=%s AND metadata->>'title'=%s "
+                "AND artifact_id LIKE 'reader:%%' ORDER BY artifact_id LIMIT 1",
+                (parent_id, source_id, title),
+            ).fetchone()
+        if row is None:
+            raise ValueError("INVALID_IMAGE_NAME_LINK")
+        current = self.read(row["artifact_id"].removeprefix("reader:"))
+        if (
+            current.get("origin") != "CURRENT_SOURCE"
+            or current.get("source_id") != source_id
+            or current.get("title") != title
+            or current.get("html_sha256") != html_hash
+            or current.get("html_artifact_id") != parent_id
+        ):
+            raise ValueError("INVALID_IMAGE_NAME_LINK")
 
     def read(self, document_id: str) -> dict[str, Any]:
         if not re.fullmatch("[0-9a-f]{64}", document_id):

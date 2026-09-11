@@ -83,4 +83,21 @@
 - 기존 전수 inventory: `data/legacy-enrichment-inventory-20260911-v1/rows.jsonl` 및 `summary.json`. 이번 읽기에서 summary SHA-256은 `ed472060b0626eea900aba9dab2db6ac0790506bb0c516c6ec1afd43732cad9d`다. rows 파일은 89,130행이며 SHA-256 `ae4332ee5652cbbe3b0a01747654dc82eb1a1b1eaad130e4c908b85e8f4c8045`가 summary의 고정값과 일치했다.
 - Parquet에서 위치로 선택한 46행의 기준 본문 SHA-256이 대상 목록의 각 body_hash와 일치함을 확인했다. 원문 HTMLParser/기존 image_occurrences로 src 유무·원 query 필드 존재·행별 ID 일관성·파일명 반복을 대조했으며, URL 원문은 이 보고서에 복사하지 않았다.
 
-이 문서는 미해결 사유 감사이며 새 취득·ID 복구·reader 연결 완료 보고가 아니다. 코드 변경은 없고 상태를 pending/미확정으로 유지한다.
+위 내용은 초기 미해결 사유 감사 시점의 기록이다. 이후 후보 조회와 현재 원문 이미지 취득은 아래 별도 실행으로 구분한다. gmeta·canonical ID 교정과 기존 행의 이미지 연결 승인 여부는 별개이며 미확정을 유지한다.
+
+
+## 원문 URL의 43개 후보 조회 및 현재 원문 이미지 보존
+
+별도 후보 조사 run은 43개를 모두 처리해 현재 원문 근거 보존 2개와 SOURCE_NOT_FOUND 41개로 완료했다. 보존한 현재 원문은 position 6429와 26270에서 관찰한 URL 후보에 대응한다. 기존 source 근거를 재사용한 결과도 포함하므로 43건 모두를 새 HTTP 본문 취득으로 세지 않는다.
+
+두 현재 원문에는 이미지 37위치·고유 URL 36개가 있었고, 취득 job `3bc463a6-5004-4836-8ac6-42df07021954`는 36 URL 전부를 취득했다. 실패·skip은 각각 0이며 고유 파일 36개·427,593 bytes를 보존했다. after 감사에서 37위치 모두 ACQUIRED이고 미시도·실패·URL 미확정은 0이다. 문서 반영 전 36개 실물 파일의 SHA-256·크기·decode도 독립 검증했다.
+
+이는 **CURRENT_SOURCE_ONLY** 결과다. 기존 43행에 대한 문서 동일성·gmeta 교정·이미지 연결은 승인하지 않았으며 원문·기존 ID·행 locator를 바꾸지 않았다. 이 36 URL/37위치를 기본 1,825 source의 결과나 기존 corpus의 연결 완료 수에 합산하지 않는다. SOURCE_NOT_FOUND 41건은 판례가 존재하지 않거나 과거 자료가 잘못됐다는 판정이 아니다. 정적 제공자 표식 3 URL과 src 없는 17위치의 문제도 이 결과로 해결됐다고 보지 않는다.
+
+재현 근거:
+
+- `data/legacy-reader-scale-20260911-v1/url-candidate-run-8ef2a23141394b5dbda68180348be5cebd346b1749fc5ce0c9f3529aa362e7ff.json`: 같은 SHA-256의 불변 `source-url-candidate-run` artifact 및 43개 개별 evidence CAS와 대조했다.
+- `data/legacy-reader-scale-20260911-v1/url-candidate-images-after-v1/summary.json`: SHA-256 `ed757ead49ec31376352a914753031eeb46ff44239615d10854d330d91515c5f`. parents/references/verified-blobs 산출물의 hash·크기도 확인했다.
+- `data/legacy-reader-scale-20260911-v1/url-candidate-image-acquisition-v1/final-f1021346788b55961d093ac31fd28ef88bb97ab4f01e7422bca8c3c73a71c75a.json`: 로컬 파일 SHA-256 `6f5ae4d169134d303e7ecba1523bc3d74d09ea9b2abd395c9fcee0602f395dd6`, 대응 CAS `legacy-image-wave:f1021346788b55961d093ac31fd28ef88bb97ab4f01e7422bca8c3c73a71c75a`. 로컬 파일의 artifact_id 포인터를 제외한 내용이 CAS와 같다.
+
+문서 반영 시 원본 corrected Parquet SHA-256은 기존 고정값 `3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2`와 일치했다. 이 문서 감사에서는 DB·job·reader·원본을 변경하거나 새 live 취득을 실행하지 않았다.

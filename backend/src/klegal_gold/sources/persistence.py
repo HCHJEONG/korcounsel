@@ -40,7 +40,7 @@ def preserve_response(
             sort_keys=True,
         ).encode(),
         origin="DERIVED",
-        metadata={"kind": "HTTP_ATTEMPT"},
+        metadata={"kind": "HTTP_ATTEMPT", "run_id": run_id},
         parent_id=artifact_id,
     )
     return artifact_id

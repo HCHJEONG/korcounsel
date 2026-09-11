@@ -16,6 +16,7 @@ services:
   api:
     image: korcounsel-backend:scaffold
     build: ./backend
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
@@ -23,13 +24,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
       DATA_DIR: /data
+      LEGACY_PARQUET_PATH: ${LEGACY_PARQUET_CONTAINER_PATH:-/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet}
       WEB_ORIGIN: ${WEB_ORIGIN:-http://127.0.0.1:8080}
       KORCOUNSEL_ADMIN_ID: ${KORCOUNSEL_ADMIN_ID:-}
       KORCOUNSEL_ADMIN_PASSWORD: ${KORCOUNSEL_ADMIN_PASSWORD:-}
       KORCOUNSEL_DEV_EDITOR_ID: ${KORCOUNSEL_DEV_EDITOR_ID:-}
       KORCOUNSEL_DEV_EDITOR_PASSWORD: ${KORCOUNSEL_DEV_EDITOR_PASSWORD:-}
     volumes:
-      - case_data:/data
+      - ${LOCAL_DATA_DIR:-./data}:/data
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,9 +52,11 @@ services:
     depends_on:
       api:
         condition: service_healthy
+        restart: true
   worker:
     image: korcounsel-backend:scaffold
     build: ./backend
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
     command: ["klegal", "ops", "worker"]
     init: true
     restart: unless-stopped
@@ -70,7 +74,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
       DATA_DIR: /data
     volumes:
-      - case_data:/data
+      - ${LOCAL_DATA_DIR:-./data}:/data
     depends_on:
       postgres:
         condition: service_healthy
@@ -90,4 +94,3 @@ services:
         condition: service_healthy
 volumes:
   postgres_data:
-  case_data:

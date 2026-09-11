@@ -3,6 +3,9 @@
 > **출처 ID 차집합 해석 — 2026-09-10:** 신규 contId/serialno는 새 출처 항목의 관찰이며 신규 판례 확정이 아니다. 기존 번호 미조회·다른 번호 후보가 확인됐으므로 문서 동일성 대조 후 출처 독립 canonical에 연결한다. 미조회만으로 삭제·철회로 확정하거나 기존 연결을 덮어쓰지 않는다. [identity 정책](case-identity.md) 참조.
 
 
+
+> **inventory delta 기반 구현 — 2026-09-11:** `ingestion.delta`가 동일 source·scope의 immutable inventory를 비교하여 `NEW`, `CHANGED`, `UNCHANGED`, `LEGACY_KNOWN`, `MISSING`, `ABSENCE_UNCONFIRMED`으로 기록한다. 두 snapshot이 모두 `COMPLETE`일 때만 `MISSING`을 허용하고, 그 외에는 부재를 확정하지 않는다. 새/변경 ID와 기존 ledger의 미완료 ID만 상세 취득 후보로 돌려준다. `LEGACY_KNOWN`은 corrected Parquet에서 계승할 기존 source ID 기준선에 이미 있다는 뜻일 뿐, canonical 연결이나 본문 최신성을 확정하지 않는다. 결과는 부모 inventory artifact hash를 검증한 뒤 파생 immutable artifact로 저장한다. corrected Parquet 실측은 89,130행 중 유효한 고유 contId 88,607개와 보류값 454개이며 bundle SHA-256은 `3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2`다. `klegal ops preserve-legacy-scourt-catalog <parquet-path>`가 이 기준선을 immutable artifact로 등록한다. `klegal ops plan-inventory-delta <current-snapshot-id> <legacy-catalog-artifact-id> [baseline-snapshot-id]`가 보존된 입력만 비교해 delta artifact와 건수를 출력한다. `klegal ops submit-delta-scourt-details <request-key-prefix> <delta-artifact-id> [max-details]`는 그 artifact의 `NEW`·`CHANGED`만 1~50건씩 idempotent detail job으로 등록한다. live 목록 실행과 worker의 실제 detail 취득은 다음 단계다.
+
 2026-09-09 추가 지시 반영. 구현 전 설계. 레거시 `_02`의 contId 집합 차이를 계승하며 선고일을 등록일로 해석하지 않는다.
 
 ## Snapshot

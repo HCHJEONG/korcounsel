@@ -13,6 +13,7 @@ from klegal_gold.domain.cases import RawLegalCase
 from klegal_gold.domain.common import content_hash
 from klegal_gold.domain.inventory import InventorySnapshot
 from klegal_gold.domain.legacy import LegacyCaseRecord
+from klegal_gold.ingestion.delta import InventoryDelta
 from klegal_gold.ingestion.legacy import legacy_content_revision
 from klegal_gold.storage.files import Blob, FileStore
 
@@ -374,6 +375,26 @@ class Records:
                     snapshot.completeness,
                     artifact_id,
                 ),
+            )
+        return artifact_id
+
+        return artifact_id
+
+    def save_inventory_delta(self, delta: InventoryDelta) -> str:
+        """Store one immutable comparison after verifying its input snapshots."""
+        current_artifact = "inventory:" + delta.current_snapshot_id
+        self.read(current_artifact)
+        if delta.baseline_snapshot_id is not None:
+            self.read("inventory:" + delta.baseline_snapshot_id)
+        artifact_id = "inventory-delta:" + content_hash(_json(delta.payload()))
+        with self.db.connect() as conn:
+            self._artifact(
+                conn,
+                artifact_id,
+                _json(delta.payload()),
+                "DERIVED",
+                {"kind": "INVENTORY_DELTA", "version": delta.version},
+                current_artifact,
             )
         return artifact_id
 

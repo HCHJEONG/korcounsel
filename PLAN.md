@@ -1,6 +1,9 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
-**기존 corpus 전수 보강 확대 — 2026-09-11 실행 중:** 사용자와 전체 작업을 ①기존 corpus 보강 열람 완성 ②신규·변경 판례 지속 축적 ③쟁점·답변·근거 구조화/검수/GOLD 생산으로 정리했고 첫 단계 실행을 시작했다. 89,130행 전수 관찰·원본 hash 점검 후 892개 worker 배치의 기본 보강 등록을 완료했다(89,130행 성공·0행 실패). 전수 coverage도 89,130행 모두 통과했고 원본 Parquet·기존 import 불변을 확인했다. 현재 scourt 본문 이미지 확대 취득을 진행한다. 추가 발견한 lawgo 조문 이미지 480URL을 취득해 651행/4,698위치 전부에 연결했고, 고유 파일 473개의 hash·decode와 전체 위치를 검증했다. `폐지/변경/위헌조문 표시`의 원래 제공자 표식은 삭제하지 않는다. [실행·집계·한계](docs/legacy-reader-scale.md), [배치/재개](docs/legacy-reader-batches.md).
+**기존 corpus 전수 보강 확대 — 2026-09-11 전수 적용·검증 완료:** 기본 892개 worker 배치로 89,130행 모두 보강 reader를 등록했고, scourt 19개 wave·추가 이미지 취득 후 1,806행을 19배치로 갱신했다. 최종 전수 coverage는 89,130행 모두 STAGED_VERIFIED·오류 0이며, 본문 이미지 7,561위치와 lawgo 조문 이미지 4,698/4,698위치의 실물을 연결했다. 고유 artifact/blob 320,460개 hash와 이미지 5,356개 decode, 원본 Parquet·기존 import 불변을 확인했다. 미취득·미연결·법령 버전 미확인은 표시하며 모든 이미지/조문 완성을 뜻하지 않는다. 일반 검색 desktop/mobile 28개·최종 Python/PostgreSQL 회귀 688개를 통과했다. 별도 저장 루트에 있던 등록 원본 178,314개를 exact copy로 복구하고 등록 전체 529,551개의 host 경로·크기 및 원본 DB metadata 불변을 확인했다. 로컬 Compose API/worker의 파일 저장소도 통일했다. [실행·최종 집계·한계](docs/legacy-reader-scale.md), [배치/재개](docs/legacy-reader-batches.md).
+
+
+**신규·변경 판례 증분 수집 착수 — 2026-09-11:** immutable inventory 비교 기반을 구현했다. 동일 source·scope에서 새 ID, metadata 변경 ID, 기존 corpus에 이미 알려진 ID, 완전하지 않은 목록의 미확정 부재를 분리하고, 새/변경·기존 미완료 ID만 상세 취득 후보로 선택한다. 비교 artifact는 입력 inventory hash 검증 뒤 보존한다. 아직 89,130행의 source-ID 기준선 artifact 생성, live inventory 대량 수집, 신규 detail/이미지/lawgo 보강 job 등록은 실행하지 않았다.
 
 **일반 검색 보강 열람 표본 — 2026-09-11:** 기존 8행의 jtable 내용·실패 상태와 검증된 이미지 위치를 일반 검색 reader에 연결했다. 보유 이미지 4개 등장 위치를 재사용하고 새 이미지 1개를 다운로드·decode 검증해 1곳에 연결했다. 별도 2개 URL 재시도는 decode 실패로 보존했다. 공통 조문 renderer는 전체 corpus 행에 적용되지만 전수 이미지 연결·신규 수집 자동 통합은 미완료다. [구현·표본·재현·한계](docs/legacy-reader-enrichment.md).
 

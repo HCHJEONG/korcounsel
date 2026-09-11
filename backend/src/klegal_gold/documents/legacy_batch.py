@@ -356,6 +356,12 @@ class LegacyReaderBatch:
         raw = self.records.read(manifest["html_artifact_id"])
         if sha256(raw).hexdigest() != manifest["html_sha256"]:
             raise ValueError("READER_PARENT_MISMATCH")
+        self.reader.validate_name_links(
+            raw.decode(),
+            manifest["images"],
+            title=manifest["title"],
+            source_id=manifest["source_id"],
+        )
         checked = set()
         for ref in manifest["images"]:
             digest = ref.get("blob_hash")
@@ -516,6 +522,7 @@ class LegacyReaderBatch:
                     "LEGACY_BODY_EMPTY",
                     "IMAGE_DOCUMENT_IDENTITY_UNCONFIRMED",
                     "IMAGE_OCCURRENCE_ORDER_CONFLICT",
+                    "INVALID_IMAGE_NAME_LINK",
                     "EXPECTED_CURRENT_SOURCE_READER",
                     "CURRENT_BODY_HASH_MISMATCH",
                     "IMAGE_HASH_MISMATCH",

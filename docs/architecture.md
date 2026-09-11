@@ -60,7 +60,7 @@ identity 연결, 원문 취득, asset 취득, OCR, issue alignment, 자동 검�
 
 Step 1은 공개 법률 데이터가 없는 개발용 상태 화면, /api/health liveness, CLI version/check-config/check-db, explicit env 및 PostgreSQL SELECT 1 검증을 제공한다. health 성공은 DB·worker 준비 완료가 아니다. Step 2A에서 실제 queue/worker와 SQL migration을 추가했다. worker는 artifact 검증과 projection 재생성을 실행하며 migration만 tools profile의 명시적 명령이다.
 
-API·worker 이미지는 backend/를 build context로, 프런트 이미지는 루트를 context로 사용한다. 루트 .dockerignore는 backend·data·.fordeploy·secret을 제외하며 Nginx 설정은 Compose의 읽기 전용 mount로 전달한다. 실제 이미지 취득·TLS·운영 배포는 후속이다. DB와 판례 데이터는 각각 named volume을 사용하고 `down -v`를 일반 종료 절차에 사용하지 않는다.
+API·worker 이미지는 backend/를 build context로, 프런트 이미지는 루트를 context로 사용한다. 루트 .dockerignore는 backend·data·.fordeploy·secret을 제외하며 Nginx 설정은 Compose의 읽기 전용 mount로 전달한다. 이미지 보존·열람은 로컬 corpus 전체에 확장했으며 TLS·운영 배포는 후속이다. DB는 기존 named volume을, API/worker 판례 파일은 호스트와 공유하는 `LOCAL_DATA_DIR`(기본 `./data`) bind mount를 사용하고 `down -v`를 일반 종료 절차에 사용하지 않는다.
 
 
 ## 기존 corpus bootstrap 우선 — 2026-09-10

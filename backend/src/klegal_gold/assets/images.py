@@ -8,6 +8,7 @@ import struct
 import warnings
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from hashlib import sha256
 from typing import TYPE_CHECKING, Any, Literal
 from urllib.error import HTTPError, URLError
@@ -64,6 +65,18 @@ class DownloadedImage:
     body: bytes
     content_type: str | None
     metadata: dict[str, Any]
+
+
+class ImageResponseRejected(ValueError):
+    """A complete bounded HTTP body that failed image validation; never an image."""
+
+    def __init__(self, error_code: str, response: DownloadedImage) -> None:
+        super().__init__(error_code)
+        self.response = response
+
+
+def _attempt_id(job_id: UUID, url: str, outcome: AttemptOutcome, error_code: str | None) -> UUID:
+    return uuid5(NAMESPACE_URL, json.dumps([str(job_id), url, outcome, error_code], sort_keys=True))
 
 
 Fetcher = Callable[[str, int], DownloadedImage]
@@ -297,7 +310,13 @@ def fetch_image(url: str, max_bytes: int = MAX_IMAGE_BYTES) -> DownloadedImage:
     except URLError as exc:
         raise ValueError("IMAGE_NETWORK_ERROR") from exc
     raw = b"".join(chunks)
-    return DownloadedImage(raw, content_type, {**validate_image(raw), "final_url": url})
+    observed = {"final_url": url, "retrieved_at": datetime.now(UTC).isoformat()}
+    response_body = DownloadedImage(raw, content_type, observed)
+    try:
+        verified = validate_image(raw)
+    except ValueError as exc:
+        raise ImageResponseRejected(str(exc), response_body) from exc
+    return DownloadedImage(raw, content_type, {**verified, **observed})
 
 
 class ImageAcquirer:
@@ -327,23 +346,27 @@ class ImageAcquirer:
                 seen.add(ref.resolved_url)
                 urls.append(ref.resolved_url)
         selected = urls[: max(0, max_urls)]
-        acquired = skipped = failed = total_bytes = 0
+        acquired = skipped = failed = total_bytes = consumed_bytes = 0
         for index, url in enumerate(selected, start=1):
             status = self._current_status(url)
             if status == "ACQUIRED":
                 self._record_attempt(job.job_id, url, "SKIPPED", None, None, "ALREADY_ACQUIRED")
                 skipped += 1
-            elif total_bytes >= max_total_bytes:
+            elif consumed_bytes >= max_total_bytes:
                 self._record_attempt(job.job_id, url, "SKIPPED", None, None, "BATCH_BYTE_LIMIT")
                 skipped += 1
             else:
                 try:
                     if not valid_image_url(url):
                         raise ValueError("UNSAFE_IMAGE_URL")
-                    downloaded = self.fetcher(
-                        url, min(MAX_IMAGE_BYTES, max_total_bytes - total_bytes)
-                    )
-                    verified = validate_image(downloaded.body)
+                    limit = min(MAX_IMAGE_BYTES, max_total_bytes - consumed_bytes)
+                    downloaded = self.fetcher(url, limit)
+                    if len(downloaded.body) > limit:
+                        raise ValueError("IMAGE_TOO_LARGE")
+                    try:
+                        verified = validate_image(downloaded.body)
+                    except ValueError as exc:
+                        raise ImageResponseRejected(str(exc), downloaded) from exc
                     blob = self._put_blob(downloaded.body)
                     self._save_acquired(
                         url, blob, downloaded.content_type, {**downloaded.metadata, **verified}
@@ -351,6 +374,19 @@ class ImageAcquirer:
                     self._record_attempt(job.job_id, url, "ACQUIRED", blob, blob.size_bytes, None)
                     acquired += 1
                     total_bytes += blob.size_bytes
+                    consumed_bytes += blob.size_bytes
+                except ImageResponseRejected as exc:
+                    # Persist evidence before marking failure. Storage/hash failures
+                    # must fail the job rather than silently discard the response.
+                    if len(exc.response.body) > min(
+                        MAX_IMAGE_BYTES, max_total_bytes - consumed_bytes
+                    ):
+                        raise ValueError("REJECTED_IMAGE_RESPONSE_TOO_LARGE") from exc
+                    self._preserve_rejected_response(job, url, exc.response, str(exc))
+                    consumed_bytes += len(exc.response.body)
+                    self._save_failed(url, str(exc))
+                    self._record_attempt(job.job_id, url, "FAILED", None, None, str(exc))
+                    failed += 1
                 except ValueError as exc:
                     self._save_failed(url, str(exc))
                     self._record_attempt(job.job_id, url, "FAILED", None, None, str(exc))
@@ -367,6 +403,32 @@ class ImageAcquirer:
                     }
                 )
         return AcquisitionResult(len(refs), len(selected), acquired, skipped, failed, total_bytes)
+
+    def _preserve_rejected_response(
+        self, job: Job, url: str, response: DownloadedImage, error_code: str
+    ) -> None:
+        metadata = {
+            "kind": "IMAGE_DECODE_FAILURE_RESPONSE",
+            "job_id": str(job.job_id),
+            "attempt_id": str(_attempt_id(job.job_id, url, "FAILED", error_code)),
+            "url": url,
+            "final_url": response.metadata.get("final_url", url),
+            "retrieved_at": response.metadata.get("retrieved_at", datetime.now(UTC).isoformat()),
+            "raw_content_hash": sha256(response.body).hexdigest(),
+            "size_bytes": len(response.body),
+            "content_type": response.content_type,
+            "error_code": error_code,
+            "acquisition_status": "FAILED",
+            "decode_verified": False,
+        }
+        identity = sha256(json.dumps(metadata, sort_keys=True).encode()).hexdigest()
+        self.records.put_artifact(
+            "image-failure-response:" + identity,
+            response.body,
+            origin="HTTP_RESPONSE",
+            parent_id=job.payload["manifest_artifact_id"],
+            metadata=metadata,
+        )
 
     def _put_blob(self, raw: bytes) -> Blob:
         blob = self.records.store.put(raw)
@@ -459,9 +521,7 @@ class ImageAcquirer:
                        VALUES(%s,'SKIPPED',0,%s)""",
                     (url, error_code),
                 )
-        attempt_id = uuid5(
-            NAMESPACE_URL, json.dumps([str(job_id), url, outcome, error_code], sort_keys=True)
-        )
+        attempt_id = _attempt_id(job_id, url, outcome, error_code)
         with self.records.db.connect() as conn:
             conn.execute(
                 """INSERT INTO image_acquisition_attempts

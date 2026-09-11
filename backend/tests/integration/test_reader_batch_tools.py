@@ -151,7 +151,7 @@ def load_source_tools(monkeypatch):
     return module
 
 
-def preserve_receipt(records, job_id, *, not_found=True):
+def preserve_receipt(records, job_id, *, not_found=True, indexed=True):
     response_id = "test-response:" + uuid4().hex
     records.put_artifact(
         response_id,
@@ -159,13 +159,15 @@ def preserve_receipt(records, job_id, *, not_found=True):
         origin="HTTP_RESPONSE",
         metadata={"kind": "SYNTHETIC_HTTP_RESPONSE"},
     )
+    receipt_id = "test-receipt:" + uuid4().hex
     records.put_artifact(
-        "test-receipt:" + uuid4().hex,
+        receipt_id,
         json.dumps({"run_id": str(job_id)}).encode(),
         origin="DERIVED",
-        metadata={"kind": "HTTP_ATTEMPT"},
+        metadata={"kind": "HTTP_ATTEMPT", **({"run_id": str(job_id)} if indexed else {})},
         parent_id=response_id,
     )
+    return receipt_id, response_id
 
 
 def instant_source_failures(tools, monkeypatch, *, not_found=True):
@@ -245,3 +247,124 @@ def test_source_command_stops_after_three_structure_failures(db, tmp_path, monke
     assert report["paused_for_structure"]
     with db.connect() as conn:
         assert conn.execute("SELECT count(*) n FROM jobs").fetchone()["n"] == 3
+
+
+def test_new_http_receipt_has_queryable_job_key(db, tmp_path, monkeypatch):
+    from datetime import UTC, datetime
+
+    from klegal_gold.domain.identity import SourceSystem
+    from klegal_gold.sources.law_api import Response
+    from klegal_gold.sources.persistence import preserve_response
+
+    tools = load_source_tools(monkeypatch)
+    records = Records(db, FileStore(tmp_path / "data"))
+    job_id = uuid4()
+    response = Response(
+        b'{"data":{"result":"notExtist"}}',
+        200,
+        "application/json",
+        "https://portal.scourt.go.kr/pgp/pgp1011/selectJdcpctDtl.on",
+        datetime.now(UTC),
+    )
+    preserve_response(records, response, str(job_id), SourceSystem.SCOURT)
+    with db.connect() as conn:
+        receipt = conn.execute(
+            "SELECT metadata FROM artifacts WHERE metadata->>'kind'='HTTP_ATTEMPT'"
+        ).fetchone()
+    assert receipt["metadata"]["run_id"] == str(job_id)
+    # Indexed receipts do not require a job_attempt interval to be discoverable.
+    assert tools.fetch_failure_kind(records, job_id, "100") == "SOURCE_NOT_FOUND"
+
+
+def test_legacy_job_intervals_exclude_unrelated_missing_historical_receipts(
+    db, tmp_path, monkeypatch
+):
+    tools = load_source_tools(monkeypatch)
+    records = Records(db, FileStore(tmp_path / "data"))
+    unrelated, _ = preserve_receipt(records, uuid4(), indexed=False)
+    records.store.path(records.blob(unrelated).storage_key).unlink()
+    queue = Queue(db)
+    submitted = queue.submit_scourt_detail("current-source", "100")
+    job = queue.claim("receipt-fixture")
+    assert job.job_id == submitted.job_id
+    current, _ = preserve_receipt(records, job.job_id, indexed=False)
+    # A new indexed receipt for another job is excluded even within this interval.
+    overlapping, _ = preserve_receipt(records, uuid4(), indexed=True)
+    records.store.path(records.blob(overlapping).storage_key).unlink()
+    queue.finish(job, outcome="FAILED", error_code="HANDLER_FAILED")
+    original_read = records.read
+    read_ids = []
+
+    def tracked(artifact_id):
+        read_ids.append(artifact_id)
+        return original_read(artifact_id)
+
+    monkeypatch.setattr(records, "read", tracked)
+    assert tools.fetch_failure_kind(records, job.job_id, "100") == "SOURCE_NOT_FOUND"
+    assert current in read_ids
+    assert unrelated not in read_ids and overlapping not in read_ids
+
+
+@pytest.mark.parametrize("damage", ["missing_receipt", "missing_response", "corrupt_response"])
+@pytest.mark.parametrize("indexed", [True, False])
+def test_related_receipt_damage_is_not_hidden_by_another_not_found_response(
+    db, tmp_path, monkeypatch, damage, indexed
+):
+    tools = load_source_tools(monkeypatch)
+    records = Records(db, FileStore(tmp_path / "data"))
+    queue = Queue(db)
+    queue.submit_scourt_detail("damaged-source", "100")
+    job = queue.claim("receipt-fixture")
+    receipt, response = preserve_receipt(records, job.job_id, not_found=False, indexed=indexed)
+    # This newer valid NOT_FOUND must not short-circuit the older damaged evidence.
+    preserve_receipt(records, job.job_id, not_found=True, indexed=indexed)
+    queue.finish(job, outcome="FAILED", error_code="HANDLER_FAILED")
+    damaged_id = receipt if damage == "missing_receipt" else response
+    path = records.store.path(records.blob(damaged_id).storage_key)
+    if damage == "corrupt_response":
+        path.write_bytes(b"corrupt")
+        expected = ValueError
+    else:
+        path.unlink()
+        expected = FileNotFoundError
+    with pytest.raises(expected):
+        tools.fetch_failure_kind(records, job.job_id, "100")
+
+
+@pytest.mark.parametrize("latest_has_response", [True, False])
+def test_latest_source_attempt_does_not_inherit_old_not_found(
+    db, tmp_path, monkeypatch, latest_has_response
+):
+    tools = load_source_tools(monkeypatch)
+    records = Records(db, FileStore(tmp_path / "data"))
+    queue = Queue(db)
+    queue.submit_scourt_detail("changed-source", "100")
+    first = queue.claim("receipt-fixture")
+    preserve_receipt(records, first.job_id, not_found=True, indexed=False)
+    queue.finish(first, outcome="FAILED", error_code="HANDLER_FAILED")
+    with db.connect() as conn:
+        conn.execute(
+            "UPDATE jobs SET available_at=clock_timestamp() WHERE job_id=%s", (first.job_id,)
+        )
+    latest = queue.claim("receipt-fixture")
+    assert latest.attempts == 2
+    if latest_has_response:
+        preserve_receipt(records, latest.job_id, not_found=False, indexed=False)
+        response_id = "test-empty-body:" + uuid4().hex
+        records.put_artifact(
+            response_id,
+            json.dumps(
+                {"data": {"dma_jdcpctCtxt": {"jisCntntsSrno": "100", "orgdocXmlCtt": ""}}}
+            ).encode(),
+            origin="HTTP_RESPONSE",
+            metadata={"kind": "SYNTHETIC_HTTP_RESPONSE"},
+        )
+        records.put_artifact(
+            "test-receipt:" + uuid4().hex,
+            json.dumps({"run_id": str(latest.job_id)}).encode(),
+            origin="DERIVED",
+            metadata={"kind": "HTTP_ATTEMPT", "run_id": str(latest.job_id)},
+            parent_id=response_id,
+        )
+    queue.finish(latest, outcome="FAILED", error_code="HANDLER_FAILED")
+    assert tools.fetch_failure_kind(records, latest.job_id, "100") == "SOURCE_FETCH_FAILED"
