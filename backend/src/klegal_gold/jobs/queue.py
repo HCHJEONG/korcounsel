@@ -92,6 +92,33 @@ class Queue:
             request_key, "IMPORT_LEGACY_BUNDLE", {"manifest_hash": manifest_hash}, 3
         )
 
+    def submit_image_batch(
+        self,
+        request_key: str,
+        manifest_artifact_id: str,
+        *,
+        max_urls: int = 50,
+        max_total_bytes: int = 512 * 1024 * 1024,
+    ) -> Job:
+        if (
+            not manifest_artifact_id.strip()
+            or type(max_urls) is not int
+            or not 1 <= max_urls <= 500
+            or type(max_total_bytes) is not int
+            or not 1 <= max_total_bytes <= 5 * 1024 * 1024 * 1024
+        ):
+            raise ValueError("INVALID_IMAGE_BATCH_REQUEST")
+        return self._submit(
+            request_key,
+            "ACQUIRE_IMAGE_BATCH",
+            {
+                "manifest_artifact_id": manifest_artifact_id,
+                "max_urls": max_urls,
+                "max_total_bytes": max_total_bytes,
+            },
+            3,
+        )
+
     def submit_rebuild(self, request_key: str, *, max_attempts: int = 3) -> Job:
         return self._submit(request_key, "REBUILD_PROJECTION", {}, max_attempts)
 
@@ -117,10 +144,13 @@ class Queue:
                 return _job(existing)  # A lost response remains queryable during drain.
             if control["draining"]:
                 raise ValueError("RUNTIME_DRAINING")
+            artifact_payload_key = (
+                "artifact_id" if kind == "VERIFY_ARTIFACT" else "manifest_artifact_id"
+            )
             if (
-                kind == "VERIFY_ARTIFACT"
+                kind in {"VERIFY_ARTIFACT", "ACQUIRE_IMAGE_BATCH"}
                 and not conn.execute(
-                    "SELECT 1 FROM artifacts WHERE artifact_id=%s", (payload["artifact_id"],)
+                    "SELECT 1 FROM artifacts WHERE artifact_id=%s", (payload[artifact_payload_key],)
                 ).fetchone()
             ):
                 raise ValueError("ARTIFACT_NOT_FOUND")
@@ -135,7 +165,11 @@ class Queue:
                     max_attempts,
                     "legacy-import-1"
                     if kind == "IMPORT_LEGACY_BUNDLE"
-                    else ("source-1" if kind.startswith("FETCH_") else "persistence-1"),
+                    else (
+                        "asset-1"
+                        if kind == "ACQUIRE_IMAGE_BATCH"
+                        else ("source-1" if kind.startswith("FETCH_") else "persistence-1")
+                    ),
                 ),
             ).fetchone()
             assert result is not None

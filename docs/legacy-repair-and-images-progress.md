@@ -89,7 +89,15 @@
 - 새 Python 파일 ruff 검사, Node syntax 검증. 기존 backend ruff/format/mypy 통과, pytest 225 passed / 56 skipped. 이번 corrected bundle 단계에서는 신규 bundle 변환 test와 PostgreSQL legacy import 통합 test를 통과했다.
 - 원본 pickle과 레거시 코드·원문 HTML 수정, canonical 등록, AWS 변경은 없다. PostgreSQL 전수 적재는 로컬 개발 DB 보존 import 범위에서 완료했다.
 
-corrected Parquet을 기존 full-row/DB import 경로에 연결하고 로컬 개발 PostgreSQL 보존 import까지 완료했다. 다음은 이미지별 영속 ledger와 worker 취득·재시도 연결, 8,418 URL 대상의 제한된 batch 확대, name-only/ID 불일치 예외 처리, 그리고 canonical 연결 후보 검토다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다.
+corrected Parquet을 기존 full-row/DB import 경로에 연결하고 로컬 개발 PostgreSQL 보존 import까지 완료했다. 다음은 DNS/접속 가능 환경에서 이미지 batch 크기를 50→수백 단위로 넓히고, name-only/ID 불일치 예외를 실제 검토 queue와 UI 표시로 연결하며, canonical 연결 후보 검토를 진행하는 일이다. 복구 불가능한 이미지는 원참조와 실패 상태를 유지하고 완전 취득으로 표시하지 않는다.
+
+## 이미지 영속 ledger와 제한 batch — 2026-09-11
+
+이미지 취득을 운영 worker 경로에 연결했다. migration 0010은 이미지 참조 ledger, URL별 현재 취득 상태, job별 시도 이력을 분리한다. worker는 보존된 manifest artifact를 읽고 allowlist URL만 제한적으로 취득하며, name-only와 ID 불일치 참조는 RESOLVED와 별도 상태로 남긴다. 같은 URL이 이미 ACQUIRED이면 재다운로드하지 않고 SKIPPED/ALREADY_ACQUIRED attempt를 남긴다.
+
+8,418개 레거시 glaw URL 대상은 현재 직접 취득 URL이 아니라 재해석 대상이다. 수정된 50개 제한 manifest `data/repair-audit-20260910/image-acquisition-manifest-legacy-unresolved-sample-50.json`은 원래 glaw URL, 파일명, legacy contId와 row_position을 보존하고 50건 모두 NAME_ONLY로 분류했다. `image-manifest:legacy-unresolved-sample-50` artifact SHA-256은 `0cd3f7426a20be8c08073b40cda68cbd74dcb27930183ef7174a7df3aae5a54a`다. 새 worker job `c5c585d0-f324-4554-a930-de2cad384d5d`는 SUCCEEDED로 종료되었고, 현재 취득 URL이 없으므로 image_acquisition_attempts는 0건이다. 이전 glaw 직접 시도 job의 `IMAGE_NETWORK_ERROR` 50건은 레거시 URL 직접 재시도 한계로 보존한다.
+
+검증: 새 이미지 asset 단위/통합 테스트 5건과 ruff 검사를 통과했다. Windows/WSL 혼합 실행 때문에 FileStore는 hardlink 미지원 filesystem에서 `os.replace` fallback을 사용하도록 보완했다. 로컬 개발 DB에는 0010만 직접 적용했으며, 기존 public schema의 0009 checksum 이력은 건드리지 않았다.
 
 ## Parquet 직접 검색 UI — 2026-09-11
 

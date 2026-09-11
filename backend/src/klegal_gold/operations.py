@@ -3,6 +3,7 @@
 import json
 from collections.abc import Callable
 from functools import wraps
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
@@ -164,6 +165,71 @@ def submit_legacy_import(request_key: str, manifest_hash: str) -> None:
     _, _, queue = _services()
     job = queue.submit_legacy_import(request_key, manifest_hash)
     typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("preserve-image-manifest")
+@_safe
+def preserve_image_manifest(manifest_id: str, path: Path) -> None:
+    """Store a local image reference manifest as an immutable artifact."""
+    _, records, _ = _services()
+    raw = path.read_bytes()
+    artifact_id = "image-manifest:" + manifest_id
+    blob = records.put_artifact(
+        artifact_id,
+        raw,
+        origin="MANIFEST",
+        metadata={"kind": "IMAGE_REFERENCE_MANIFEST"},
+    )
+    typer.echo(
+        json.dumps(
+            {"artifact_id": artifact_id, "sha256": blob.sha256, "size_bytes": blob.size_bytes}
+        )
+    )
+
+
+@operations.command("submit-image-batch")
+@_safe
+def submit_image_batch(
+    request_key: str,
+    manifest_artifact_id: str,
+    max_urls: int = 50,
+    max_total_bytes: int = 512 * 1024 * 1024,
+) -> None:
+    """Queue a bounded scourt image acquisition batch from a preserved manifest artifact."""
+    _, _, queue = _services()
+    job = queue.submit_image_batch(
+        request_key,
+        manifest_artifact_id,
+        max_urls=max_urls,
+        max_total_bytes=max_total_bytes,
+    )
+    typer.echo(json.dumps({"job_id": str(job.job_id), "status": job.status}))
+
+
+@operations.command("image-batch-status")
+@_safe
+def image_batch_status(job_id: UUID) -> None:
+    """Report image acquisition counts without exposing response bodies."""
+    db, _, queue = _services()
+    job = queue.get(job_id)
+    if job.kind != "ACQUIRE_IMAGE_BATCH":
+        raise ValueError("NOT_IMAGE_BATCH_JOB")
+    with db.connect() as conn:
+        attempts = conn.execute(
+            """SELECT outcome,count(*) AS n FROM image_acquisition_attempts
+               WHERE job_id=%s GROUP BY outcome""",
+            (job_id,),
+        ).fetchall()
+    typer.echo(
+        json.dumps(
+            {
+                "job_id": str(job_id),
+                "status": job.status,
+                "attempts": {row["outcome"]: row["n"] for row in attempts},
+                "checkpoint": job.checkpoint,
+            }
+        )
+    )
 
 
 @operations.command("legacy-import-status")

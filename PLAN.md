@@ -1,6 +1,10 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**이미지 작업의 최종 목표 — 2026-09-11 사용자 확정:** 판례 본문을 열면 다운로드해 보존한 이미지가 원래 등장 위치에 표시되어야 한다. 다음 우선 검증은 실제 소수 판례의 위치 추출→현재 매핑 확인→취득→인증된 내부 이미지 제공→안전한 본문 렌더링을 끝까지 연결하는 것이다. 반복 등장·표 안 이미지·실패 위치 표시 및 외부 제공자 접속 없는 열람을 브라우저에서 검증한 뒤 전수 확대한다. 현재 검색은 목록 조회 단계이며 이미지 포함 본문 열람은 미완료다. [계약](docs/image-preservation-review.md).
+
 **전수 corrected Parquet 및 검증 검색 — 2026-09-11:** 89,130행×60컬럼 전체 corrected Parquet을 생성했다. 선고일 89,130행과 변론종결일 신규 17행을 검증된 overlay에서 반영했고 Python row group 전수 대조와 Node/DuckDB count 검증을 통과했다. corrected bundle v2를 기존 import worker 경로로 로컬 개발 PostgreSQL에 적재했고 89,130행 모두 PRESERVED로 확인했다. 검증용 프론트 UI는 LEGACY_PARQUET_PATH가 가리키는 corrected Parquet을 pyarrow로 직접 스캔해 문자열 검색한다. DuckDB와 Polars는 아직 선택하지 않았다. 이미지 전수 취득·canonical 등록은 미완료다. [결과와 한계](docs/legacy-repair-and-images-progress.md), [검색 방식](docs/legacy-full-row-import.md#parquet-직접-검색-ui--2026-09-11).
+
+**이미지 영속 ledger·worker 경로 — 2026-09-11:** migration 0010으로 image_references/image_acquisitions/image_acquisition_attempts를 추가하고 ACQUIRE_IMAGE_BATCH worker handler와 운영 CLI를 구현했다. 8,418개 레거시 glaw 이미지 URL은 현재 직접 취득 URL로 보지 않고, 원참조·파일명·legacy contId를 보존한 뒤 현재 scourt portal provider mapping으로 재해석해야 하는 대상으로 분류한다. 수정된 50개 제한 manifest `image-manifest:legacy-unresolved-sample-50`은 NAME_ONLY 50건을 저장했고, worker job c5c585d0-f324-4554-a930-de2cad384d5d는 다운로드 시도 0건으로 SUCCEEDED했다. 이전에 glaw URL을 직접 시도한 job 4087f002-1579-4ca0-9b31-d998c760c32d의 50개 IMAGE_NETWORK_ERROR는 실패 이력으로 보존하되 최종 접근 방식으로 삼지 않는다. [상세](docs/image-preservation-review.md#영속-ledger와-worker-취득-경로--2026-09-11).
 
 이하 표본 조사·미실행 표시는 당시 이력이며 최신 완료 범위는 위 보고서를 따른다.
 
@@ -633,3 +637,5 @@ Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.
 - [ ] source/identity/asset 이력·snapshot과 DB를 일관되게 백업·복구하고 small EC2에서 browser·asset 자원을 측정한다.
 
 2026-09-10 최종 검증: backend에서 uv ruff check·ruff format --check·mypy 통과, 로컬 PostgreSQL 연결 포함 pytest **105건 통과**. 기존 upstream deprecation warning 2건 유지. 실제 metadata 15행·저장 HTML 4개 검증 및 git diff --check 통과. 프런트·분석 전용 도구는 변경하지 않았으며 해당 테스트를 이번 작업에서 재실행하지 않았다.
+
+**본문 위치 연결 보완 필요 — 2026-09-11:** 현재 이미지 batch의 occurrence_order는 중복 제거한 URL 목록 순서이며 본문 img별 위치 보존 완료를 뜻하지 않는다. 대표 row_position과 그룹 context는 저장하지만 반복 등장·복수 행의 개별 위치 및 본문 artifact hash 연결의 전수 검증은 남아 있다. 이미지 batch 확대에 앞서 태그 있는 보존 본문에서 등장별 참조를 추출·연결하고 재구성을 검증한다. 상세는 docs/image-preservation-review.md의 본문 위치 연결 점검을 따른다.

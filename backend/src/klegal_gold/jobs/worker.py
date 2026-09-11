@@ -7,6 +7,7 @@ import threading
 import time
 from uuid import uuid4
 
+from klegal_gold.assets.images import ImageAcquirer
 from klegal_gold.config import load_settings
 from klegal_gold.db.records import Records
 from klegal_gold.documents.observe import observe_html
@@ -192,6 +193,31 @@ class Worker:
         result = LegacyImporter(self.records).run(job, progress)
         self.queue.heartbeat(job, {"result_manifest": result})
 
+    def _acquire_images(self, job: Job) -> None:
+        def progress(checkpoint: dict[str, object]) -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job, checkpoint)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        result = ImageAcquirer(self.records).run(
+            job,
+            max_urls=job.payload["max_urls"],
+            max_total_bytes=job.payload["max_total_bytes"],
+            progress=progress,
+        )
+        self.queue.heartbeat(
+            job,
+            {
+                "image_references": result.references,
+                "image_urls_considered": result.urls_considered,
+                "image_acquired": result.acquired,
+                "image_skipped": result.skipped,
+                "image_failed": result.failed,
+                "image_bytes_stored": result.bytes_stored,
+            },
+        )
+
     def run_once(self) -> bool:
         if self.stop.is_set():
             return False
@@ -202,7 +228,11 @@ class Worker:
             if job.handler_version != (
                 "legacy-import-1"
                 if job.kind == "IMPORT_LEGACY_BUNDLE"
-                else ("source-1" if job.kind.startswith("FETCH_") else "persistence-1")
+                else (
+                    "asset-1"
+                    if job.kind == "ACQUIRE_IMAGE_BATCH"
+                    else ("source-1" if job.kind.startswith("FETCH_") else "persistence-1")
+                )
             ):
                 raise ValueError("UNSUPPORTED_HANDLER_VERSION")
             if job.kind == "IMPORT_LEGACY_BUNDLE":
@@ -217,6 +247,8 @@ class Worker:
                 self._fetch_scourt(job)
             elif job.kind == "FETCH_SCOURT_INVENTORY":
                 self._inventory(job)
+            elif job.kind == "ACQUIRE_IMAGE_BATCH":
+                self._acquire_images(job)
             else:
                 raise ValueError("UNKNOWN_JOB_KIND")
             self.queue.finish(job, outcome="SUCCEEDED")
@@ -230,7 +262,7 @@ class Worker:
                     outcome="FAILED",
                     error_code=(
                         "HANDLER_FAILED"
-                        if job.kind.startswith("FETCH_")
+                        if job.kind.startswith("FETCH_") or job.kind == "ACQUIRE_IMAGE_BATCH"
                         else "ARTIFACT_INTEGRITY_FAILED"
                     ),
                 )

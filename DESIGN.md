@@ -237,3 +237,7 @@
 - source/identity revision 변경은 기존 승인/검토 대상에 반영하되 과거 release와 직접 링크는 그대로 유지한다.
 
 추가 브라우저 검증: source/version 전환, 정상 no-editorial/full-text/scan 화면, reference-only 이미지 문맥·순서, UNKNOWN 표시, identity 복수 후보·충돌, 부분 snapshot·asset 실패, 과거 identity revision 링크. canonical/source/issue 수를 혼동하지 않는 집계도 확인한다.
+
+## 보존 이미지가 포함된 판례 본문 — 2026-09-11 사용자 확정
+
+판례 열람은 다운로드하여 보존한 이미지를 본문 내 원래 위치에 함께 표시하는 것을 완료 기준으로 한다. 문단·표·이미지의 순서와 반복 등장을 유지한다. 기준 HTML을 보존하면서 안전한 열람 표현을 만들고, 이미지 파일은 인증된 내부 경로로 제공한다. 미취득·실패·연결 미확정 이미지는 해당 위치에 상태를 표시한다. 실제 판례를 검색하여 열고 외부 제공자 접속 없이 보존 이미지가 표시되는 브라우저 검증이 필요하다. 상세 계약과 미완료 범위는 docs/image-preservation-review.md를 따른다.

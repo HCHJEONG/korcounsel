@@ -56,6 +56,7 @@ class FileStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         self.path(blob.storage_key)
         fd, temporary = tempfile.mkstemp(prefix=".pending-", dir=path.parent)
+        pending_path: str | None = temporary
         try:
             with os.fdopen(fd, "wb") as stream:
                 stream.write(raw)
@@ -65,12 +66,20 @@ class FileStore:
                 os.link(temporary, path)
             except FileExistsError:
                 pass
-            directory_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            except OSError:
+                if path.exists():
+                    pass
+                else:
+                    os.replace(temporary, path)
+                    pending_path = None
+            if hasattr(os, "O_DIRECTORY"):
+                directory_fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
             self.verify(blob)
         finally:
-            os.unlink(temporary)
+            if pending_path is not None:
+                os.unlink(pending_path)
         return blob

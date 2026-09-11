@@ -50,7 +50,7 @@ PRESERVED는 보존 완료이며 법률적 승인이나 GOLD 승격이 아니다
 
 ## 파일·DB 실패 복구
 
-FileStore는 bytes hash로 `blobs/<앞 두 글자>/<SHA-256>` 키를 만든다. 같은 디렉터리에 임시 파일을 쓰고 fsync 후 hard link로 최종 이름을 설치한다. 이미 있는 최종 파일을 덮지 않고 hash·크기를 다시 확인한다. 디렉터리도 fsync한다. Linux/WSL의 동일 파일시스템을 대상으로 하며 Windows native 저장 adapter를 구현한 것은 아니다.
+FileStore는 bytes hash로 `blobs/<앞 두 글자>/<SHA-256>` 키를 만든다. 같은 디렉터리에 임시 파일을 쓰고 fsync 후 hard link로 최종 이름을 설치한다. 이미 있는 최종 파일을 덮지 않고 hash·크기를 다시 확인한다. 디렉터리 fsync는 지원되는 OS에서 수행한다. Windows에서 WSL UNC처럼 hardlink가 지원되지 않는 파일시스템은 대상이 없을 때 `os.replace` fallback을 사용하고, 이후 hash·크기를 다시 확인한다.
 
 - 파일 저장 전 실패: DB 완료 참조를 만들지 않는다.
 - 파일 설치 후 DB rollback: 파일은 orphan으로 남는다. 같은 입력 재실행 시 검증 후 재사용한다.
@@ -62,12 +62,7 @@ HTTP bytes는 RawLegalCase의 hash·크기·storage key와 실제 bytes를 대�
 
 ## 작업과 재시작
 
-현재 실제 handler는 두 가지다.
-
-1. VERIFY_ARTIFACT: 기존 artifact 파일의 hash·크기 검사.
-2. REBUILD_PROJECTION: 등록 시 고정한 legacy artifact 목록에서 조회 데이터를 복원.
-
-handler_version=persistence-1을 저장한다. job_id는 실행 요청 identity이며 dataset_version과 다르다. 수집·조문 보강 handler는 아직 없고 item ledger의 저장 계약만 준비됐다.
+현재 worker handler는 artifact 검증, projection 재생성, source 상세/목록 관찰, legacy bundle import, 이미지 제한 batch 취득을 처리한다. `ACQUIRE_IMAGE_BATCH`는 handler_version `asset-1`을 저장한다. job_id는 실행 요청 identity이며 dataset_version과 다르다. OCR·시각 해석 handler는 아직 없다.
 
 동일 request_key·같은 요청은 기존 job을 반환한다. 같은 key의 다른 kind/payload/재시도 설정은 거부한다. 완료된 작업을 의도적으로 다시 실행할 때는 새로운 request_key를 사용한다. 응답 유실 시에는 먼저 기존 job 조회 또는 같은 key 재요청으로 확인한다.
 
@@ -86,6 +81,22 @@ submit/claim/drain은 동일 runtime_control row lock으로 순서를 정한다.
 SIGTERM/SIGINT는 stop 요청으로 처리하고 가능한 checkpoint 경계에서 종료한다. Compose의 stop_grace_period는 130초다. worker heartbeat는 별도 테이블에 기록하며 60초가 넘게 갱신되지 않거나 정상 종료 표시가 있으면 unavailable이다. API /api/health와 별도다.
 
 drain 상태는 재시작 후 유지된다. worker 시작이 자동으로 resume하지 않는다. 운영자가 기동 조건을 확인한 뒤 `ops resume`을 실행한다. 평일 17시 자동 호출이나 AWS 예약 설정은 이번 단계에 없다.
+
+## 이미지 취득 job — 2026-09-11
+
+`ACQUIRE_IMAGE_BATCH` job을 추가했다. 관리자는 먼저 image reference manifest를 불변 artifact로 보존한다.
+
+```bash
+cd backend
+uv run klegal ops preserve-image-manifest legacy-sample-50 ../data/repair-audit-20260910/image-acquisition-manifest-sample-50.json
+uv run klegal ops submit-image-batch legacy-sample-50-run image-manifest:legacy-sample-50 --max-urls 50 --max-total-bytes 268435456
+uv run klegal ops worker --once
+uv run klegal ops image-batch-status <job-id>
+```
+
+worker는 manifest artifact ID만 payload로 받는다. URL 문자열을 job payload에 대량 저장하지 않는다. `image_references`는 각 등장 위치와 상태를 불변으로 보존하고, `image_acquisitions`는 URL별 현재 상태를 갱신하며, `image_acquisition_attempts`는 job별 취득·실패·재사용 skip을 불변으로 기록한다. name-only와 ID 불일치 참조는 다운로드 실패로 뭉개지 않고 별도 `reference_status`로 보존한다.
+
+현재 로컬 개발 DB 검증에서는 job `c5c585d0-f324-4554-a930-de2cad384d5d`가 레거시 glaw 50개 참조를 NAME_ONLY로 저장하고 다운로드 시도 없이 SUCCEEDED했다. 레거시 glaw URL은 직접 취득 대상이 아니라 현재 portal provider mapping 재관찰 대상이다. 이전 glaw 직접 시도 job `4087f002-1579-4ca0-9b31-d998c760c32d`의 50개 `IMAGE_NETWORK_ERROR`는 실패 이력으로만 보존한다. 전수 취득 확대 전에는 실행 환경의 DNS/네트워크와 실행 중 worker image가 최신 코드인지 확인한다.
 
 ## 실행 — 로컬 Compose
 

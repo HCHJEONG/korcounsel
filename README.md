@@ -67,6 +67,10 @@ LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-pa
 
 DuckDB와 Polars는 아직 채택하지 않았습니다. 89,130행 규모의 단순 검증 검색은 pyarrow batch scan으로 시작하고, 빠른 반복 검색·SQL 집계·여러 Parquet 조인이 필요해지면 DuckDB를, DataFrame 분석 파이프라인이 필요해지면 Polars를 별도 검토합니다. 운영 배포에서도 Parquet 파일을 배치하고 LEGACY_PARQUET_PATH만 지정하면 같은 UI를 사용할 수 있습니다.
 
+## 이미지 취득 ledger
+
+이미지 참조와 실제 bytes 취득은 PostgreSQL job으로 처리한다. `scripts/stage_image_acquisition_manifest.py`는 기존 8,418개 레거시 glaw URL을 직접 취득 URL로 넣지 않고 원참조·파일명·legacy contId를 보존한다. 현재 portal provider mapping을 재관찰해 취득 URL이 생긴 항목만 `klegal ops submit-image-batch`와 worker가 다운로드한다. 수정된 50개 제한 job은 NAME_ONLY 50건을 저장하고 다운로드 시도 0건으로 통과했다. name-only와 ID 불일치 참조는 별도 상태로 보존한다. 자세한 내용은 [이미지 보존 검토](docs/image-preservation-review.md#영속-ledger와-worker-취득-경로--2026-09-11)를 참고하세요.
+
 ## Compose 전체 실행
 
 ```bash
