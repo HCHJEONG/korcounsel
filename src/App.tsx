@@ -141,7 +141,15 @@ export default function App() {
       if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
       if (!response.ok) throw new Error('Unavailable')
       const html = await response.text()
-      if (own === readerRequest.current) { setDocument(html); setReaderStatus('') }
+      if (own === readerRequest.current) {
+        const revision = response.headers.get('X-Reader-Revision')
+        if (revision && /^[a-f0-9]{64}$/.test(revision)) {
+          const params = new URLSearchParams(window.location.search)
+          params.set('reader_revision', revision)
+          window.history.replaceState(null, '', '?' + params)
+        }
+        setDocument(html); setReaderStatus('')
+      }
     } catch { if (own === readerRequest.current) setReaderStatus('본문을 불러올 수 없습니다. 다시 선택해 주세요.') }
   }, [clearPrivate])
 
@@ -153,7 +161,7 @@ export default function App() {
     const hash = params.get('body_hash')
     void Promise.resolve().then(() => {
       if (id && /^[a-f0-9]{64}$/.test(id)) void openDocument({ title: '보존 본문', url: '/api/reader/' + id + '/html', note: '현재 제공 본문을 별도 보존한 버전입니다.' })
-      else if (row && /^\d+$/.test(row) && hash && /^[a-f0-9]{64}$/.test(hash)) void openDocument({ title: '과거 보존 본문', url: '/api/cases/' + row + '/body?body_hash=' + hash, note: '과거 보존 본문입니다. 미연결 이미지는 원래 위치에 상태를 표시합니다.' })
+      else if (row && /^\d+$/.test(row) && hash && /^[a-f0-9]{64}$/.test(hash)) void openDocument({ title: '과거 보존 본문', url: '/api/cases/' + row + '/body?body_hash=' + hash + (params.get('reader_revision') ? '&reader_revision=' + encodeURIComponent(params.get('reader_revision')!) : ''), note: '과거 보존 본문입니다. 미연결 이미지는 원래 위치에 상태를 표시합니다.' })
     })
   }, [authenticated, openDocument])
 
@@ -196,7 +204,17 @@ export default function App() {
           <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); window.history.replaceState(null, '', window.location.pathname) }}>닫기</button></div>
           <p>{selection.note}</p>
           {readerStatus && <p role="status">{readerStatus}</p>}
-          {document && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} />}
+          {document && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} onLoad={event => {
+            const frameDocument = event.currentTarget.contentDocument
+            frameDocument?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
+              link.addEventListener('click', click => {
+                const target = link.getAttribute('href') ?? ''
+                if (!/^#(?:statute|citation)-\d+$/.test(target)) return
+                click.preventDefault()
+                frameDocument.getElementById(target.slice(1))?.scrollIntoView({ block: 'start' })
+              })
+            })
+          }} />}
         </section>}
       </>}
       <p role="status" className="login-message">{message}</p>

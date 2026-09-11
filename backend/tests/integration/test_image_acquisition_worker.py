@@ -79,7 +79,13 @@ def test_image_batch_worker_persists_refs_attempts_and_blobs(db, tmp_path, monke
     }
     assert {row["status"] for row in acquisition} == {"ACQUIRED"}
     assert acquisition[0]["size_bytes"] > 0
-    assert acquisition[0]["image_metadata"] == {"format": "GIF", "width": 1, "height": 1}
+    assert acquisition[0]["image_metadata"] == {
+        "format": "GIF",
+        "width": 1,
+        "height": 1,
+        "frames": 1,
+        "decode_verified": True,
+    }
     assert {row["outcome"]: row["n"] for row in attempts} == {"ACQUIRED": 1}
 
 

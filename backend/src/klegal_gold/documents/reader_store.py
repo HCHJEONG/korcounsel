@@ -5,9 +5,10 @@ import re
 from hashlib import sha256
 from typing import Any
 
-from klegal_gold.assets.images import image_metadata
+from klegal_gold.assets.images import image_metadata, validate_image
 from klegal_gold.db.records import Records
 from klegal_gold.documents.reader import VERSION, image_occurrences, render_document
+from klegal_gold.enrichment.legacy_statutes import statute_occurrences
 
 MEDIA = {
     "GIF": "image/gif",
@@ -31,6 +32,7 @@ class ReaderStore:
         origin: str,
         provenance: dict[str, Any],
         acquisitions: dict[str, dict[str, Any]],
+        linked_images: list[dict[str, Any]] | None = None,
     ) -> str:
         base = (
             "https://portal.scourt.go.kr/"
@@ -47,14 +49,36 @@ class ReaderStore:
                 if sha256(raw).hexdigest() != digest:
                     raise ValueError("READER_IMAGE_HASH_MISMATCH")
                 ref["blob_hash"] = digest
-                ref["media_type"] = MEDIA[image_metadata(raw)["format"]]
+                ref["media_type"] = MEDIA[validate_image(raw)["format"]]
             ref["acquisition"] = acquired
+        if linked_images is not None:
+            if origin != "LEGACY_CORPUS" or len(linked_images) != len(refs):
+                raise ValueError("INVALID_LEGACY_IMAGE_LINKS")
+            for original, linked in zip(refs, linked_images, strict=True):
+                if any(original[k] != linked[k] for k in ("reference_id", "html_tag", "order")):
+                    raise ValueError("LEGACY_IMAGE_POSITION_MISMATCH")
+                if linked.get("blob_hash"):
+                    if not linked.get("link_evidence"):
+                        raise ValueError("MISSING_IMAGE_LINK_EVIDENCE")
+                    validate_image(self.records.read("reader-image:" + linked["blob_hash"]))
+            refs = linked_images
         raw = html.encode()
         html_hash = sha256(raw).hexdigest()
         parent_id = "reader-html:" + html_hash
         self.records.put_artifact(
             parent_id, raw, origin="DERIVED", metadata={"kind": "READER_SOURCE_HTML"}
         )
+        statutes = statute_occurrences(html)
+        for article in statutes:
+            if article["payload"]:
+                artifact = "legacy-statute:" + article["payload_sha256"]
+                self.records.put_artifact(
+                    artifact,
+                    article["payload"].encode(),
+                    origin="DERIVED",
+                    metadata={"kind": "LEGACY_LAWGO_PAYLOAD", "version_status": "UNVERIFIED"},
+                )
+                article["payload_artifact_id"] = artifact
         payload = {
             "version": VERSION,
             "title": title,
@@ -64,6 +88,7 @@ class ReaderStore:
             "html_artifact_id": parent_id,
             "html_sha256": html_hash,
             "images": refs,
+            "statutes": statutes,
         }
         encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode()
         document_id = sha256(encoded).hexdigest()
@@ -81,6 +106,15 @@ class ReaderStore:
                 "origin": origin,
                 "image_count": len(refs),
                 "acquired_count": sum(bool(r.get("blob_hash")) for r in refs),
+                **(
+                    {
+                        "legacy_body_hash": html_hash,
+                        "legacy_position": provenance["row_position"],
+                        "legacy_snapshot": provenance["snapshot_sha256"],
+                    }
+                    if origin == "LEGACY_CORPUS"
+                    else {}
+                ),
             },
         )
         return document_id
@@ -115,6 +149,7 @@ class ReaderStore:
             rows = conn.execute(
                 """SELECT artifact_id,metadata FROM artifacts
                    WHERE metadata->>'kind'='READER_DOCUMENT'
+                   AND metadata->>'origin'='CURRENT_SOURCE'
                    AND strpos(lower(metadata->>'title'), lower(%s))>0
                    ORDER BY created_at DESC,artifact_id LIMIT 30""",
                 (query,),
@@ -122,3 +157,16 @@ class ReaderStore:
         return [
             {"document_id": r["artifact_id"].removeprefix("reader:"), **r["metadata"]} for r in rows
         ]
+
+    def find_legacy(self, body_hash: str, position: int, snapshot: str) -> str | None:
+        with self.records.db.connect() as conn:
+            row = conn.execute(
+                """SELECT artifact_id FROM artifacts
+                   WHERE metadata->>'kind'='READER_DOCUMENT'
+                   AND metadata->>'legacy_body_hash'=%s
+                   AND metadata->>'legacy_position'=%s
+                   AND metadata->>'legacy_snapshot'=%s
+                   ORDER BY created_at DESC,artifact_id DESC LIMIT 1""",
+                (body_hash, str(position), snapshot),
+            ).fetchone()
+        return row["artifact_id"].removeprefix("reader:") if row else None

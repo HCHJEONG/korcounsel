@@ -1,0 +1,133 @@
+{
+  "rows": [
+    {
+      "position": 33,
+      "title": "대법원 2011. 3. 10. 선고 2010후3226 판결",
+      "body_hash": "269c82fc35b270f072f647fc415d10cb874dbf037e190526a0016ced618a55ae",
+      "document_id": "f734e93b4d5ebc9419f633ce08882d645de444573abab58629753e63958b4701",
+      "images": 4,
+      "linked": 1,
+      "statutes": 22,
+      "preserved_statutes": 7
+    },
+    {
+      "position": 8467,
+      "title": "대법원 2008. 2. 28. 선고 2006후4086 판결",
+      "body_hash": "151afb7a9212cffc334428a2e9b7d09cede125ceff5fb51f55d04772ef6d5678",
+      "document_id": "d7e98c7bbd1aeff3141ceb78e459197a5d6426b90aa5e787344c0c19121642dd",
+      "images": 4,
+      "linked": 2,
+      "statutes": 4,
+      "preserved_statutes": 2
+    },
+    {
+      "position": 2233,
+      "title": "대법원 2010. 5. 13. 선고 2009다47340 판결",
+      "body_hash": "c4b774a1f5deb6bdb2f0159362c44b8ec42714463cd7b527da81df1cb36d0fe9",
+      "document_id": "b4db63f3891c014d6dfd8ad96c85850bfc105f5dfb82d967de6256b9ab6595e9",
+      "images": 6,
+      "linked": 2,
+      "statutes": 7,
+      "preserved_statutes": 2
+    },
+    {
+      "position": 11792,
+      "title": "대법원 2006. 11. 23. 선고 2005후1356 판결",
+      "body_hash": "a1a95904a77536751b0a94cbefc0e4c740ef55b37a112df63a9bf0e1e8877811",
+      "document_id": "7a0362cb3d2156199e1c099a4fb5915e0505b72499ab816f1cf4f487d4d3fff3",
+      "images": 6,
+      "linked": 0,
+      "statutes": 10,
+      "preserved_statutes": 4
+    },
+    {
+      "position": 19539,
+      "title": "제26사단보통군사법원 2002. 10. 24. 선고 2002고26 판결",
+      "body_hash": "5d71fdc92efc0db2720ccf1d46046d23fc927f6885db6891ba7fc5bb92ed792b",
+      "document_id": "0ff9803253480a02473ba5768a5ef2b3ebf869ac45dc9a181ac39d53633ee4b6",
+      "images": 0,
+      "linked": 0,
+      "statutes": 23,
+      "preserved_statutes": 12
+    },
+    {
+      "position": 37,
+      "title": "대법원 2011. 3. 10. 선고 2009도6256 판결",
+      "body_hash": "57e9248132c5e2e197d17829cb443bcda5a2038b9579aa531b11eaaab90bdfcd",
+      "document_id": "42defe828ec4f5070bdf9ebc9acc3881bf70475b89b080457d08b47a138757af",
+      "images": 1,
+      "linked": 0,
+      "statutes": 26,
+      "preserved_statutes": 3
+    },
+    {
+      "position": 331,
+      "title": "춘천지방법원영월지원 2011. 1. 20. 선고 2010고합50 판결",
+      "body_hash": "bfbf25ef0a74afda4480d7142f733719d47f39f5c031bcc352b420a331192755",
+      "document_id": "6887d2a4f87c78cb28894f000e5e98951fa5aec807d495e1ac616376e9df53b9",
+      "images": 0,
+      "linked": 0,
+      "statutes": 72,
+      "preserved_statutes": 0
+    },
+    {
+      "position": 88590,
+      "title": "대법원 2023. 11. 16. 선고 2023도11810 판결",
+      "body_hash": "4245083341805274ee7d03813cfb4fe4649dbe4509b4572957e74fe1fb5e08d3",
+      "document_id": "be0bae5ad62d1570629128c78c825e07d26d748f51fcf857ae296fb7de20570f",
+      "images": 4,
+      "linked": 0,
+      "statutes": 30,
+      "preserved_statutes": 11
+    }
+  ],
+  "download_manifest": "image-manifest:legacy-reader-71c6c4857f91c6b9c44d8d2ee826d186ace206ce1a4bc4873ebe8571fa40bb42",
+  "download_references": 3,
+  "download_job": "3be28527-9690-4fac-a4d8-ac3092ffd613",
+  "new_download_attempts": [
+    {
+      "outcome": "ACQUIRED",
+      "error_code": null,
+      "blob_hash": "3b614212867dcd8166cf287f8a991a926c913534506272278c7773975e6bfbed",
+      "size_bytes": 1694
+    }
+  ],
+  "parquet_sha256": "3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2",
+  "parquet_matches_original_export": true,
+  "legacy_file_comparisons": [
+    {
+      "position": 19539,
+      "legacy_file": "/mnt/i/VSCodeBases/web2df/saved/20241126/lawgo_jomunupdated_panre_txt/19539-empty-77567.txt",
+      "legacy_file_sha256": "088b3753880771498d7945f7c82c16e261d812ec77498b7ddd5fd6a0b95d3e4c",
+      "parquet_body_sha256": "5d71fdc92efc0db2720ccf1d46046d23fc927f6885db6891ba7fc5bb92ed792b",
+      "payloads": 12,
+      "payload_sequence_equal": false,
+      "payload_sequence_equal_after_crlf_to_lf": true,
+      "comparison_note": "Raw payload hashes differ; CRLF-to-LF alone makes all payloads identical. Neither source was rewritten."
+    },
+    {
+      "position": 88590,
+      "legacy_file": "/mnt/i/VSCodeBases/web2df/saved/20241126/lawgo_jomunupdated_panre_txt/88590-3328392-240889.txt",
+      "legacy_file_sha256": "ae2cd1335d90f1dbae034bdec46c81a9e903ec8ff8951ab91a56ef92e6b3a270",
+      "parquet_body_sha256": "4245083341805274ee7d03813cfb4fe4649dbe4509b4572957e74fe1fb5e08d3",
+      "payloads": 11,
+      "payload_sequence_equal": false,
+      "payload_sequence_equal_after_crlf_to_lf": true,
+      "comparison_note": "Raw payload hashes differ; CRLF-to-LF alone makes all payloads identical. Neither source was rewritten."
+    }
+  ],
+  "scope": "Eight real legacy rows; runtime statute rendering shared by all rows; not full image acquisition",
+  "repeat_identical": true,
+  "original_corpus": {
+    "preserved": 89130,
+    "positions": 89130
+  },
+  "python_tests": 332,
+  "frontend_checks": [
+    "typecheck",
+    "lint",
+    "build"
+  ],
+  "browser_scenarios": 14,
+  "browser_note": "Initial run 13/14; srcDoc navigation fixed; affected desktop scenario rerun passed. Mobile scenario passed with fix."
+}

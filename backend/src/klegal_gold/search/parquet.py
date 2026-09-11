@@ -134,3 +134,8 @@ def read_legacy_body(path: Path, position: int, expected_hash: str) -> tuple[str
                     raise ValueError("BODY_VERSION_CHANGED")
                 return html, _text(row.get("gmeta_contId"))
     raise ValueError("ROW_NOT_FOUND")
+
+
+def legacy_snapshot(path: Path) -> str:
+    metadata = pq.ParquetFile(path).schema_arrow.metadata or {}
+    return str(json.loads(metadata.get(b"legacy", b"{}")).get("snapshot_sha256", ""))

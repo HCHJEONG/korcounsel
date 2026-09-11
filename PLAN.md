@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**일반 검색 보강 열람 표본 — 2026-09-11:** 기존 8행의 jtable 내용·실패 상태와 검증된 이미지 위치를 일반 검색 reader에 연결했다. 보유 이미지 4개 등장 위치를 재사용하고 새 이미지 1개를 다운로드·decode 검증해 1곳에 연결했다. 별도 2개 URL 재시도는 decode 실패로 보존했다. 공통 조문 renderer는 전체 corpus 행에 적용되지만 전수 이미지 연결·신규 수집 자동 통합은 미완료다. [구현·표본·재현·한계](docs/legacy-reader-enrichment.md).
+
 **검색→완전한 보강 본문 열람 목표 — 2026-09-11 사용자 확정:** 기존 89,130행 전체와 앞으로 수집할 신규 판례 모두를 대상으로, KorCounsel 프런트의 일반 검색·열람 경로에서 scourt HTML을 기반으로 이미지 위치에는 보존한 scourt 이미지 실물을, 조문 위치에는 해당 판례에 연결된 lawgo 법령·조문 내용을 결합하여 검색 결과 클릭 시 함께 열람하게 한다. 원본은 불변 보존하고 파생 열람 표현을 재현한다. 완료 기준은 별도 표본이 아닌 실제 검색 경로의 문단·표·반복 이미지·조문 보강 표시 및 실패/미확인 상태 검증이다. 현재는 검색 본문 열기와 별도 현재 본문 이미지 표본까지 구현했으며, 검색 corpus의 이미지·조문 통합 열람 완료는 아니다. [상세 계약](docs/legacy-enrichment-and-incremental.md#검색에서-완전한-보강-본문-열람까지).
 
 **PostgreSQL 환경 정합성 완료 — 2026-09-11:** 전체 Python/PostgreSQL 회귀 326개·ruff·mypy 및 실제/예제 환경파일의 Compose config 검증 통과. 사용자 선택에 따라 기존 DB를 유지하고 .fordeploy/aws-backup/.env의 로컬 DB 5개 항목만 127.0.0.1:55432/korcounsel_dev에 맞췄다. 관리자·편집자·AWS·기타 설정은 그대로다. DB URL 덮어쓰기 없이 연결·두 계정 로그인 및 기존 89,130행 보존을 확인했다. API/worker와 CLI의 URL 해석을 통일했고 Compose는 같은 계정으로 내부 postgres:5432에 연결한다. [설정 계약](docs/persistence-and-jobs.md#postgresql-환경변수-정합성--2026-09-11).

@@ -11,7 +11,7 @@ from klegal_gold.db.records import Records
 from klegal_gold.db.session import Database
 from klegal_gold.documents.reader import image_occurrences, render_document
 from klegal_gold.documents.reader_store import ReaderStore
-from klegal_gold.search.parquet import read_legacy_body
+from klegal_gold.search.parquet import legacy_snapshot, read_legacy_body
 from klegal_gold.storage.files import FileStore
 from klegal_gold.web.auth import require_user
 
@@ -68,18 +68,44 @@ def document_image(
 
 
 @router.get("/cases/{position}/body", response_class=HTMLResponse)
-def legacy_body(position: int, body_hash: str = Query(pattern="^[0-9a-f]{64}$")) -> HTMLResponse:
+def legacy_body(
+    position: int,
+    store: Annotated[ReaderStore, Depends(reader_store)],
+    body_hash: str = Query(pattern="^[0-9a-f]{64}$"),
+    reader_revision: str | None = Query(default=None, pattern="^[0-9a-f]{64}$"),
+) -> HTMLResponse:
     settings = load_settings()
     if settings.legacy_parquet_path is None:
         raise HTTPException(503, "본문 저장소가 설정되지 않았습니다.")
     try:
         body, source_id = read_legacy_body(settings.legacy_parquet_path, position, body_hash)
-        refs = image_occurrences(body, source_id=source_id, base_url="https://glaw.scourt.go.kr/")
-        html = render_document(body, refs, body_hash)
+        snapshot = legacy_snapshot(settings.legacy_parquet_path)
+        revision = reader_revision or store.find_legacy(body_hash, position, snapshot)
+        if revision:
+            manifest = store.read(revision)
+            provenance = manifest["provenance"]
+            if (
+                manifest["origin"] != "LEGACY_CORPUS"
+                or manifest["html_sha256"] != body_hash
+                or provenance.get("row_position") != position
+                or provenance.get("snapshot_sha256") != snapshot
+            ):
+                raise ValueError("READER_VERSION_MISMATCH")
+            html = store.html(revision)
+        else:
+            refs = image_occurrences(
+                body, source_id=source_id, base_url="https://glaw.scourt.go.kr/"
+            )
+            html = render_document(body, refs, body_hash)
     except (ValueError, OSError):
         raise HTTPException(
             409, "본문 버전이 변경되었거나 사용할 수 없습니다. 다시 검색하세요."
         ) from None
     return HTMLResponse(
-        html, headers={"Content-Security-Policy": CSP, "X-Content-Type-Options": "nosniff"}
+        html,
+        headers={
+            "Content-Security-Policy": CSP,
+            "X-Content-Type-Options": "nosniff",
+            **({"X-Reader-Revision": revision} if revision else {}),
+        },
     )

@@ -27,7 +27,7 @@ def reader_client(db, tmp_path):
     digest = sha256(GIF).hexdigest()
     records.put_artifact("reader-image:" + digest, GIF, origin="DERIVED", metadata={})
     store = ReaderStore(records)
-    url = "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=a.gif"
+    url = "https://portal.scourt.go.kr/pgp/pgp003/downloadImgFile.on?pgmId=PGP1011M04&jisCntntsSrno=123&atchImgFileNm=a.gif"  # noqa: E501
     html = (
         '<input class="contImagePath" name="a" value="a.gif">'
         + '<p>앞<img name="a">중간<img name="a">뒤<img name="missing"></p>'
@@ -102,3 +102,61 @@ def test_expired_and_disabled_sessions(reader_client):
     with db.connect() as conn:
         conn.execute("UPDATE app_users SET enabled=false")
     assert client.get("/api/reader").status_code == 401
+
+
+def test_legacy_route_uses_revision_and_rejects_wrong_row(reader_client, tmp_path, monkeypatch):
+    import json
+
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from klegal_gold.documents.reader import image_occurrences
+
+    client, password, current_id, store, db = reader_client
+    body = '<p>앞<img name="a">뒤<a name="linkContJomun" jtable="&lt;table&gt;&lt;tr&gt;&lt;td&gt;조문내용&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;">법1조</a></p>'  # noqa: E501
+    digest = sha256(body.encode()).hexdigest()
+    table = pa.table(
+        {
+            "__legacy_position": [7, 8],
+            "case_txt_scraped_with_tags": [body, body],
+            "gmeta_contId": ["123", "123"],
+        }
+    )
+    table = table.replace_schema_metadata(
+        {b"legacy": json.dumps({"snapshot_sha256": "s"}).encode()}
+    )
+    path = tmp_path / "legacy.parquet"
+    pq.write_table(table, path)
+    monkeypatch.setenv("LEGACY_PARQUET_PATH", str(path))
+    refs = image_occurrences(body, source_id="123", base_url="https://glaw.scourt.go.kr/")
+    refs[0].update(
+        blob_hash=sha256(GIF).hexdigest(), status="ACQUIRED", link_evidence={"test": True}
+    )
+    revision = store.preserve(
+        body,
+        title="기존표본",
+        source_id="123",
+        origin="LEGACY_CORPUS",
+        provenance={"row_position": 7, "snapshot_sha256": "s"},
+        acquisitions={},
+        linked_images=refs,
+    )
+    url = f"/api/cases/7/body?body_hash={digest}"
+    assert client.get(url).status_code == 401
+    client.post(
+        "/api/auth/login", headers=ORIGIN, json={"username": "reader-test", "password": password}
+    )
+    response = client.get(url)
+    assert response.status_code == 200
+    assert response.headers["X-Reader-Revision"] == revision
+    assert f"/api/reader/{revision}/images/0" in response.text
+    assert "<td>조문내용</td>" in response.text
+    assert client.get(url + "&reader_revision=" + revision).text == response.text
+    assert (
+        client.get(f"/api/cases/8/body?body_hash={digest}&reader_revision={revision}").status_code
+        == 409
+    )
+    assert client.get(url + "&reader_revision=" + current_id).status_code == 409
+    assert client.get(url.replace(digest, "0" * 64)).status_code == 409
+    assert client.get(f"/api/cases/8/body?body_hash={digest}").status_code == 200
+    assert len(store.read(revision)["statutes"]) == 1

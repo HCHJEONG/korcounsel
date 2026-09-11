@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+import io
 import json
 import struct
+import warnings
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from hashlib import sha256
 from typing import TYPE_CHECKING, Any, Literal
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, urlparse
-from urllib.request import Request, urlopen
+from urllib.request import Request, build_opener
 from uuid import NAMESPACE_URL, UUID, uuid5
+
+from PIL import Image
+
+from klegal_gold.sources.law_api import _NoRedirect
 
 if TYPE_CHECKING:
     from klegal_gold.db.records import Records
@@ -95,6 +101,38 @@ def image_metadata(raw: bytes) -> dict[str, Any]:
     if raw.startswith(b"BM"):
         return {"format": "BMP"}
     raise ValueError("UNSUPPORTED_IMAGE_BYTES")
+
+
+def validate_image(raw: bytes) -> dict[str, Any]:
+    """Verify the container and decode every frame within a fixed pixel budget."""
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(raw), formats=["GIF", "PNG", "JPEG", "WEBP", "BMP"]) as img:
+                width, height = img.size
+                frames = getattr(img, "n_frames", 1)
+                if width * height * frames > 25_000_000 or frames > 200:
+                    raise ValueError("IMAGE_PIXEL_LIMIT")
+                result = {
+                    "format": img.format,
+                    "width": width,
+                    "height": height,
+                    "frames": frames,
+                    "decode_verified": True,
+                }
+                img.verify()
+            with Image.open(io.BytesIO(raw), formats=["GIF", "PNG", "JPEG", "WEBP", "BMP"]) as img:
+                for frame in range(frames):
+                    img.seek(frame)
+                    img.load()
+        return result
+    except (
+        OSError,
+        SyntaxError,
+        Image.DecompressionBombWarning,
+        Image.DecompressionBombError,
+    ) as exc:
+        raise ValueError("IMAGE_DECODE_FAILED") from exc
 
 
 def _scalar(value: Any) -> str | None:
@@ -221,7 +259,7 @@ def fetch_image(url: str, max_bytes: int = MAX_IMAGE_BYTES) -> DownloadedImage:
         raise ValueError("UNSAFE_IMAGE_URL")
     request = Request(url, headers={"User-Agent": "KorCounsel/0.1 image-ledger"})
     try:
-        with urlopen(request, timeout=20) as response:  # noqa: S310 - URL is allowlisted above.
+        with build_opener(_NoRedirect()).open(request, timeout=20) as response:
             content_type = response.headers.get("Content-Type")
             chunks: list[bytes] = []
             total = 0
@@ -238,7 +276,7 @@ def fetch_image(url: str, max_bytes: int = MAX_IMAGE_BYTES) -> DownloadedImage:
     except URLError as exc:
         raise ValueError("IMAGE_NETWORK_ERROR") from exc
     raw = b"".join(chunks)
-    return DownloadedImage(raw, content_type, image_metadata(raw))
+    return DownloadedImage(raw, content_type, {**validate_image(raw), "final_url": url})
 
 
 class ImageAcquirer:
@@ -282,8 +320,11 @@ class ImageAcquirer:
                     downloaded = self.fetcher(
                         url, min(MAX_IMAGE_BYTES, max_total_bytes - total_bytes)
                     )
+                    verified = validate_image(downloaded.body)
                     blob = self._put_blob(downloaded.body)
-                    self._save_acquired(url, blob, downloaded.content_type, downloaded.metadata)
+                    self._save_acquired(
+                        url, blob, downloaded.content_type, {**downloaded.metadata, **verified}
+                    )
                     self._record_attempt(job.job_id, url, "ACQUIRED", blob, blob.size_bytes, None)
                     acquired += 1
                     total_bytes += blob.size_bytes

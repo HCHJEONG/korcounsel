@@ -1,5 +1,7 @@
 # KorCounsel
 
+일반 검색 결과의 본문에서 보존된 lawgo 조문 내용을 확인할 수 있습니다. 기존 8개 판례에는 보강 manifest를 등록했고 검증된 이미지 5개 등장 위치를 연결했습니다. 미확보·미연결·과거 보강 실패 및 적용 법령 버전 미확인을 구분합니다. [현재 표본과 실행 방법](docs/legacy-reader-enrichment.md)을 참고하세요. 전체 이미지 연결 완료는 아닙니다.
+
 **핵심 제품 요구사항 — 2026-09-11 사용자 확정:** 이미 보존한 89,130행과 앞으로 수집할 판례 모두를 KorCounsel 프런트에서 검색하고, scourt HTML의 문서 구조·이미지와 lawgo 법령·조문 보강 내용이 결합된 형태로 열람하게 합니다. 이 표현을 지속적으로 제공하는 것이 스크레이핑·가공의 핵심 목적입니다. 현재 통합 열람은 구현 중이며 전체 자료의 보강 완료를 뜻하지 않습니다. [요구사항·완료 기준](docs/legacy-enrichment-and-incremental.md#검색에서-완전한-보강-본문-열람까지).
 
 **PostgreSQL 설정 — 2026-09-11:** 지정 환경파일의 로컬 DB 설정을 기존 127.0.0.1:55432/korcounsel_dev에 맞췄다. 호스트 API/CLI는 DATABASE_URL, Compose API·worker·migration은 POSTGRES_*와 내부 postgres:5432를 사용한다. 실제 .env의 나머지 값과 기존 판례 데이터는 보존했다.

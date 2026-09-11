@@ -9,7 +9,7 @@ from typing import Any
 
 from klegal_gold.documents.observe import observe_html
 
-VERSION = "image-reader-1"
+VERSION = "enriched-reader-2"
 TAGS = frozenset(
     "p div span br hr table thead tbody tfoot tr td th caption colgroup col "
     "b strong i em u s sub sup h1 h2 h3 h4 h5 h6 ul ol li dl dt dd blockquote pre".split()
@@ -62,7 +62,9 @@ def image_occurrences(html: str, *, source_id: str, base_url: str) -> list[dict[
     return result
 
 
-def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> str:
+def _render_content(
+    html: str, refs: list[dict[str, Any]], document_id: str, *, statutes: bool = True
+) -> str:
     """Render only escaped text, structural allowlist tags and internal image URLs."""
     parent_hash = sha256(html.encode()).hexdigest()
     for ref in refs:
@@ -72,14 +74,31 @@ def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> 
         ):
             raise ValueError("READER_POSITION_MISMATCH")
 
+    from klegal_gold.enrichment.legacy_statutes import statute_occurrences
+
+    articles = statute_occurrences(html) if statutes else []
+
     class Renderer(HTMLParser):
         def __init__(self) -> None:
             super().__init__(convert_charrefs=True)
             self.output: list[str] = []
             self.order = 0
             self.hidden: list[str] = []
+            self.article_order = 0
+            self.article_open = False
 
         def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            values = dict(attrs)
+            if tag == "a" and not self.hidden and statutes:
+                if values.get("name") == "linkContJomun" or "jtable" in values:
+                    number = self.article_order
+                    self.article_order += 1
+                    self.article_open = True
+                    self.output.append(
+                        f'<a class="statute-link" id="citation-{number}" '
+                        f'href="#statute-{number}">[조문 {number + 1}] '
+                    )
+                return
             if tag == "img":
                 ref = refs[self.order]
                 self.order += 1
@@ -125,6 +144,10 @@ def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> 
                 if tag == self.hidden[-1]:
                     self.hidden.pop()
                 return
+            if tag == "a" and self.article_open:
+                self.output.append("</a>")
+                self.article_open = False
+                return
             if tag in TAGS and tag not in VOID:
                 self.output.append(f"</{tag}>")
 
@@ -136,12 +159,50 @@ def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> 
     parser.feed(html)
     if parser.order != len(refs):
         raise ValueError("READER_IMAGE_COUNT_MISMATCH")
+    output = "".join(parser.output)
+    if articles:
+        output += '<section class="statute-enrichment"><h2>보존된 법령·조문 보강</h2>'
+        output += (
+            "<p>기존 lawgo 보강 내용입니다. "
+            "판례 적용 법령 버전과 과거 취득 시각은 미확인입니다.</p>"
+        )
+        for article in articles:
+            order = article["order"]
+            output += f'<section id="statute-{order}" class="statute-item">'
+            output += f"<h3>조문 {order + 1} · {escape(article['text'])}</h3>"
+            if article["status"] == "PRESERVED":
+                payload = article["payload"]
+                embedded = image_occurrences(
+                    payload, source_id="", base_url="https://www.law.go.kr/"
+                )
+                output += '<p class="statute-status">보강 내용 보존 · 적용 버전 미확인</p>'
+                output += _render_content(payload, embedded, document_id, statutes=False)
+            elif article["status"] == "LEGACY_FAILURE":
+                output += (
+                    '<p class="statute-status">과거 보강 실패: '
+                    + escape(article["payload"])
+                    + "</p>"
+                )
+            else:
+                output += (
+                    '<p class="statute-status">조문 내용 미연결 · 제공 정보 부재 여부 미확인</p>'
+                )
+            output += f'<a href="#citation-{order}">원래 인용 위치로 돌아가기</a></section>'
+        output += "</section>"
+    return output
+
+
+def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> str:
+    content = _render_content(html, refs, document_id)
     style = (
         "body{font:17px/1.85 sans-serif;color:#1f2933;margin:24px;overflow-wrap:anywhere}"
         "img{max-width:100%;height:auto}"
         "table{border-collapse:collapse;max-width:100%}"
         "td,th{border:1px solid #ddd;padding:6px}"
         "pre{white-space:pre-wrap}"
+        ".statute-item{border-top:1px solid #ddd;margin-top:24px;padding-top:12px}"
+        ".statute-status{color:#685333;font-size:14px}a{color:#245b78}"
+        ":target{outline:2px solid #b58c48;outline-offset:4px}"
         ".missing-image{display:inline-block;border:1px dashed #a77;padding:6px;color:#854}"
     )
     return (
@@ -152,6 +213,6 @@ def render_document(html: str, refs: list[dict[str, Any]], document_id: str) -> 
         'form-action &apos;none&apos;"><title>판례 본문</title><style>'
         + style
         + "</style><body>"
-        + "".join(parser.output)
+        + content
         + "</body></html>"
     )
