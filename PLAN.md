@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**현재 본문 후속 보강 — 2026-09-14:** 이미지 취득의 영속 terminal 상태를 확인하는 별도 reader refresh job, 원문 불변 revision, source_id별 최신 본문/revision 검색, lawgo 제공 링크의 별도 보강 job과 관리자 API 재확인을 구현했다. 로컬 이미지 표본은 4위치 저장 bytes 재사용·2위치 미확보, lawgo 조문 4위치 연결이며 일반 검색→본문→내부 이미지→조문 이동을 실제 브라우저에서 확인했다. 신규 2025년 판례 1건도 관리자 증보로 수집했으나 이미지 0건이므로 새 이미지 bytes 취득 실증과 구분한다. 최종 Python/PostgreSQL 회귀 706건과 ruff check/format·mypy·pnpm lint/build·git diff --check를 통과했다. [구현·실제 결과·남은 한계](docs/current-reader-enrichment.md).
+
 **기존 corpus 전수 보강 확대 — 2026-09-11 전수 적용·검증 완료:** 기본 892개 worker 배치로 89,130행 모두 보강 reader를 등록했고, scourt 19개 wave·추가 이미지 취득 후 1,806행을 19배치로 갱신했다. 최종 전수 coverage는 89,130행 모두 STAGED_VERIFIED·오류 0이며, 본문 이미지 7,561위치와 lawgo 조문 이미지 4,698/4,698위치의 실물을 연결했다. 고유 artifact/blob 320,460개 hash와 이미지 5,356개 decode, 원본 Parquet·기존 import 불변을 확인했다. 미취득·미연결·법령 버전 미확인은 표시하며 모든 이미지/조문 완성을 뜻하지 않는다. 일반 검색 desktop/mobile 28개·최종 Python/PostgreSQL 회귀 688개를 통과했다. 별도 저장 루트에 있던 등록 원본 178,314개를 exact copy로 복구하고 등록 전체 529,551개의 host 경로·크기 및 원본 DB metadata 불변을 확인했다. 로컬 Compose API/worker의 파일 저장소도 통일했다. [실행·최종 집계·한계](docs/legacy-reader-scale.md), [배치/재개](docs/legacy-reader-batches.md).
 
 

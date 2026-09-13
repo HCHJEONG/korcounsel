@@ -179,6 +179,8 @@ def test_upgrade_backfills_without_mutating_history(empty_db):
         "0009_case_search_text.sql",
         "0010_image_acquisition.sql",
         "0011_legacy_reader_batches.sql",
+        "0012_current_reader_refresh.sql",
+        "0013_current_lawgo.sql",
     ]
     with empty_db.connect() as conn:
         extension = conn.execute(

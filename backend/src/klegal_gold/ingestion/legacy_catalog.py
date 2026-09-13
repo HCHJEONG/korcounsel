@@ -53,7 +53,6 @@ class LegacySourceCatalog:
             rejected_values=int(value["rejected_values"]),
         )
 
-
     def encoded(self) -> bytes:
         return json.dumps(
             self.payload(), ensure_ascii=False, sort_keys=True, separators=(",", ":")

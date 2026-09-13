@@ -41,6 +41,14 @@ def require_user(request: Request, service: Annotated[Accounts, Depends(accounts
     return user
 
 
+def require_admin(
+    user: Annotated[UUID, Depends(require_user)], service: Annotated[Accounts, Depends(accounts)]
+) -> UUID:
+    if not isinstance(service, SiteAccounts) or service.role_for(user) != "admin":
+        raise HTTPException(403, "관리자 권한이 필요합니다.")
+    return user
+
+
 class Login(BaseModel):
     username: str = Field(min_length=1, max_length=100)
     password: SecretStr = Field(min_length=1, max_length=1024)

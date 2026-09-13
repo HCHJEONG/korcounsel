@@ -32,7 +32,7 @@ def snapshot(
         ),
         observed_unique_count=len(entries),
         metadata_hash="0" * 64,
-        scope="{\"court\":\"all\"}",
+        scope='{"court":"all"}',
         scope_hash="1" * 64,
         collector_version="test",
         hash_rules_version="test",
@@ -83,9 +83,7 @@ def test_complete_equal_scope_snapshots_can_mark_missing() -> None:
 
 def test_delta_rejects_a_different_scope() -> None:
     baseline = snapshot("old", {"case": digest("a")})
-    current = snapshot("new", {"case": digest("a")}).model_copy(
-        update={"scope_hash": digest("9")}
-    )
+    current = snapshot("new", {"case": digest("a")}).model_copy(update={"scope_hash": digest("9")})
 
     with pytest.raises(ValueError, match="scopes"):
         compare_inventory(current, baseline)
@@ -100,6 +98,7 @@ def test_baseline_free_delta_keeps_known_legacy_ids_out_of_new_work() -> None:
         "fresh": InventoryDeltaKind.NEW,
         "legacy": InventoryDeltaKind.LEGACY_KNOWN,
     }
+
 
 def test_delta_payload_round_trip_preserves_sorted_candidates() -> None:
     current = snapshot("new", {"fresh": digest("a")})

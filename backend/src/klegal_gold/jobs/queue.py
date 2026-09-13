@@ -119,6 +119,33 @@ class Queue:
             3,
         )
 
+    def submit_current_lawgo(
+        self, document_id: str, dependency_id: UUID, *, request_key: str | None = None
+    ) -> Job:
+        dependency = self.get(dependency_id)
+        if dependency.kind not in {"FETCH_SCOURT_DETAIL", "REFRESH_CURRENT_READER_IMAGES"}:
+            raise ValueError("INVALID_LAWGO_DEPENDENCY")
+        return self._submit(
+            request_key or f"current-lawgo:{dependency_id}:{document_id}",
+            "ENRICH_CURRENT_LAWGO",
+            {"document_id": document_id, "dependency_id": str(dependency_id)},
+            3,
+        )
+
+    def submit_current_reader_refresh(self, document_id: str, image_job_id: UUID) -> Job:
+        # Binding is checked again by the handler against immutable manifest bytes.
+        dependency = self.get(image_job_id)
+        if dependency.kind != "ACQUIRE_IMAGE_BATCH":
+            raise ValueError("INVALID_READER_DEPENDENCY")
+        if len(document_id) != 64 or any(c not in "0123456789abcdef" for c in document_id):
+            raise ValueError("INVALID_READER_DOCUMENT_ID")
+        return self._submit(
+            f"current-reader-refresh:{image_job_id}:{document_id}",
+            "REFRESH_CURRENT_READER_IMAGES",
+            {"document_id": document_id, "image_job_id": str(image_job_id)},
+            3,
+        )
+
     def submit_legacy_reader_batch(self, request_key: str, manifest_artifact_id: str) -> Job:
         if not manifest_artifact_id.strip():
             raise ValueError("INVALID_LEGACY_READER_BATCH_REQUEST")
@@ -231,6 +258,16 @@ class Queue:
                 return None
             row = conn.execute(
                 """SELECT * FROM jobs WHERE status='QUEUED' AND available_at<=clock_timestamp()
+                   AND (kind <> 'REFRESH_CURRENT_READER_IMAGES' OR EXISTS (
+                     SELECT 1 FROM jobs dependency
+                     WHERE dependency.job_id::text=jobs.payload->>'image_job_id'
+                     AND dependency.status IN ('SUCCEEDED','FAILED')
+                   ))
+                   AND (kind <> 'ENRICH_CURRENT_LAWGO' OR EXISTS (
+                     SELECT 1 FROM jobs dependency
+                     WHERE dependency.job_id::text=jobs.payload->>'dependency_id'
+                     AND dependency.status IN ('SUCCEEDED','FAILED')
+                   ))
                    ORDER BY created_at,job_id FOR UPDATE SKIP LOCKED LIMIT 1"""
             ).fetchone()
             if row is None:

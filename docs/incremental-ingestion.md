@@ -6,6 +6,10 @@
 
 > **inventory delta 기반 구현 — 2026-09-11:** `ingestion.delta`가 동일 source·scope의 immutable inventory를 비교하여 `NEW`, `CHANGED`, `UNCHANGED`, `LEGACY_KNOWN`, `MISSING`, `ABSENCE_UNCONFIRMED`으로 기록한다. 두 snapshot이 모두 `COMPLETE`일 때만 `MISSING`을 허용하고, 그 외에는 부재를 확정하지 않는다. 새/변경 ID와 기존 ledger의 미완료 ID만 상세 취득 후보로 돌려준다. `LEGACY_KNOWN`은 corrected Parquet에서 계승할 기존 source ID 기준선에 이미 있다는 뜻일 뿐, canonical 연결이나 본문 최신성을 확정하지 않는다. 결과는 부모 inventory artifact hash를 검증한 뒤 파생 immutable artifact로 저장한다. corrected Parquet 실측은 89,130행 중 유효한 고유 contId 88,607개와 보류값 454개이며 bundle SHA-256은 `3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2`다. `klegal ops preserve-legacy-scourt-catalog <parquet-path>`가 이 기준선을 immutable artifact로 등록한다. `klegal ops plan-inventory-delta <current-snapshot-id> <legacy-catalog-artifact-id> [baseline-snapshot-id]`가 보존된 입력만 비교해 delta artifact와 건수를 출력한다. `klegal ops submit-delta-scourt-details <request-key-prefix> <delta-artifact-id> [max-details]`는 그 artifact의 `NEW`·`CHANGED`만 1~50건씩 idempotent detail job으로 등록한다. live 목록 실행과 worker의 실제 detail 취득은 다음 단계다.
 
+관리자 실행 원칙(2026-09-11): 정기 실행을 두지 않는다. 인증된 관리자만 웹의 신규 판례 증보 시작으로 제한된 scourt inventory job을 명시적으로 등록한다. 작업이 성공하면 같은 화면에서 저장된 snapshot과 legacy catalog의 delta를 계산해 NEW·CHANGED 후보 수를 확인한다. 이 단계는 목록 관찰과 후보 계획만 수행하며, detail 수집은 같은 화면에서 1~50건의 제한된 batch로 명시 등록하며, lawgo 조문 보강·canonical 연결은 각각 별도 관리자 작업으로 남긴다.
+
+2026-09-12 로컬 실증: 관리자 API 경로로 1페이지 20건 inventory를 실행해 20건 `NEW` delta를 보존했고, 그중 1건(`2026000043180`)의 상세 본문을 수집했다. worker는 source artifact·HTML 관찰 manifest와 함께 immutable `CURRENT_SOURCE` reader manifest를 만들고 job checkpoint에 reader document ID를 기록한다. 인증된 `/api/reader` 목록과 보존 HTML 응답을 확인했다. 이 표본은 이미지 참조가 0건이어서 image acquisition·lawgo 조문 보강은 발생하지 않았다. 이어 `/api/cases/search`와 화면 결과를 legacy Parquet와 `CURRENT_SOURCE` reader를 함께 표시하도록 연결했고, `2026두30340` 검색이 `CURRENT_SOURCE` 1건과 reader document ID를 반환하고 해당 HTML이 200으로 열림을 확인했다. 현재 증분 reader의 본문 검색은 보존 manifest를 순회하는 제한된 초기 구현이므로, 수집량이 커지기 전에 재구성 가능한 검색 projection을 별도 추가한다. 다음 단계는 lawgo 연결·조문 보강이다.
+
 2026-09-09 추가 지시 반영. 구현 전 설계. 레거시 `_02`의 contId 집합 차이를 계승하며 선고일을 등록일로 해석하지 않는다.
 
 ## Snapshot
@@ -49,3 +53,7 @@ scourt metadata snapshot → 이전 snapshot 비교 → 신규 contId 및 실패
 ## 선등록·후보강의 범위
 
 2026-09-10 사용자 확정: scourt 본문을 기본 검증 후 먼저 등록하고 lawgo 대기/미연결 보강은 별도 작업으로 처리한다. 제공자가 연결한 조문 정보만 추가하며, 인용을 앱이 해석하여 법령 API로 직접 보강하지 않는다. 목록 변화·대기 기간에 따른 제한된 재시도로 미완료를 추적한다. 현행 사이트 구조 검증 전 과거 crawler를 대량 실행하지 않는다.
+
+## 현재 본문 후속 job — 2026-09-14
+
+상세 본문 보존 checkpoint 뒤 image acquisition → terminal 의존성 확인 reader refresh → lawgo 제공 연결 보강을 각각 별도 job으로 실행한다. 관리자의 명시 증보 요청에서 파생되는 후속 작업이며 정기 실행은 없다. 원문과 이전 reader는 불변이고, 이미지/lawgo 부분 실패는 본문 실패와 구분한다. 관리자 재보강 API·최신 revision 선택·실제 브라우저 검증 및 신규 이미지 실증 한계는 [현재 reader 보강 계약](current-reader-enrichment.md)을 따른다.

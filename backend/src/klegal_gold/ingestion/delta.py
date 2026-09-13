@@ -83,7 +83,6 @@ class InventoryDelta:
             entries=parsed,
         )
 
-
     def payload(self) -> dict[str, object]:
         return {
             "version": self.version,

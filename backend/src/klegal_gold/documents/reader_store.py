@@ -40,6 +40,7 @@ class ReaderStore:
         acquisitions: dict[str, dict[str, Any]],
         linked_images: list[dict[str, Any]] | None = None,
         statute_images: list[dict[str, Any]] | None = None,
+        linked_statutes: list[dict[str, Any]] | None = None,
     ) -> str:
         base = (
             "https://portal.scourt.go.kr/"
@@ -82,8 +83,35 @@ class ReaderStore:
             }
         }
         statutes = statute_occurrences(html)
+        if linked_statutes is not None:
+            if origin != "CURRENT_SOURCE" or len(statutes) != len(linked_statutes):
+                raise ValueError("INVALID_CURRENT_STATUTE_LINKS")
+            for observed, linked in zip(statutes, linked_statutes, strict=True):
+                for key in (
+                    "order",
+                    "reference_id",
+                    "html_tag",
+                    "html_start",
+                    "html_end",
+                    "parent_html_sha256",
+                    "text",
+                    "source_attributes",
+                ):
+                    if observed[key] != linked.get(key):
+                        raise ValueError("CURRENT_STATUTE_POSITION_MISMATCH")
+                if linked["payload"] != observed["payload"]:
+                    from klegal_gold.enrichment.current_lawgo import article_table
+
+                    raw = self.records.read(linked["payload_artifact_id"])
+                    frame = self.records.read(linked["frame_artifact_id"]).decode()
+                    if (
+                        article_table(raw.decode()) != linked["payload"]
+                        or linked["provider_link"]["provider_tag"] not in frame
+                    ):
+                        raise ValueError("CURRENT_STATUTE_EVIDENCE_MISMATCH")
+            statutes = linked_statutes
         for article in statutes:
-            if article["payload"]:
+            if article["payload"] and not article.get("provider_link"):
                 artifact = "legacy-statute:" + article["payload_sha256"]
                 entries[artifact] = {
                     "artifact_id": artifact,
@@ -134,6 +162,11 @@ class ReaderStore:
                 "title": title,
                 "source_id": source_id,
                 "origin": origin,
+                **(
+                    {"current_root_document_id": provenance["current_root_document_id"]}
+                    if origin == "CURRENT_SOURCE" and "current_root_document_id" in provenance
+                    else {}
+                ),
                 "image_count": len(refs),
                 "acquired_count": sum(bool(r.get("blob_hash")) for r in refs),
                 **(
@@ -159,6 +192,67 @@ class ReaderStore:
         }
         self.records.put_artifacts(list(entries.values()))
         return document_id
+
+    def refresh_current_images(self, document_id: str) -> str:
+        manifest = self.read(document_id)
+        if manifest.get("origin") != "CURRENT_SOURCE":
+            raise ValueError("NOT_CURRENT_READER")
+        urls = sorted(
+            {str(ref["resolved_url"]) for ref in manifest["images"] if ref.get("resolved_url")}
+        )
+        acquisitions: dict[str, dict[str, Any]] = {}
+        if urls:
+            with self.records.db.connect() as conn:
+                rows = conn.execute(
+                    "SELECT url,status,blob_hash,last_error_code FROM image_acquisitions "
+                    "WHERE url=ANY(%s)",
+                    (urls,),
+                ).fetchall()
+            for row in rows:
+                entry: dict[str, Any] = {"url": row["url"], "status": row["status"]}
+                if row["status"] == "ACQUIRED":
+                    digest = row["blob_hash"]
+                    raw = self.records.store.path(f"blobs/{digest[:2]}/{digest}").read_bytes()
+                    if sha256(raw).hexdigest() != digest:
+                        raise ValueError("READER_IMAGE_HASH_MISMATCH")
+                    self.records.put_artifact(
+                        "reader-image:" + digest,
+                        raw,
+                        origin="DERIVED",
+                        metadata={"kind": "PRESERVED_IMAGE_BYTES"},
+                    )
+                    entry["sha256"] = digest
+                elif row["last_error_code"]:
+                    entry["error"] = row["last_error_code"]
+                acquisitions[row["url"]] = entry
+        provenance = dict(manifest["provenance"])
+        provenance["current_root_document_id"] = provenance.get(
+            "current_root_document_id", document_id
+        )
+        provenance["previous_reader_document_id"] = document_id
+        provenance["image_refresh"] = "image-acquisition-ledger-1"
+        return self.preserve(
+            self.records.read(manifest["html_artifact_id"]).decode(),
+            title=manifest["title"],
+            source_id=manifest["source_id"],
+            origin="CURRENT_SOURCE",
+            provenance=provenance,
+            acquisitions=acquisitions,
+            statute_images=manifest.get("statute_images"),
+            linked_statutes=[
+                next(
+                    (
+                        old
+                        for old in manifest["statutes"]
+                        if old["reference_id"] == ref["reference_id"]
+                    ),
+                    ref,
+                )
+                for ref in statute_occurrences(
+                    self.records.read(manifest["html_artifact_id"]).decode()
+                )
+            ],
+        )
 
     def validate_name_links(
         self, html: str, refs: list[dict[str, Any]], *, title: str, source_id: str
@@ -264,12 +358,27 @@ class ReaderStore:
         html = self.records.read(manifest["html_artifact_id"]).decode()
         if sha256(html.encode()).hexdigest() != manifest["html_sha256"]:
             raise ValueError("READER_PARENT_MISMATCH")
-        return render_document(
+        rendered = render_document(
             html,
             manifest["images"],
             document_id,
             statute_images=self._manifest_statute_images(manifest),
+            parsed_statutes=manifest["statutes"],
         )
+        if manifest["origin"] == "CURRENT_SOURCE":
+            state = manifest["provenance"].get("lawgo_status", "PENDING")
+            label = {
+                "EXACT": "lawgo 판례 연결 확인 · 조문별 보강 상태와 적용 버전은 각 위치에서 확인",
+                "UNMATCHED": "lawgo 대응 판례 미연결",
+                "AMBIGUOUS": "lawgo 연결 후보 모호 · 검토 필요",
+                "CONFLICT": "lawgo 연결 정보 충돌 · 검토 필요",
+                "CREDENTIAL_UNAVAILABLE": "lawgo 취득 설정 미완료 · 보강 대기",
+                "METADATA_INCOMPLETE": "lawgo 연결 대조 정보 부족 · 보강 대기",
+            }.get(state, "lawgo 연결·보강 대기")
+            rendered = rendered.replace(
+                "<body>", '<body><p class="statute-status">' + label + "</p>", 1
+            )
+        return rendered
 
     @staticmethod
     def _manifest_statute_images(manifest: dict[str, Any]) -> list[dict[str, Any]] | None:
@@ -327,15 +436,24 @@ class ReaderStore:
         raw = self.records.read("reader-image:" + ref["blob_hash"])
         return raw, MEDIA[image_metadata(raw)["format"]]
 
-    def search(self, query: str = "") -> list[dict[str, Any]]:
+    def search(self, query: str = "", *, limit: int = 30, offset: int = 0) -> list[dict[str, Any]]:
+        if not 1 <= limit <= 100 or offset < 0:
+            raise ValueError("INVALID_READER_SEARCH_LIMIT")
         with self.records.db.connect() as conn:
             rows = conn.execute(
-                """SELECT artifact_id,metadata FROM artifacts
-                   WHERE metadata->>'kind'='READER_DOCUMENT'
-                   AND metadata->>'origin'='CURRENT_SOURCE'
-                   AND strpos(lower(metadata->>'title'), lower(%s))>0
-                   ORDER BY created_at DESC,artifact_id LIMIT 30""",
-                (query,),
+                """SELECT artifact_id,metadata FROM (
+                     SELECT DISTINCT ON(a.metadata->>'source_id')
+                       a.artifact_id,a.metadata,a.created_at
+                     FROM artifacts a LEFT JOIN artifacts root ON root.artifact_id=
+                       'reader:' || (a.metadata->>'current_root_document_id')
+                     WHERE a.metadata->>'kind'='READER_DOCUMENT'
+                     AND a.metadata->>'origin'='CURRENT_SOURCE'
+                     ORDER BY a.metadata->>'source_id',
+                       COALESCE(root.created_at,a.created_at) DESC,
+                       a.created_at DESC,a.artifact_id DESC
+                   ) latest WHERE strpos(lower(metadata->>'title'),lower(%s))>0
+                   ORDER BY created_at DESC,artifact_id DESC LIMIT %s OFFSET %s""",
+                (query, limit, offset),
             ).fetchall()
         return [
             {"document_id": r["artifact_id"].removeprefix("reader:"), **r["metadata"]} for r in rows

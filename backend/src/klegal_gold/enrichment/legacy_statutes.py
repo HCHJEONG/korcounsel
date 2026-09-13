@@ -28,7 +28,9 @@ def statute_occurrences(html: str) -> list[dict[str, Any]]:
             if self.hidden:
                 return
             values = dict(attrs)
-            if tag != "a" or not (values.get("name") == "linkContJomun" or "jtable" in values):
+            if tag != "a" or not (
+                values.get("name") in {"linkContJomun", "linkPrvs"} or "jtable" in values
+            ):
                 return
             raw = self.get_starttag_text() or ""
             line, column = self.getpos()
@@ -52,7 +54,9 @@ def statute_occurrences(html: str) -> list[dict[str, Any]]:
                 "version_status": "UNVERIFIED",
                 "text": "",
                 "source_attributes": values,
-                "rule_version": VERSION,
+                "rule_version": "current-scourt-statute-1"
+                if values.get("name") == "linkPrvs"
+                else VERSION,
             }
             self.items.append(item)
             self.active = item

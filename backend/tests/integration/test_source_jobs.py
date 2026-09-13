@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 import pytest
 
 from klegal_gold.db.records import Records
+from klegal_gold.documents.reader_store import ReaderStore
 from klegal_gold.jobs.queue import Queue
 from klegal_gold.jobs.worker import Worker
 from klegal_gold.sources.law_api import Response, UrllibTransport
@@ -102,6 +103,12 @@ def test_scourt_worker_keeps_both_metadata_and_body(db, tmp_path, monkeypatch):
     done = queue.get(job.job_id)
     assert done.status == "SUCCEEDED"
     assert records.read(done.checkpoint["artifact_id"]) == (fixture / "scourt-1.json").read_bytes()
+    reader = ReaderStore(records)
+    manifest = reader.read(done.checkpoint["reader_document_id"])
+    assert manifest["origin"] == "CURRENT_SOURCE"
+    assert manifest["source_id"] == "2252318"
+    assert manifest["title"] == "대법원 20170413 2017도953 판결"
+    assert "상습도박" in reader.html(done.checkpoint["reader_document_id"])
     with db.connect() as conn:
         row = conn.execute("SELECT * FROM source_versions").fetchone()
         assert row["source"] == "scourt"

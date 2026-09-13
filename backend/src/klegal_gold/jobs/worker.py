@@ -5,13 +5,14 @@ import logging
 import signal
 import threading
 import time
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from klegal_gold.assets.images import ImageAcquirer
+from klegal_gold.assets.images import ImageAcquirer, valid_scourt_image_url
 from klegal_gold.config import load_settings
 from klegal_gold.db.records import Records
 from klegal_gold.documents.legacy_batch import LegacyReaderBatch
 from klegal_gold.documents.observe import observe_html
+from klegal_gold.documents.reader_store import ReaderStore
 from klegal_gold.domain.identity import SourceSystem
 from klegal_gold.ingestion.inventory import InventoryCapture, collect_inventory
 from klegal_gold.sources.law_api import LawOpenApiCaseSource, Response
@@ -33,6 +34,7 @@ class Worker:
         self.stop = threading.Event()
         self.worker_id = str(uuid4())
         self.legacy_readers = LegacyReaderBatch(records)
+        self.readers = ReaderStore(records)
 
     def _verify(self, job: Job) -> None:
         blob = self.records.blob(job.payload["artifact_id"])
@@ -93,6 +95,10 @@ class Worker:
         self.queue.heartbeat(job, {"artifact_id": artifact_id})
 
     def _fetch_scourt(self, job: Job) -> None:
+        if job.checkpoint.get("reader_document_id"):
+            self._submit_current_images(job, job.checkpoint)
+            return
+
         def progress() -> None:
             self.queue.worker_heartbeat(self.worker_id)
             self.queue.heartbeat(job)
@@ -106,18 +112,81 @@ class Worker:
         detail = source.fetch_detail(job.payload["source_id"])
         progress()
         artifact_id = save_detail(self.records, detail, str(job.job_id), SourceSystem.SCOURT)
+        body_html = detail.fields["body"]["orgdocXmlCtt"]
+        metadata = detail.fields
+        title = (
+            " ".join(
+                value
+                for value in (
+                    metadata.get("cortNm"),
+                    metadata.get("prnjdgYmd"),
+                    metadata.get("csNoLstCtt"),
+                    metadata.get("adjdTypNm"),
+                )
+                if isinstance(value, str) and value.strip()
+            )
+            or f"scourt {detail.source_id}"
+        )
+        reader_document_id = self.readers.preserve(
+            body_html,
+            title=title,
+            source_id=detail.source_id,
+            origin="CURRENT_SOURCE",
+            provenance={
+                "source_artifact_id": artifact_id,
+                "metadata_response_hash": metadata["metadata_response_hash"],
+                "job_id": str(job.job_id),
+                "court": metadata.get("cortNm"),
+                "case_number": metadata.get("csNoLstCtt"),
+                "decision_date": metadata.get("prnjdgYmd"),
+                "decision_type": metadata.get("adjdTypNm"),
+            },
+            acquisitions={},
+        )
+        observation = observe_html(
+            body_html, "https://portal.scourt.go.kr/", scourt_id=detail.source_id
+        )
         self.records.save_manifest(
             "scourt-document:" + artifact_id,
             "DOCUMENT_OBSERVATION",
             {
                 "parent_artifact_id": artifact_id,
-                "observation": observe_html(
-                    detail.fields["body"]["orgdocXmlCtt"],
-                    "https://portal.scourt.go.kr/",
-                    scourt_id=detail.source_id,
-                ),
+                "reader_document_id": reader_document_id,
+                "observation": observation,
             },
         )
+        references = []
+        for reference in observation["images"]:
+            url = reference.get("resolved_url")
+            resolved = isinstance(url, str) and valid_scourt_image_url(url)
+            references.append(
+                {
+                    **reference,
+                    "source_system": "scourt",
+                    "source_id": detail.source_id,
+                    "reference_status": "RESOLVED" if resolved else "UNRESOLVED",
+                    "reason": "Observed current scourt image URL"
+                    if resolved
+                    else "No validated current scourt image URL",
+                    "reader_document_id": reader_document_id,
+                }
+            )
+        image_manifest_id = None
+        if references:
+            from hashlib import sha256
+
+            raw = json.dumps({"references": references}, sort_keys=True).encode()
+            image_manifest_id = "image-manifest:current-reader-" + sha256(raw).hexdigest()
+            self.records.put_artifact(
+                image_manifest_id,
+                raw,
+                origin="MANIFEST",
+                metadata={
+                    "kind": "IMAGE_REFERENCE_MANIFEST",
+                    "reader_document_id": reader_document_id,
+                },
+                parent_id=artifact_id,
+            )
         self.records.put_artifact(
             "scourt-acquisition:" + str(uuid4()),
             json.dumps(
@@ -134,7 +203,39 @@ class Worker:
             metadata={"kind": "SCOURT_ACQUISITION"},
             parent_id=artifact_id,
         )
-        self.queue.heartbeat(job, {"artifact_id": artifact_id})
+        checkpoint: dict[str, object] = {
+            "artifact_id": artifact_id,
+            "reader_document_id": reader_document_id,
+            "image_manifest_id": image_manifest_id,
+        }
+        self.queue.heartbeat(job, checkpoint)
+        self._submit_current_images(job, checkpoint)
+
+    def _submit_current_images(self, job: Job, checkpoint: dict[str, object]) -> None:
+        checkpoint = dict(checkpoint)
+        if checkpoint.get("image_manifest_id"):
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+            image_job = self.queue.submit_image_batch(
+                "current-reader-images:" + str(job.job_id),
+                str(checkpoint["image_manifest_id"]),
+            )
+            refresh_job = self.queue.submit_current_reader_refresh(
+                str(checkpoint["reader_document_id"]), image_job.job_id
+            )
+            checkpoint.update(
+                image_job_id=str(image_job.job_id), reader_refresh_job_id=str(refresh_job.job_id)
+            )
+        dependency_id = (
+            UUID(str(checkpoint["reader_refresh_job_id"]))
+            if checkpoint.get("reader_refresh_job_id")
+            else job.job_id
+        )
+        lawgo = self.queue.submit_current_lawgo(
+            str(checkpoint["reader_document_id"]), dependency_id
+        )
+        checkpoint["lawgo_job_id"] = str(lawgo.job_id)
+        self.queue.heartbeat(job, checkpoint)
 
     def _inventory(self, job: Job) -> None:
         def progress() -> None:
@@ -220,6 +321,69 @@ class Worker:
             },
         )
 
+    def _enrich_current_lawgo(self, job: Job) -> None:
+        from klegal_gold.enrichment.current_lawgo import CurrentLawgo
+
+        dependency = self.queue.get(UUID(job.payload["dependency_id"]))
+        if dependency.status not in {"SUCCEEDED", "FAILED"}:
+            raise ValueError("LAWGO_DEPENDENCY_NOT_TERMINAL")
+        expected = dependency.payload.get("document_id") or dependency.checkpoint.get(
+            "reader_document_id"
+        )
+        requested = self.readers.read(job.payload["document_id"])
+        root = requested["provenance"].get("current_root_document_id", job.payload["document_id"])
+        if expected != root:
+            raise ValueError("LAWGO_DEPENDENCY_MISMATCH")
+        document_id = (
+            dependency.checkpoint.get("reader_document_id")
+            if dependency.status == "SUCCEEDED"
+            else None
+        )
+        document_id = document_id or job.payload["document_id"]
+        if job.payload["document_id"] != root:
+            document_id = job.payload["document_id"]
+
+        def progress() -> None:
+            self.queue.worker_heartbeat(self.worker_id)
+            self.queue.heartbeat(job)
+            if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                raise CheckpointRequested
+
+        revision = CurrentLawgo(self.records).run(document_id, str(job.job_id), progress)
+        self.queue.heartbeat(
+            job,
+            {
+                "reader_document_id": revision,
+                "lawgo_status": self.readers.read(revision)["provenance"]["lawgo_status"],
+            },
+        )
+
+    def _refresh_current_reader_images(self, job: Job) -> None:
+        dependency = self.queue.get(UUID(job.payload["image_job_id"]))
+        if dependency.kind != "ACQUIRE_IMAGE_BATCH" or dependency.status not in {
+            "SUCCEEDED",
+            "FAILED",
+        }:
+            raise ValueError("READER_DEPENDENCY_NOT_TERMINAL")
+        document_id = job.payload["document_id"]
+        payload = json.loads(self.records.read(dependency.payload["manifest_artifact_id"]))
+        if not any(
+            isinstance(ref, dict) and ref.get("reader_document_id") == document_id
+            for ref in payload.get("references", [])
+        ):
+            raise ValueError("READER_DEPENDENCY_MISMATCH")
+        self.queue.heartbeat(job, {"phase": "REFRESHING", "image_job_status": dependency.status})
+        revision = self.readers.refresh_current_images(document_id)
+        self.queue.heartbeat(
+            job,
+            {
+                "phase": "PUBLISHED",
+                "image_job_status": dependency.status,
+                "reader_document_id": revision,
+                "previous_reader_document_id": document_id,
+            },
+        )
+
     def _stage_legacy_reader(self, job: Job) -> None:
         settings = load_settings()
         if settings.legacy_parquet_path is None:
@@ -278,6 +442,10 @@ class Worker:
                 self._fetch_scourt(job)
             elif job.kind == "FETCH_SCOURT_INVENTORY":
                 self._inventory(job)
+            elif job.kind == "ENRICH_CURRENT_LAWGO":
+                self._enrich_current_lawgo(job)
+            elif job.kind == "REFRESH_CURRENT_READER_IMAGES":
+                self._refresh_current_reader_images(job)
             elif job.kind == "ACQUIRE_IMAGE_BATCH":
                 self._acquire_images(job)
             else:

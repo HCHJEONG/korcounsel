@@ -157,9 +157,7 @@ def plan_inventory_delta(
         if baseline_snapshot_id is not None
         else None
     )
-    catalog = LegacySourceCatalog.from_payload(
-        json.loads(records.read(legacy_catalog_artifact_id))
-    )
+    catalog = LegacySourceCatalog.from_payload(json.loads(records.read(legacy_catalog_artifact_id)))
     if current.source.value != catalog.source:
         raise ValueError("LEGACY_CATALOG_SOURCE_MISMATCH")
     delta = compare_inventory(current, baseline, legacy_source_ids=catalog.source_ids)
@@ -292,13 +290,14 @@ def preserve_document_image_manifest(source_id: str, observation_artifact_id: st
     references = manifest["image_references"]
     assert isinstance(references, list)
     blob = records.put_artifact(
-        manifest_id, json.dumps(manifest, sort_keys=True).encode(), origin="MANIFEST",
+        manifest_id,
+        json.dumps(manifest, sort_keys=True).encode(),
+        origin="MANIFEST",
         metadata={"kind": "DOCUMENT_IMAGE_REFERENCE_MANIFEST"},
     )
     typer.echo(
         json.dumps(
-            {"artifact_id": manifest_id, "sha256": blob.sha256,
-             "references": len(references)}
+            {"artifact_id": manifest_id, "sha256": blob.sha256, "references": len(references)}
         )
     )
 

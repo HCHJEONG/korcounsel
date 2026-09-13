@@ -1,14 +1,18 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 type CaseItem = {
-  court: string | null; case_numbers: string[]; decision_date: string | null
-  row_position: number; original_index: string; matched_columns: string[]; body_hash: string
+  source: string; display_title: string; court: string | null; case_numbers: string[]
+  decision_date: string | null; row_position: number | null; original_index: string | null
+  matched_columns: string[]; body_hash: string | null; reader_document_id: string | null
 }
 type ReaderItem = {
   document_id: string; title: string; source_id: string; origin: string
   image_count: number; acquired_count: number
 }
 type Selection = { title: string; url: string; note: string }
+type AdminDelta = { artifact_id: string; counts: Record<string, number> }
+type DetailSubmission = { candidate_count: number; registered: number; job_ids: string[] }
+type DetailStatus = { total: number; completed: number; statuses: Record<string, number> }
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false)
@@ -24,6 +28,14 @@ export default function App() {
   const [selection, setSelection] = useState<Selection | null>(null)
   const [document, setDocument] = useState('')
   const [readerStatus, setReaderStatus] = useState('')
+  const [adminJob, setAdminJob] = useState('')
+  const [adminJobStatus, setAdminJobStatus] = useState('')
+  const [adminDelta, setAdminDelta] = useState<AdminDelta | null>(null)
+  const [detailBatch, setDetailBatch] = useState(10)
+  const [detailSubmission, setDetailSubmission] = useState<DetailSubmission | null>(null)
+  const [detailStatus, setDetailStatus] = useState<DetailStatus | null>(null)
+  const [inventoryPages, setInventoryPages] = useState(1)
+  const [inventoryDisplay, setInventoryDisplay] = useState(20)
   const generation = useRef(0)
   const readerRequest = useRef(0)
 
@@ -38,6 +50,11 @@ export default function App() {
     setDocument('')
     setBusy(false)
     setReaderStatus('')
+    setAdminJob('')
+    setAdminJobStatus('')
+    setAdminDelta(null)
+    setDetailSubmission(null)
+    setDetailStatus(null)
   }, [])
 
   const checkSession = useCallback(async () => {
@@ -80,6 +97,44 @@ export default function App() {
     return () => { controller.abort(); window.removeEventListener('focus', onFocus); window.clearInterval(timer) }
   }, [authenticated, checkSession, clearPrivate])
 
+  useEffect(() => {
+    if (!adminJob || !authenticated) return
+    if (adminJobStatus === 'SUCCEEDED' || adminJobStatus === 'FAILED') return
+    let stopped = false
+    const refresh = async () => {
+      try {
+        const response = await fetch('/api/admin/jobs/' + adminJob, { cache: 'no-store' })
+        if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+        if (!response.ok) throw new Error('job status unavailable')
+        const job = await response.json() as { status: string }
+        if (!stopped) setAdminJobStatus(job.status)
+      } catch { if (!stopped) setMessage('증보 작업 상태를 불러올 수 없습니다.') }
+    }
+    void refresh()
+    const timer = window.setInterval(() => { void refresh() }, 5000)
+    return () => { stopped = true; window.clearInterval(timer) }
+  }, [adminJob, adminJobStatus, authenticated, clearPrivate])
+  useEffect(() => {
+    if (!authenticated || !detailSubmission || detailSubmission.registered === 0) return
+    let stopped = false
+    const refresh = async () => {
+      try {
+        const parameters = new URLSearchParams()
+        detailSubmission.job_ids.forEach(jobId => parameters.append('job_id', jobId))
+        const response = await fetch('/api/admin/jobs?' + parameters, { cache: 'no-store' })
+        if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+        if (!response.ok) throw new Error('detail status unavailable')
+        const status = await response.json() as DetailStatus
+        if (!stopped) {
+          setDetailStatus(status)
+          if (status.completed === status.total && timer !== undefined) window.clearInterval(timer)
+        }
+      } catch { if (!stopped) setMessage('상세 수집 작업 상태를 불러올 수 없습니다.') }
+    }
+    void refresh()
+    const timer = window.setInterval(() => { void refresh() }, 5000)
+    return () => { stopped = true; if (timer !== undefined) window.clearInterval(timer) }
+  }, [authenticated, clearPrivate, detailSubmission])
   async function login(event: FormEvent) {
     event.preventDefault()
     generation.current += 1
@@ -107,6 +162,55 @@ export default function App() {
     } catch { setMessage('로그아웃에 실패했습니다. 다시 시도하세요.'); setBusy(false) }
   }
 
+  async function startIncremental() {
+    setBusy(true); setMessage('증보 작업을 등록하고 있습니다.'); setAdminJob(''); setAdminJobStatus(''); setAdminDelta(null); setDetailSubmission(null); setDetailStatus(null)
+    try {
+      const response = await fetch('/api/admin/scourt-inventory', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ max_pages: inventoryPages, display: inventoryDisplay }),
+      })
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (response.status === 403) { setMessage('관리자만 증보 작업을 등록할 수 있습니다.'); return }
+      if (!response.ok) throw new Error('submit failed')
+      const job = await response.json() as { job_id: string; status: string }
+      setAdminJob(job.job_id); setMessage(`증보 작업이 ${job.status} 상태로 등록되었습니다.`)
+    } catch { setMessage('증보 작업 등록에 실패했습니다.') }
+    finally { setBusy(false) }
+  }
+  async function calculateDelta() {
+    if (!adminJob || adminJobStatus !== 'SUCCEEDED') return
+    setBusy(true); setMessage('신규·변경 후보를 계산하고 있습니다.'); setAdminDelta(null); setDetailSubmission(null); setDetailStatus(null)
+    try {
+      const response = await fetch('/api/admin/jobs/' + adminJob + '/delta', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}',
+      })
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (response.status === 403) { setMessage('관리자만 후보를 계산할 수 있습니다.'); return }
+      if (!response.ok) throw new Error('delta failed')
+      const delta = await response.json() as AdminDelta
+      setAdminDelta(delta)
+      setMessage('신규·변경 후보를 계산했습니다.')
+    } catch { setMessage('신규·변경 후보 계산에 실패했습니다.') }
+    finally { setBusy(false) }
+  }
+  async function submitDetailBatch() {
+    if (!adminDelta) return
+    setBusy(true); setMessage('상세 본문 수집 작업을 등록하고 있습니다.'); setDetailSubmission(null); setDetailStatus(null)
+    try {
+      const response = await fetch(
+        '/api/admin/deltas/' + encodeURIComponent(adminDelta.artifact_id) + '/scourt-details?'
+          + new URLSearchParams({ max_details: String(detailBatch) }),
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+      )
+      if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
+      if (response.status === 403) { setMessage('관리자만 상세 수집을 등록할 수 있습니다.'); return }
+      if (!response.ok) throw new Error('detail submit failed')
+      const submitted = await response.json() as DetailSubmission
+      setDetailSubmission(submitted)
+      setMessage(`${submitted.registered}건의 상세 본문 수집 작업을 등록했습니다.`)
+    } catch { setMessage('상세 본문 수집 작업 등록에 실패했습니다.') }
+    finally { setBusy(false) }
+  }
   async function search(event: FormEvent) {
     event.preventDefault()
     if (!query.trim()) return
@@ -177,19 +281,52 @@ export default function App() {
         </form>
         <p className="login-help">허용된 관리자 또는 편집자 계정으로 로그인하세요.</p>
       </section> : <>
-        <section aria-labelledby="search-title">
+        {role === 'admin' && <section aria-labelledby="ingestion-title" className="admin-panel">
+          <h2 id="ingestion-title">신규 판례 증보</h2>
+          <p>scourt 현재 목록을 관찰해 신규·변경 후보를 기록합니다.</p>
+          <div className="search-row">
+            <label htmlFor="inventory-pages">페이지 수</label>
+            <select id="inventory-pages" value={inventoryPages} disabled={busy} onChange={event => setInventoryPages(Number(event.target.value))}>
+              {[1, 2, 3, 5, 10].map(value => <option key={value} value={value}>{value}페이지</option>)}
+            </select>
+            <label htmlFor="inventory-display">페이지당 건수</label>
+            <select id="inventory-display" value={inventoryDisplay} disabled={busy} onChange={event => setInventoryDisplay(Number(event.target.value))}>
+              {[20, 50, 100].map(value => <option key={value} value={value}>{value}건</option>)}
+            </select>
+            <button disabled={busy} onClick={() => void startIncremental()}>신규 판례 증보 시작</button>
+          </div>
+          <p>이번 실행 범위: 최대 {inventoryPages * inventoryDisplay}건. 목록 관찰만 등록하며 상세 수집은 결과를 확인한 뒤 별도로 실행합니다.</p>
+          {adminJob && <p role="status">등록 job: {adminJob} · 상태: {adminJobStatus || "확인 중"}</p>}
+          {adminJobStatus === 'SUCCEEDED' && <button disabled={busy} onClick={() => void calculateDelta()}>신규·변경 후보 계산</button>}
+          {adminDelta && <>
+            <p role="status">후보 계산 완료 · 신규 {adminDelta.counts.NEW ?? 0}건 · 변경 {adminDelta.counts.CHANGED ?? 0}건 · 미변경 {adminDelta.counts.UNCHANGED ?? 0}건</p>
+            <div className="search-row">
+              <label htmlFor="detail-batch">상세 수집 건수</label>
+              <select id="detail-batch" value={detailBatch} disabled={busy} onChange={event => setDetailBatch(Number(event.target.value))}>
+                {[1, 5, 10, 25, 50].map(value => <option key={value} value={value}>{value}건</option>)}
+              </select>
+              <button disabled={busy || (adminDelta.counts.NEW ?? 0) + (adminDelta.counts.CHANGED ?? 0) === 0} onClick={() => void submitDetailBatch()}>상세 본문 수집 등록</button>
+            </div>
+            {detailSubmission && <p role="status">상세 수집 등록 {detailSubmission.registered}건 / 후보 {detailSubmission.candidate_count}건</p>}
+            {detailStatus && <p role="status">상세 수집 완료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')}</p>}
+          </>}
+        </section>}        <section aria-labelledby="search-title">
           <h2 id="search-title">판례 검색</h2>
           <form onSubmit={event => void search(event)} className="search-form">
             <label htmlFor="query">법원명 · 사건번호 · 본문 문자열</label>
             <div className="search-row"><input id="query" required maxLength={200} value={query} onChange={event => setQuery(event.target.value)} /><button disabled={busy}>검색</button></div>
           </form>
           {results.length > 0 && <div className="result-table"><table>
-            <thead><tr><th>법원</th><th>사건번호</th><th>선고일</th><th>본문</th></tr></thead>
-            <tbody>{results.map(item => <tr key={item.row_position}><td>{item.court ?? '미상'}</td><td>{item.case_numbers.join(', ')}</td><td>{item.decision_date ?? '미상'}</td><td><button onClick={() => void openDocument({
-              title: item.case_numbers.join(', ') || '보존 판례',
+            <thead><tr><th>법원</th><th>사건번호 · 제목</th><th>선고일</th><th>출처</th><th>본문</th></tr></thead>
+            <tbody>{results.map(item => <tr key={item.reader_document_id ?? `legacy-${item.row_position}`}><td>{item.court ?? '미상'}</td><td>{item.display_title}</td><td>{item.decision_date ?? '미상'}</td><td>{item.source === 'CURRENT_SOURCE' ? '현재 수집' : '기존 corpus'}</td><td>{item.reader_document_id ? <button onClick={() => void openDocument({
+              title: item.display_title,
+              url: `/api/reader/${item.reader_document_id}/html`,
+              note: '현재 scourt에서 보존한 본문입니다. 이미지·조문 보강 상태는 원래 위치에 표시합니다.',
+            })}>본문 열기</button> : item.row_position !== null && item.body_hash ? <button onClick={() => void openDocument({
+              title: item.display_title,
               url: `/api/cases/${item.row_position}/body?body_hash=${item.body_hash}`,
               note: '과거 보존 본문입니다. 아직 연결되지 않은 이미지는 해당 위치에 미확보 상태로 표시합니다.',
-            })}>본문 열기</button></td></tr>)}</tbody>
+            })}>본문 열기</button> : <span>본문 버전 미확보</span>}</td></tr>)}</tbody>
           </table></div>}
         </section>
         <section aria-labelledby="samples-title">

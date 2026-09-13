@@ -161,7 +161,9 @@ def _render_content(
         def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
             if tag == "a" and not self.hidden and statutes:
                 values = dict(attrs)
-                if values.get("name") == "linkContJomun" or "jtable" in values:
+                if (
+                    values.get("name") in {"linkContJomun", "linkPrvs"} or "jtable" in values
+                ) and self.article_order < len(articles):
                     number = self.article_order
                     self.article_order += 1
                     self.article_open = True
@@ -235,7 +237,7 @@ def _render_content(
     if articles:
         output += '<section class="statute-enrichment"><h2>보존된 법령·조문 보강</h2>'
         output += (
-            "<p>기존 lawgo 보강 내용입니다. "
+            "<p>lawgo 제공 보강 내용입니다. "
             "판례 적용 법령 버전과 과거 취득 시각은 미확인입니다.</p>"
         )
         rendered_payloads: dict[tuple[str, int | None], str] = {}
@@ -275,6 +277,8 @@ def _render_content(
                     + escape(article["payload"])
                     + "</p>"
                 )
+            elif article.get("provider_status") == "FAILED":
+                output += '<p class="statute-status">제공 조문 취득 실패 · 재시도 대기</p>'
             else:
                 output += (
                     '<p class="statute-status">조문 내용 미연결 · 제공 정보 부재 여부 미확인</p>'
