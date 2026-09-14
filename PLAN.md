@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**lawgo 미연결 위치 감사 — 2026-09-14:** 2010두9976의 미연결 2곳은 보존 lawgo frame에서도 a 태그 없는 일반 텍스트였다. 약칭 추정 연결을 하지 않고 UNLINKED를 유지하며 원문 위치·hash·판단을 별도 immutable 감사 artifact에 보존했다. 앱 코드 변경 없음. 브라우저 재연결은 Windows sandbox 초기화 오류로 실패했다. [조사 기록](docs/lawgo-popup-variants.md#미연결-두-위치-조사--2026-09-14-후속).
+
 **lawgo 날짜 지정 팝업 — 2026-09-14:** 실제 precYYYYMMDD 형식을 확인해 제공 날짜를 유지하는 요청·manifest와 날짜 충돌 보류를 구현했다. 2010두9976 한 건에서 날짜 지정 3곳 및 총 24/26 조문 보강, 일반 검색 최신 revision·반환 HTML·원문 불변·401을 검증했다. 회귀 723건 통과. 브라우저 육안 검증은 Windows sandbox 초기화 오류로 미실행이다. [관찰·구현·한계](docs/lawgo-popup-variants.md).
 
 **신규 조문 이미지 — 2026-09-14 완료:** provider popup 내 이미지 위치→취득 ledger→새 reader chain을 연결했다. 2010구합13975 한 건을 관리자 API로 재수집해 조문 10/11곳 보강·이미지 2곳 표시·원문 hash 불변·이미지 401을 확인했다. 이미지 bytes는 기존 성공 파일을 재사용했다. 전체 회귀 715건 통과. 다른 popup 형식은 후속이다. [구현·실증·한계](docs/current-statute-images.md).

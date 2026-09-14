@@ -29,3 +29,14 @@ current-lawgo-2는 정확한 네 인자 JO 호출의 prec 또는 prec+유효한 
 ## 회귀와 남은 범위
 
 Python/PostgreSQL 723개 회귀와 ruff check/format·mypy를 통과했다. 날짜 유지·legacy plan 호환·잘못된 날짜·namespace 거부·동일 조문 날짜 충돌의 요청 차단·원문 불변을 검증했다. 본 작업은 관찰된 날짜 지정 JO 형식에 한정한다. 별표·서식·조약 등 다른 분기는 실제 판례 연결 표본과 취득/표시 계약을 확인하기 전까지 미지원이며, 문구 불일치는 미연결로 남긴다. 자동 schedule·commit/push·AWS 변경은 하지 않았다.
+
+
+## 미연결 두 위치 조사 — 2026-09-14 후속
+
+최종 reader의 article_order 23(공정거래법 제23조 제1항 제5호)과 25(구 공정거래법 시행령 … 제36조 제1항)를 저장된 lawgo frame에 대조했다. 두 문구는 ‘상고이유 제2점에 관한 판단’ 아래 밑줄 본문에서 일반 텍스트로 제공되며 해당 위치를 감싸는 a 태그가 없다. 날짜 지정 팝업을 잘못 파싱해서 생긴 누락이 아니다.
+
+다른 위치에는 법령 전체 명칭의 제공 링크가 있지만, 두 약칭 문구와 정확히 일치하는 제공 링크는 없다. 앱이 약칭을 해석하거나 다른 위치의 조문을 추정 연결하지 않는 계약에 따라 두 위치의 UNLINKED를 유지한다. 이 판단은 해당 보존 frame에 대한 조사이며 법령 전체의 제공 여부나 향후 제공자 변경을 단정하지 않는다. 이미 문구가 같은 ‘제2항’ 등 다른 참조의 연결 정책을 이 조사만으로 확대하지 않았다.
+
+감사 artifact는 lawgo-link-audit:9b7001c11acd945280f874aaa384c843eef02c0741acb2d5196c1d6af517ef81이다. 부모 frame artifact·SHA-256, reader reference ID, scourt HTML 위치, provider HTML 위치, KEEP_UNLINKED 판단을 별도 immutable artifact에 보존했다. 파일 증거는 data/lawgo-unlinked-audit-20260914.json이다. source/reader/payload는 변경하지 않았고 외부 조문을 추가 요청하지 않았다.
+
+브라우저 런타임을 초기화해 재시도했으나 Windows sandbox setup refresh 오류로 실패했다. 브라우저 검색→본문 육안 검증은 여전히 미실행이다. 이번 단계는 데이터 감사와 문서 갱신이며 앱 코드 변경·회귀 재실행은 없다. 이전 전체 723개 회귀 통과 기록을 이번 재실행으로 표현하지 않는다.
