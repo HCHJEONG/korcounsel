@@ -12,6 +12,7 @@ from klegal_gold.config import load_settings
 from klegal_gold.db.records import Records
 from klegal_gold.documents.reader_store import ReaderStore
 from klegal_gold.enrichment.legacy_statutes import statute_occurrences
+from klegal_gold.enrichment.statute_images import current_statute_images
 from klegal_gold.normalize.decision import decision_kind, docket_aliases
 from klegal_gold.sources.law_api import LawOpenApiCaseSource
 from klegal_gold.sources.lawgo_html import fetch_provider_html
@@ -293,4 +294,7 @@ class CurrentLawgo:
                 if ref.get("resolved_url")
             },
             linked_statutes=statutes,
+            statute_images=current_statute_images(
+                self.records, html, statutes, original.get("statute_images")
+            ),
         )

@@ -64,3 +64,6 @@ Python ruff check/format·mypy, 실제 PostgreSQL을 포함한 전체 회귀 706
 - 이 버튼은 lawgo 조문 재확인용이다. 이미지 미확보 재취득용 관리자 UI, 다른 lawgo popup 형식, 조문 내부 추가 이미지의 취득은 남은 범위다. commit/push와 정기 실행은 수행하지 않았다.
 
 검색 전용 PostgreSQL 색인과 현재 본문 이미지 재취득 UI의 후속 구현·실측은 [검색 색인과 이미지 재취득](search-index-and-image-retry.md)을 따른다. 위의 해당 기능 미구현 표시는 당시 실행 이력이다.
+
+
+신규 조문 내부 이미지의 후속 취득·reader 발급과 실제 표본 검증은 [2026-09-14 추가 기록](current-statute-images.md)을 따른다.

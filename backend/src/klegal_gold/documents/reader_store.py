@@ -196,6 +196,8 @@ class ReaderStore:
         return document_id
 
     def refresh_current_images(self, document_id: str) -> str:
+        from klegal_gold.enrichment.statute_images import current_statute_images
+
         manifest = self.read(document_id)
         if manifest.get("origin") != "CURRENT_SOURCE":
             raise ValueError("NOT_CURRENT_READER")
@@ -240,7 +242,12 @@ class ReaderStore:
             origin="CURRENT_SOURCE",
             provenance=provenance,
             acquisitions=acquisitions,
-            statute_images=manifest.get("statute_images"),
+            statute_images=current_statute_images(
+                self.records,
+                self.records.read(manifest["html_artifact_id"]).decode(),
+                manifest["statutes"],
+                manifest.get("statute_images"),
+            ),
             linked_statutes=[
                 next(
                     (
@@ -423,7 +430,7 @@ class ReaderStore:
         html = self.records.read(manifest["html_artifact_id"]).decode()
         if sha256(html.encode()).hexdigest() != manifest["html_sha256"]:
             raise ValueError("READER_PARENT_MISMATCH")
-        validate_statute_image_links(html, refs)
+        validate_statute_image_links(html, refs, parsed_statutes=manifest["statutes"])
         for ref in refs:
             if ref["article_order"] == article_order and ref["order"] == image_order:
                 return self._statute_blob(ref)

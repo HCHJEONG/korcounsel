@@ -57,7 +57,10 @@ def document_html(
             "Content-Security-Policy": CSP,
             "X-Content-Type-Options": "nosniff",
             "X-Reader-Origin": store.read(document_id)["origin"],
-            "X-Reader-Image-Count": str(len(store.read(document_id)["images"])),
+            "X-Reader-Image-Count": str(
+                len(store.read(document_id)["images"])
+                + len(store.read(document_id).get("statute_images", []))
+            ),
         },
     )
 

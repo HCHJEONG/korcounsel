@@ -7,7 +7,7 @@ from datetime import date
 from typing import Annotated, Any
 from uuid import UUID, uuid4
 
-from fastapi import Depends, FastAPI, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from starlette.responses import Response
 
@@ -153,7 +153,9 @@ def create_app() -> FastAPI:
         settings = load_settings()
         db = Database.from_settings(settings)
         manifest = ReaderStore(Records(db, FileStore(settings.data_dir))).read(document_id)
-        if manifest["origin"] != "CURRENT_SOURCE" or not manifest["images"]:
+        if manifest["origin"] != "CURRENT_SOURCE" or not (
+            manifest["images"] or manifest.get("statute_images")
+        ):
             raise ValueError("CURRENT_READER_IMAGES_REQUIRED")
         job = Queue(db).submit_current_image_retry(
             "web-image-retry:" + str(body.request_id), document_id
@@ -260,6 +262,7 @@ def create_app() -> FastAPI:
     def submit_scourt_delta_details(
         artifact_id: str,
         max_details: int = Query(default=10, ge=1, le=50),
+        refresh_source_id: str | None = Query(default=None, pattern=r"^[0-9]{1,30}$"),
         _: object = Depends(require_admin),
     ) -> dict[str, object]:
         settings = load_settings()
@@ -271,6 +274,14 @@ def create_app() -> FastAPI:
         if delta.source != "scourt":
             raise ValueError("NOT_SCOURT_INVENTORY_DELTA")
         candidates = detail_fetch_candidates(delta)
+        if refresh_source_id is not None:
+            if not any(
+                entry.source_id == refresh_source_id
+                and entry.kind in {"NEW", "LEGACY_KNOWN", "CHANGED", "UNCHANGED"}
+                for entry in delta.entries
+            ):
+                raise HTTPException(status_code=400, detail="SOURCE_NOT_IN_OBSERVED_DELTA")
+            candidates = (refresh_source_id,)
         queue = Queue(db, lease_seconds=300)
         request_key_prefix = "web-scourt-detail:" + uuid4().hex
         jobs = [

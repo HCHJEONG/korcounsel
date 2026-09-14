@@ -42,7 +42,7 @@ CURRENT_SOURCE까지 합친 일반 검색 API의 사건번호 표본은 앞선 �
 
 ## 범위와 한계
 
-검색 색인은 추가 DB 공간을 사용한다. 이전 snapshot은 자동 삭제하지 않는다. 아주 짧거나 흔한 검색어는 trigram 선택도가 낮을 수 있다. CURRENT_SOURCE 본문 색인과 50개 초과 URL 처리는 아래 후속 구현으로 확장했다. 기존 단일 배치 job의 한도 계약은 유지한다. 이미지 재취득은 저장된 주소 기준이며 현재 제공자 mapping을 다시 관찰하는 작업이나 legacy reader 재보강을 대신하지 않는다. 다른 lawgo popup 형식과 조문 내부 추가 이미지 취득은 별도 범위로 남는다.
+검색 색인은 추가 DB 공간을 사용한다. 이전 snapshot은 자동 삭제하지 않는다. 아주 짧거나 흔한 검색어는 trigram 선택도가 낮을 수 있다. CURRENT_SOURCE 본문 색인과 50개 초과 URL 처리는 아래 후속 구현으로 확장했다. 기존 단일 배치 job의 한도 계약은 유지한다. 이미지 재취득은 저장된 주소 기준이며 현재 제공자 mapping을 다시 관찰하는 작업이나 legacy reader 재보강을 대신하지 않는다. 조문 내부 추가 이미지 취득은 [후속 구현](current-statute-images.md)에 연결했다. 다른 lawgo popup 형식은 후속 범위다.
 
 
 ## CURRENT_SOURCE 본문 색인·이미지 분할 — 2026-09-14 후속

@@ -59,7 +59,9 @@ def test_provider_enrichment_preserves_original_positions_and_restarts(db, tmp_p
             raise ValueError("LAWGO_TRANSPORT_FAILED")
         table = (
             '<table summary="조문정보"><tbody id="lsLinkTable">'
-            "<tr><td>제246조 보존 내용</td></tr></tbody></table>"
+            '<tr><td>제246조 보존 내용<img src="/flDownload.do?flSeq=123">'
+            '<img src="/flDownload.do?flSeq=123"><img src="/flDownload.do?flSeq=456">'
+            '<img src="https://example.invalid/missing.png"></td></tr></tbody></table>'
         )
         records.put_artifact(key, table.encode(), origin="HTTP_RESPONSE", metadata={})
         return table.encode()
@@ -81,6 +83,44 @@ def test_provider_enrichment_preserves_original_positions_and_restarts(db, tmp_p
     assert store.refresh_current_images(revision) != revision
     assert "제246조 보존 내용" in store.html(store.refresh_current_images(revision))
     assert CurrentLawgo(records).run(doc, "test", lambda: None) == revision
+    from uuid import UUID
+
+    from klegal_gold.assets.images import DownloadedImage, ImageAcquirer
+    from klegal_gold.jobs.queue import Queue
+    from klegal_gold.jobs.worker import Worker
+
+    gif = bytes.fromhex(
+        "47494638396101000100800000000000ffffff21f90401000000002c00000000010001000002024401003b"
+    )
+    queue = Queue(db)
+    retry = queue.submit_current_image_retry("statute-retry", revision)
+
+    def fetch(url, limit):
+        if url.endswith("456"):
+            raise ValueError("IMAGE_NETWORK_ERROR")
+        return DownloadedImage(gif, "image/gif", {})
+
+    monkeypatch.setattr(
+        "klegal_gold.jobs.worker.ImageAcquirer",
+        lambda records: ImageAcquirer(records, fetcher=fetch),
+    )
+    worker = Worker(queue, records)
+    for _ in range(3):
+        worker.run_once()
+    refresh = queue.get(UUID(queue.get(retry.job_id).checkpoint["follow_up_job_id"]))
+    assert refresh.status == "SUCCEEDED"
+    final = refresh.checkpoint["reader_document_id"]
+    assert [r["status"] for r in store.read(final)["statute_images"]] == [
+        "ACQUIRED",
+        "ACQUIRED",
+        "FAILED",
+        "PENDING",
+    ]
+    assert store.statute_image(final, 0, 0)[0] == gif
+    assert store.statute_image(final, 0, 1)[0] == gif
+    assert store.read(final)["html_sha256"] == store.read(doc)["html_sha256"]
+    assert store.read(revision)["statute_images"][0]["status"] == "PENDING"
+    assert "/statutes/0/images/0" in store.html(final)
 
 
 def test_unmatched_lawgo_is_not_case_failure(db, tmp_path, monkeypatch):
@@ -127,3 +167,41 @@ def test_error_response_is_preserved_and_remains_failed_on_resume(db, tmp_path, 
             CurrentLawgo(records)._request("lsLinkProc.do", {}, "response-test")
     assert records.read("response-test") == b"provider error"
     assert len(calls) == 1
+
+
+def test_admin_explicit_refresh_is_limited_to_observed_ids(db, tmp_path, monkeypatch):
+    from importlib import import_module
+
+    from fastapi.testclient import TestClient
+
+    from klegal_gold.config import Settings
+    from klegal_gold.web.auth import require_admin
+
+    web = import_module("klegal_gold.web.app")
+    settings = Settings(data_dir=tmp_path, database_url="postgresql://unused")
+    monkeypatch.setattr(web, "load_settings", lambda: settings)
+    monkeypatch.setattr(web.Database, "from_settings", lambda _: db)
+    records = Records(db, FileStore(tmp_path))
+    records.put_artifact(
+        "observed-delta",
+        json.dumps(
+            {
+                "version": "inventory-delta-1",
+                "current_snapshot_id": "sample",
+                "source": "scourt",
+                "scope_hash": "a" * 64,
+                "absence_is_confirmed": False,
+                "entries": [{"source_id": "123", "kind": "LEGACY_KNOWN"}],
+            }
+        ).encode(),
+        origin="DERIVED",
+        metadata={},
+    )
+    app = web.create_app()
+    app.dependency_overrides[require_admin] = lambda: object()
+    client = TestClient(app)
+    headers = {"Origin": settings.web_origin}
+    url = "/api/admin/deltas/observed-delta/scourt-details"
+    assert client.post(url, headers=headers).json()["registered"] == 0
+    assert client.post(url + "?refresh_source_id=456", headers=headers).status_code == 400
+    assert client.post(url + "?refresh_source_id=123", headers=headers).json()["registered"] == 1

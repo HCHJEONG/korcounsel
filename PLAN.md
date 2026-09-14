@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**신규 조문 이미지 — 2026-09-14 완료:** provider popup 내 이미지 위치→취득 ledger→새 reader chain을 연결했다. 2010구합13975 한 건을 관리자 API로 재수집해 조문 10/11곳 보강·이미지 2곳 표시·원문 hash 불변·이미지 401을 확인했다. 이미지 bytes는 기존 성공 파일을 재사용했다. 전체 회귀 715건 통과. 다른 popup 형식은 후속이다. [구현·실증·한계](docs/current-statute-images.md).
+
 **현재 본문 검색·이미지 분할 — 2026-09-14 완료:** CURRENT_SOURCE 제목·HTML 색인을 새 reader 발급과 관리자 재구축에 연결했다. 이미지 50개 배치 checkpoint 재개로 뒤쪽 URL까지 처리하고 전체 처리 후 reader를 발급한다. PostgreSQL 103 URL 시험과 전체 714개 회귀 통과. 로컬 기존 1,836개 revision 색인·원문 전수 대조를 완료했고 본문 검색 표본 0.0354초 및 검색→이미지·조문 표시를 검증했다. [계약과 검증](docs/search-index-and-image-retry.md).
 
 **검색 전용 색인·이미지 재취득 — 2026-09-14 완료:** PostgreSQL 전 컬럼 검색 projection 89,130행 구축과 원행 위치·본문 hash 전수 대조를 완료했다. 관리자 명시적 색인 구축·이미지 재취득→새 reader UI와 재개 계약을 구현했다. 최종 직접 색인 조회 표본은 사건번호 0.019초·소유권 0.041초이고 기존 스캔과 결과가 일치한다. 일반 검색 API 사건번호 표본은 약 0.09초다. 이미지 저장 4곳·미확보 2곳·조문 4곳 계승을 브라우저에서 검증했다. 회귀 712건·ruff/mypy·프런트 lint/build 통과. 추가 DB 공간은 약 3.30GB이며 당시 남았던 CURRENT_SOURCE 본문 색인과 50개 초과 이미지 URL 분할은 위 후속 작업에서 완료했다. [구현과 실측](docs/search-index-and-image-retry.md).

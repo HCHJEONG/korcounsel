@@ -68,19 +68,28 @@ class Worker:
         )
 
     def _retry_current_images(self, job: Job) -> None:
-        document_id = job.payload["document_id"]
+        self._submit_reader_images(job, job.payload["document_id"])
+
+    def _submit_reader_images(self, job: Job, document_id: str) -> None:
+        from klegal_gold.assets.images import valid_lawgo_image_url
+
         manifest = self.readers.read(document_id)
-        if manifest["origin"] != "CURRENT_SOURCE" or not manifest["images"]:
+        if manifest["origin"] != "CURRENT_SOURCE" or not (
+            manifest["images"] or manifest.get("statute_images")
+        ):
             raise ValueError("CURRENT_READER_IMAGES_REQUIRED")
         references = []
-        for ref in manifest["images"]:
+        for ref in manifest["images"] + manifest.get("statute_images", []):
             url = ref.get("resolved_url")
-            resolved = isinstance(url, str) and valid_scourt_image_url(url)
+            statute = "article_reference_id" in ref
+            resolved = isinstance(url, str) and (
+                valid_lawgo_image_url(url) if statute else valid_scourt_image_url(url)
+            )
             references.append(
                 {
                     **ref,
-                    "source_system": "scourt",
-                    "source_id": manifest["source_id"],
+                    "source_system": "law_go_kr" if statute else "scourt",
+                    "source_id": ref.get("source_id", "") if statute else manifest["source_id"],
                     "reader_document_id": document_id,
                     "image_name": ref.get("name"),
                     "resolved_url": url if resolved else None,
@@ -100,7 +109,12 @@ class Worker:
         )
         refresh = self.queue.submit_current_reader_refresh(document_id, image_job.job_id)
         self.queue.heartbeat(
-            job, {"image_job_id": str(image_job.job_id), "follow_up_job_id": str(refresh.job_id)}
+            job,
+            {
+                **self.queue.get(job.job_id).checkpoint,
+                "image_job_id": str(image_job.job_id),
+                "follow_up_job_id": str(refresh.job_id),
+            },
         )
 
     def _build_legacy_search(self, job: Job) -> None:
@@ -412,10 +426,16 @@ class Worker:
             if self.stop.is_set() or self.queue.drain_status()["draining"]:
                 raise CheckpointRequested
 
-        revision = CurrentLawgo(self.records).run(document_id, str(job.job_id), progress)
+        revision = job.checkpoint.get("reader_document_id")
+        if not revision:
+            revision = CurrentLawgo(self.records).run(document_id, str(job.job_id), progress)
+            self.queue.heartbeat(job, {"reader_document_id": revision})
+        if self.readers.read(revision).get("statute_images"):
+            self._submit_reader_images(job, revision)
         self.queue.heartbeat(
             job,
             {
+                **self.queue.get(job.job_id).checkpoint,
                 "reader_document_id": revision,
                 "lawgo_status": self.readers.read(revision)["provenance"]["lawgo_status"],
             },
