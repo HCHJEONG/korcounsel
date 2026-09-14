@@ -57,3 +57,17 @@ scourt metadata snapshot → 이전 snapshot 비교 → 신규 contId 및 실패
 ## 현재 본문 후속 job — 2026-09-14
 
 상세 본문 보존 checkpoint 뒤 image acquisition → terminal 의존성 확인 reader refresh → lawgo 제공 연결 보강을 각각 별도 job으로 실행한다. 관리자의 명시 증보 요청에서 파생되는 후속 작업이며 정기 실행은 없다. 원문과 이전 reader는 불변이고, 이미지/lawgo 부분 실패는 본문 실패와 구분한다. 관리자 재보강 API·최신 revision 선택·실제 브라우저 검증 및 신규 이미지 실증 한계는 [현재 reader 보강 계약](current-reader-enrichment.md)을 따른다.
+
+
+## 증보 강제 종료 경계 회귀 — 2026-09-14
+
+기존 테스트에는 이미지 부분 실패·OSError 재시도, 103개 이미지의 50개 단위 checkpoint 재개, 의존 job 대기/최종 실패 후 reader 발급, 관리자 요청 중복 방지, 조문 실패/미연결 위치 유지, 오래된 root의 늦은 revision 검색 제외가 있다. 여기에 `test_current_reader_refresh.py::test_abrupt_exit_reclaims_lease_and_reuses_immutable_outputs`의 두 매개변수 시나리오를 추가했다.
+
+- 이미지 첫 URL의 bytes·취득 ledger commit 이후 다음 URL에서 BaseException을 발생시켜 worker의 정상 실패 처리 없이 RUNNING 상태를 남긴다.
+- 이미지 refresh가 immutable reader revision을 발급한 직후 PUBLISHED checkpoint 저장 전에 같은 방식으로 중단한다.
+
+각 테스트는 `korcounsel_test`의 독립 임시 schema에서 해당 job의 lease만 만료시키고 새 Queue/Worker 객체로 재개한다. 이미지 성공 URL의 fetch가 총 1회임을 확인하고, reader 발급 후 중단한 경우 동일 revision을 재사용한다. 동일 요청 재전송은 같은 job ID를 반환하며 job은 2개만 존재한다. 반복 이미지 2곳은 동일 bytes를 반환하고 실패/대기 위치를 유지하며 검색에는 최신 reader 1개만 남는다. 기존 원문 manifest bytes·artifact 행·취득 시도 행은 불변이고 job 시도 이력은 LEASE_EXPIRED → SUCCEEDED다.
+
+이는 합성 종료 주입과 실제 PostgreSQL 영속 상태를 결합한 회귀다. OS SIGKILL, 전원 장애, 실제 외부 제공자 연결 중단을 실행한 시험은 아니다. 운영 corpus·worker를 중단하거나 환경파일을 수정하지 않았다. 제품 코드·UI 수정 없이 기존 복구 계약을 검증하는 테스트만 추가했다.
+
+검증 결과: 관련 reader refresh 통합 11개 통과 후 전체 Python/PostgreSQL **725개 통과**(66.71초, 기존 의존성/프로세스 경고 4개). ruff check·format --check, mypy(62 source files), pnpm lint·build, git diff --check를 통과했다. 프런트 동작 변경이 없어 이번 단계에서 브라우저 흐름을 재실행하지 않았다.

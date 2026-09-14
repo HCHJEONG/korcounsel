@@ -151,3 +151,8 @@ docker compose --env-file .fordeploy/compose.env.example exec worker klegal ops 
 ## 호스트·Compose 파일 저장소 통일 — 2026-09-11
 
 동일 PostgreSQL의 `blobs.storage_key`는 하나의 공통 FileStore를 기준으로 해석한다. Compose API/worker의 `/data`는 `LOCAL_DATA_DIR`(기본 레포 `./data`)에 연결한다. 호스트 실행은 같은 폴더의 절대 경로를 `DATA_DIR`로 지정한다. 컨테이너의 비-root UID/GID는 해당 호스트 폴더 소유자와 맞춘다. PostgreSQL 볼륨과 기존 `korcounsel_case_data` 보존본은 삭제하지 않는다. 기존 bundle FileStore와 Docker 볼륨에 따로 있던 등록 bytes는 원래 SHA-256·크기를 확인해 공통 경로에 복사하며 DB pointer나 원본을 재생성하지 않는다. 복구 실측과 전수 coverage는 [보강 열람 확대](legacy-reader-scale.md)에 기록한다.
+
+
+## DB·파일 snapshot 복원 리허설 — 2026-09-14
+
+동일 PostgreSQL snapshot의 DB dump와 등록 blob 목록을 함께 보존하고, 별도 임시 DB에서 실제 복원하는 도구와 회귀를 추가했다. 계정·세션·작업 ledger·검색 reader·이미지/조문을 대조한다. 전체 corpus 운영 백업이나 외부 archive 보관 정책 완료와 구분한다. [구현·명령·실증·한계](backup-restore-rehearsal.md).

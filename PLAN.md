@@ -1,5 +1,9 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**DB·파일 격리 복원 완료 — 2026-09-14:** 동일 PostgreSQL snapshot의 dump와 등록 blob을 묶는 백업 모듈, 검증기, 명시적 리허설 도구를 추가했다. 새 테스트 DB에 실제 pg_restore 후 전체 테이블 행·계정/세션·대기 작업·일반 검색/본문/반복 이미지 API와 실패 상태를 확인했다. 손상/누락/실패 방어 포함 신규 7개, 전체 732개·ruff/mypy·프런트 lint/build 통과. 합성 fixture의 로컬 복원이며 89,130행 전수 운영 백업·AWS 복원 완료가 아니다. [명령·실증·한계](docs/backup-restore-rehearsal.md).
+
+**증보 중단·재개 회귀 완료 — 2026-09-14:** 이미지 commit 직후 및 reader 발급 후 완료 checkpoint 전의 비정상 종료를 주입한 PostgreSQL 회귀 2개를 추가했다. lease 만료 후 새 worker가 성공 bytes·reader revision을 재사용하고 중복 job 방지·최신 검색·실패/대기 위치·기존 artifact/취득 이력을 유지했다. 별도 korcounsel_test DB 전체 725개·ruff/mypy·프런트 lint/build 통과. 제품 코드 변경 없음. [범위·검증](docs/incremental-ingestion.md#증보-강제-종료-경계-회귀--2026-09-14).
+
 **최근 별표 표본 조사 — 2026-09-14:** 보유 corpus의 2024년 7~9월 선고 판례 5건을 현재 lawgo frame으로 확인했다. 별표 언급 30곳·기존 JO 링크 119개, 별표 문구 링크와 비JO inline 팝업 0개였다. ID·선고일·hash 대조 통과. 실증 없는 별표 취득 구현은 보류하고, 실제 제공 링크 발견 시 재개한다. 2025~2026년 또는 전체 제공 여부의 결론은 아니다. [범위·근거](docs/lawgo-popup-variants.md#최근-선고-표본-확대--2026-09-14).
 
 **별표 링크 표본 조사 — 2026-09-14:** 앞선 조사와 다른 기존 판례 5건의 현재 lawgo frame을 보존·hash/ID 검증했다. 별표 언급 19곳, 기존 지원 JO 링크 72개를 확인했으나 별표 문구 링크·비JO 팝업은 0개였다. 추정 연결이나 별표 취득 구현은 추가하지 않았다. 2011년 판례 5건의 한정 결과이며 최신/전수 미제공을 뜻하지 않는다. [표본·근거](docs/lawgo-popup-variants.md#별표-링크-추가-표본-조사--2026-09-14).

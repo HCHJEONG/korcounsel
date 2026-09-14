@@ -366,3 +366,121 @@ def test_current_search_index_latest_and_rebuild(db, tmp_path, monkeypatch):
     matches = _current_reader_matches(store, "STRASSE", limit=30)
     assert matches[0].reader_document_id == latest
     assert matches[0].matched_columns == ["current_reader_html"]
+
+
+@pytest.mark.parametrize("crash_point", ["after_image_commit", "after_reader_publication"])
+def test_abrupt_exit_reclaims_lease_and_reuses_immutable_outputs(
+    db, tmp_path, monkeypatch, crash_point
+):
+    """BaseException leaves a RUNNING lease, unlike the handled OSError retry path."""
+
+    class AbruptExit(BaseException):
+        pass
+
+    records, readers, queue, image, refresh, original = stage(db, tmp_path)
+    original_bytes = records.read("reader:" + original)
+    downloads = []
+    crashed = False
+
+    def fetch(url, max_bytes):
+        nonlocal crashed
+        downloads.append(url)
+        if "b.gif" in url:
+            if crash_point == "after_image_commit" and not crashed:
+                crashed = True
+                raise AbruptExit
+            raise ValueError("IMAGE_NETWORK_ERROR")
+        return DownloadedImage(GIF, "image/gif", {})
+
+    monkeypatch.setattr(
+        "klegal_gold.jobs.worker.ImageAcquirer",
+        lambda saved: ImageAcquirer(saved, fetcher=fetch),
+    )
+    worker = Worker(queue, records)
+    real_heartbeat = queue.heartbeat
+
+    def heartbeat(job, checkpoint=None):
+        nonlocal crashed
+        if (
+            crash_point == "after_reader_publication"
+            and checkpoint
+            and checkpoint.get("phase") == "PUBLISHED"
+            and not crashed
+        ):
+            crashed = True
+            raise AbruptExit
+        return real_heartbeat(job, checkpoint)
+
+    monkeypatch.setattr(queue, "heartbeat", heartbeat)
+    if crash_point == "after_reader_publication":
+        assert worker.run_once()
+        assert queue.get(image.job_id).status == "SUCCEEDED"
+    with pytest.raises(AbruptExit):
+        worker.run_once()
+    interrupted = image if crash_point == "after_image_commit" else refresh
+    assert queue.get(interrupted.job_id).status == "RUNNING"
+    assert queue.get(interrupted.job_id).checkpoint.get("phase") != "PUBLISHED"
+    published = readers.search()[0]["document_id"]
+    with db.connect() as conn:
+        artifacts = conn.execute("SELECT * FROM artifacts ORDER BY artifact_id").fetchall()
+        attempts = conn.execute(
+            "SELECT * FROM image_acquisition_attempts ORDER BY attempt_id"
+        ).fetchall()
+        assert any(attempt["outcome"] == "ACQUIRED" for attempt in attempts)
+        conn.execute(
+            "UPDATE jobs SET lease_until=clock_timestamp()-interval '1 second' WHERE job_id=%s",
+            (interrupted.job_id,),
+        )
+    if crash_point == "after_image_commit":
+        assert published == original
+        assert queue.get(refresh.job_id).attempts == 0
+    else:
+        assert published != original
+    restarted = Queue(db)
+    assert restarted.submit_image_batch("images", "images:test").job_id == image.job_id
+    assert restarted.submit_current_reader_refresh(original, image.job_id).job_id == refresh.job_id
+    resumed = Worker(restarted, records)
+    assert resumed.run_once()
+    if crash_point == "after_image_commit":
+        assert resumed.run_once()
+    final = restarted.get(refresh.job_id)
+    assert final.status == "SUCCEEDED"
+    revision = final.checkpoint["reader_document_id"]
+    if crash_point == "after_reader_publication":
+        assert revision == published
+    assert [ref["status"] for ref in readers.read(revision)["images"]] == [
+        "ACQUIRED",
+        "ACQUIRED",
+        "FAILED",
+        "PENDING",
+    ]
+    assert len([url for url in downloads if "a.gif" in url]) == 1
+    assert readers.image(revision, 0)[0] == readers.image(revision, 1)[0] == GIF
+    assert "이미지 미확보" in readers.html(revision)
+    assert records.read("reader:" + original) == original_bytes
+    assert [item["document_id"] for item in readers.search()] == [revision]
+    assert not resumed.run_once()
+    with db.connect() as conn:
+        assert conn.execute("SELECT count(*) n FROM jobs").fetchone()["n"] == 2
+        for artifact in artifacts:
+            assert (
+                conn.execute(
+                    "SELECT * FROM artifacts WHERE artifact_id=%s", (artifact["artifact_id"],)
+                ).fetchone()
+                == artifact
+            )
+        for attempt in attempts:
+            assert (
+                conn.execute(
+                    "SELECT * FROM image_acquisition_attempts WHERE attempt_id=%s",
+                    (attempt["attempt_id"],),
+                ).fetchone()
+                == attempt
+            )
+        assert [
+            row["outcome"]
+            for row in conn.execute(
+                "SELECT outcome FROM job_attempts WHERE job_id=%s ORDER BY attempt",
+                (interrupted.job_id,),
+            )
+        ] == ["LEASE_EXPIRED", "SUCCEEDED"]
