@@ -531,6 +531,10 @@ class Worker:
                 self._refresh_current_reader_images(job)
             elif job.kind == "RETRY_CURRENT_IMAGES":
                 self._retry_current_images(job)
+            elif job.kind == "CREATE_BACKUP":
+                from klegal_gold.jobs.backup import run_backup
+
+                run_backup(self, job)
             elif job.kind == "BUILD_LEGACY_SEARCH":
                 self._build_legacy_search(job)
             elif job.kind == "ACQUIRE_IMAGE_BATCH":

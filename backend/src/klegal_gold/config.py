@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     postgres_user: str | None = None
     postgres_password: SecretStr | None = None
     postgres_db: str | None = None
+    backup_dir: Path | None = None
     legacy_parquet_path: Path | None = None
     web_origin: str = "http://127.0.0.1:5173"
     korcounsel_admin_id: str | None = None
@@ -71,6 +72,8 @@ class Settings(BaseSettings):
             )
         ):
             raise ValueError("WEB_ORIGIN must be an HTTPS origin or HTTP loopback origin")
+        if self.backup_dir is not None and not self.backup_dir.is_absolute():
+            raise ValueError("BACKUP_DIR must be absolute")
         if not self.data_dir.is_absolute():
             raise ValueError("DATA_DIR must be absolute")
         if self.legacy_parquet_path is not None and not self.legacy_parquet_path.is_absolute():

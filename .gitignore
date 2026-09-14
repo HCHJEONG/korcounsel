@@ -12,6 +12,9 @@
 /.fordeploy/aws-backup/*
 !/.fordeploy/aws-backup/.gitkeep
 
+# Private backup bundles
+/backups/
+
 # Runtime data (small test fixtures live under tests/fixtures)
 /data/**
 !/data/**/

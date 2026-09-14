@@ -15,17 +15,27 @@ from klegal_gold.storage.files import Blob, FileStore
 DumpSnapshot = Callable[[str, Path], None]
 
 
-def file_digest(path: Path) -> tuple[str, int]:
+def file_digest(
+    path: Path, progress: Callable[[dict[str, Any]], None] | None = None
+) -> tuple[str, int]:
     digest, size = sha256(), 0
     with path.open("rb") as stream:
         while chunk := stream.read(1024 * 1024):
+            if progress:
+                progress({})
             digest.update(chunk)
             size += len(chunk)
     return digest.hexdigest(), size
 
 
 def create_backup(
-    db: Database, store: FileStore, destination: Path, dump_snapshot: DumpSnapshot
+    db: Database,
+    store: FileStore,
+    destination: Path,
+    dump_snapshot: DumpSnapshot,
+    *,
+    extra_files: dict[str, Path] | None = None,
+    progress: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     """dump_snapshot must use pg_dump --snapshot with this same database and schema.
 
@@ -47,16 +57,39 @@ def create_backup(
         ).fetchall()
         # Files committed after this snapshot are intentionally excluded, even if
         # present on disk by the time copying finishes. Unregistered orphans too.
-        for row in blobs:
+        total = sum(row["size_bytes"] for row in blobs)
+        copied = 0
+        for index, row in enumerate(blobs):
+            if progress:
+                progress(
+                    {
+                        "phase": "COPYING",
+                        "files_done": index,
+                        "files_total": len(blobs),
+                        "bytes_done": copied,
+                        "bytes_total": total,
+                    }
+                )
             blob = Blob(**row)
             store.verify(blob)
             path = target.path(blob.storage_key)
             path.parent.mkdir(parents=True, exist_ok=True)
-            with store.path(blob.storage_key).open("rb") as source, path.open("xb") as saved:
-                shutil.copyfileobj(source, saved, length=1024 * 1024)
+            with store.path(blob.storage_key).open("rb") as source_stream, path.open("xb") as saved:
+                shutil.copyfileobj(source_stream, saved, length=1024 * 1024)
                 saved.flush()
                 os.fsync(saved.fileno())
             target.verify(blob)
+            copied += blob.size_bytes
+        if progress:
+            progress(
+                {
+                    "phase": "DUMPING",
+                    "files_done": len(blobs),
+                    "files_total": len(blobs),
+                    "bytes_done": copied,
+                    "bytes_total": total,
+                }
+            )
         dump = destination / "database.dump"
         dump_snapshot(snapshot["snapshot"], dump)
         if dump.is_symlink() or not dump.is_file():
@@ -65,13 +98,35 @@ def create_backup(
             if stream.read(5) != b"PGDMP":
                 raise ValueError("BACKUP_DUMP_FORMAT")
             os.fsync(stream.fileno())
-        digest, size = file_digest(dump)
+        extras = {}
+        for name, source in (extra_files or {}).items():
+            if name != "legacy.parquet" or source.is_symlink():
+                raise ValueError("INVALID_BACKUP_EXTRA")
+            if progress:
+                progress({"phase": "PARQUET"})
+            before = file_digest(source, progress)
+            saved_path = destination / name
+            with source.open("rb") as src, saved_path.open("xb") as saved:
+                while chunk := src.read(1024 * 1024):
+                    saved.write(chunk)
+                    if progress:
+                        progress({"phase": "PARQUET"})
+                saved.flush()
+                os.fsync(saved.fileno())
+            if (
+                file_digest(saved_path, progress) != before
+                or file_digest(source, progress) != before
+            ):
+                raise ValueError("BACKUP_EXTRA_CHANGED")
+            extras[name] = {"sha256": before[0], "size_bytes": before[1]}
+        digest, size = file_digest(dump, progress)
         manifest = {
             "version": "postgres-blob-backup-1",
             "created_at": datetime.now(UTC).isoformat(),
             "schema": db.schema,
             "dump": {"sha256": digest, "size_bytes": size},
             "blobs": blobs,
+            "extra_files": extras,
         }
     # Persist nested directory entries before publishing the completion marker.
     for parent, _, _ in os.walk(target.root, topdown=False):
@@ -96,7 +151,9 @@ def create_backup(
     return manifest
 
 
-def verify_backup(directory: Path) -> dict[str, Any]:
+def verify_backup(
+    directory: Path, *, progress: Callable[[dict[str, Any]], None] | None = None
+) -> dict[str, Any]:
     """Verify local bundle integrity; this alone is not a database restore test."""
     if directory.is_symlink() or not directory.is_dir():
         raise ValueError("INVALID_BACKUP_PATH")
@@ -107,14 +164,24 @@ def verify_backup(directory: Path) -> dict[str, Any]:
     if manifest.get("version") != "postgres-blob-backup-1":
         raise ValueError("BACKUP_VERSION")
     expected = manifest["dump"]
-    if file_digest(dump) != (expected["sha256"], expected["size_bytes"]):
+    if file_digest(dump, progress) != (expected["sha256"], expected["size_bytes"]):
         raise ValueError("BACKUP_DUMP_INTEGRITY")
+    for name, expected_file in manifest.get("extra_files", {}).items():
+        if name != "legacy.parquet" or (directory / name).is_symlink():
+            raise ValueError("INVALID_BACKUP_EXTRA")
+        if file_digest(directory / name, progress) != (
+            expected_file["sha256"],
+            expected_file["size_bytes"],
+        ):
+            raise ValueError("BACKUP_EXTRA_INTEGRITY")
     files = directory / "files"
     if files.is_symlink() or not files.is_dir():
         raise ValueError("BACKUP_FILES_MISSING")
     store = FileStore(files)
     seen = set()
     for row in manifest["blobs"]:
+        if progress:
+            progress({"phase": "VERIFYING"})
         blob = Blob(**row)
         if blob.sha256 in seen:
             raise ValueError("BACKUP_DUPLICATE_BLOB")

@@ -162,6 +162,33 @@ def create_app() -> FastAPI:
         )
         return {"job_id": str(job.job_id), "status": job.status}
 
+    @application.get("/api/admin/backups")
+    def backup_history(_: object = Depends(require_admin)) -> dict[str, object]:
+        settings = load_settings()
+        with Database.from_settings(settings).connect() as conn:
+            rows = conn.execute(
+                "SELECT job_id,status,attempts,checkpoint,created_at,updated_at FROM jobs "
+                "WHERE kind='CREATE_BACKUP' ORDER BY created_at DESC LIMIT 20"
+            ).fetchall()
+        return {"enabled": settings.backup_dir is not None, "items": rows}
+
+    @application.post("/api/admin/backups", dependencies=[Depends(same_origin)])
+    def start_backup(
+        body: AdminEnrichmentRequest, _: object = Depends(require_admin)
+    ) -> dict[str, str]:
+        settings = load_settings()
+        if settings.backup_dir is None:
+            raise HTTPException(409, "BACKUP_NOT_CONFIGURED")
+        try:
+            job = Queue(Database.from_settings(settings)).submit_backup(
+                "web-backup:" + str(body.request_id)
+            )
+        except ValueError as exc:
+            if str(exc) == "BACKUP_ALREADY_ACTIVE":
+                raise HTTPException(409, "BACKUP_ALREADY_ACTIVE") from None
+            raise
+        return {"job_id": str(job.job_id), "status": job.status}
+
     @application.post("/api/admin/search-index", dependencies=[Depends(same_origin)])
     def build_search_index(
         body: AdminEnrichmentRequest, _: object = Depends(require_admin)

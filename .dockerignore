@@ -30,3 +30,5 @@ tests
 
 .venv-reader
 .venv-win
+
+backups

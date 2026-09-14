@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import ReaderEnrichment from './ReaderEnrichment'
+import BackupPanel from './BackupPanel'
 
 type CaseItem = {
   source: string; display_title: string; court: string | null; case_numbers: string[]
@@ -301,6 +302,7 @@ export default function App() {
       </section> : <>
         {role === 'admin' && <section aria-labelledby="ingestion-title" className="admin-panel">
           <h2 id="ingestion-title">신규 판례 증보</h2>
+          <details><summary>백업 관리</summary><BackupPanel onExpired={clearPrivate} /></details>
           <details><summary>검색 색인 관리</summary><ReaderEnrichment kind="index" documentId="" onExpired={clearPrivate} onOpen={() => {}} /></details>
           <p>scourt 현재 목록을 관찰해 신규·변경 후보를 기록합니다.</p>
           <div className="search-row">

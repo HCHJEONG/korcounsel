@@ -1,5 +1,8 @@
 FROM ghcr.io/astral-sh/uv:0.12.5 AS uv
+FROM postgres:17-bookworm AS postgres_client
 FROM python:3.12-slim-bookworm
+RUN apt-get update && apt-get install -y --no-install-recommends libpq5 liblz4-1 libzstd1 && rm -rf /var/lib/apt/lists/*
+COPY --from=postgres_client /usr/lib/postgresql/17/bin/pg_dump /usr/local/bin/pg_dump
 COPY --from=uv /uv /usr/local/bin/uv
 WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PATH="/app/.venv/bin:$PATH" DATA_DIR=/data

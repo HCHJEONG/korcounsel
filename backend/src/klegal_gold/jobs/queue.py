@@ -45,6 +45,9 @@ class Queue:
             request_key, "VERIFY_ARTIFACT", {"artifact_id": artifact_id}, max_attempts
         )
 
+    def submit_backup(self, request_key: str) -> Job:
+        return self._submit(request_key, "CREATE_BACKUP", {}, 3)
+
     def submit_law_detail(self, request_key: str, source_id: str) -> Job:
         from klegal_gold.sources.law_api import identifier
 
@@ -189,6 +192,14 @@ class Queue:
                 return _job(existing)  # A lost response remains queryable during drain.
             if control["draining"]:
                 raise ValueError("RUNTIME_DRAINING")
+            if (
+                kind == "CREATE_BACKUP"
+                and conn.execute(
+                    "SELECT 1 FROM jobs WHERE kind=%s AND status IN ('QUEUED','RUNNING')",
+                    (kind,),
+                ).fetchone()
+            ):
+                raise ValueError("BACKUP_ALREADY_ACTIVE")
             artifact_payload_key = (
                 "artifact_id" if kind == "VERIFY_ARTIFACT" else "manifest_artifact_id"
             )
