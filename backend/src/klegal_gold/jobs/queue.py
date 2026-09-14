@@ -62,6 +62,19 @@ class Queue:
             request_key, "FETCH_SCOURT_DETAIL", {"source_id": identifier(source_id)}, 3
         )
 
+    def submit_scourt_replay(self, original_job_id: UUID, *, attempt: int = 1) -> Job:
+        if attempt < 1 or attempt > 10:
+            raise ValueError("INVALID_REPLAY_ATTEMPT")
+        original = self.get(original_job_id)
+        if original.kind != "FETCH_SCOURT_DETAIL" or not original.checkpoint.get("artifact_id"):
+            raise ValueError("SCOURT_SOURCE_NOT_PRESERVED")
+        return self._submit(
+            f"scourt-reader-replay:{original_job_id}:{attempt}",
+            "FETCH_SCOURT_DETAIL",
+            {"source_id": original.payload["source_id"], "preserved_job_id": str(original_job_id)},
+            3,
+        )
+
     def submit_scourt_inventory(
         self, request_key: str, *, query: str = "", max_pages: int = 2, display: int = 20
     ) -> Job:

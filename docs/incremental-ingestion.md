@@ -71,3 +71,23 @@ scourt metadata snapshot → 이전 snapshot 비교 → 신규 contId 및 실패
 이는 합성 종료 주입과 실제 PostgreSQL 영속 상태를 결합한 회귀다. OS SIGKILL, 전원 장애, 실제 외부 제공자 연결 중단을 실행한 시험은 아니다. 운영 corpus·worker를 중단하거나 환경파일을 수정하지 않았다. 제품 코드·UI 수정 없이 기존 복구 계약을 검증하는 테스트만 추가했다.
 
 검증 결과: 관련 reader refresh 통합 11개 통과 후 전체 Python/PostgreSQL **725개 통과**(66.71초, 기존 의존성/프로세스 경고 4개). ruff check·format --check, mypy(62 source files), pnpm lint·build, git diff --check를 통과했다. 프런트 동작 변경이 없어 이번 단계에서 브라우저 흐름을 재실행하지 않았다.
+
+## 과거 원문 전용 수집 20건 복구 — 2026-09-15
+
+9월 11일 원문 저장만으로 SUCCEEDED 처리됐던 신규 20건을 기존 HTTP 본문·메타데이터의 SHA 검증 후 영속 FETCH_SCOURT_DETAIL replay로 처리했다. scourt 본문을 재다운로드하거나 기존 job·원문·manifest를 수정하지 않았다. 요청별 중복 제출은 같은 replay job을 반환한다. 과거 관찰 manifest와의 이름 충돌을 발견해 관찰 ID에도 reader revision을 포함하도록 수정했고, 최초 복구 실패 이력은 보존했다. 실패한 9개 복구 job은 새 명시적 시도로 재개했으며 나머지 11개는 기존 대기 작업으로 완료했다.
+
+20건 모두 reader 및 lawgo 후속 처리 종료, 일반 검색에서 최신 reader 1건과 인증된 본문 200을 전수 확인했다. 원문 HTML SHA도 전부 동일하다. 본문 자체의 이미지 위치는 0곳, 보강 조문 내부 이미지는 22곳이고 모두 ACQUIRED다. lawgo 판례 연결 EXACT 17건·CONFLICT 3건, 조문 위치 PRESERVED 554·UNLINKED 57·AMBIGUOUS 27·FAILED 1이다. 실패 1곳은 2026모683의 제52조 응답 LAWGO_ARTICLE_STRUCTURE_CHANGED이며 미확정/실패 표시를 유지한다. 제공 연결이 없는 조문을 추정 보강하지 않았다. 이 수치는 보강 대상 전부 성공을 뜻하지 않는다.
+
+관리자 화면에 DB 기반 최근 출처 50건의 후속 처리 이력을 추가했다. 상세 수집 SUCCEEDED만으로 끝내지 않고 image acquisition → reader refresh → lawgo → 조문 이미지 acquisition/refresh까지 연결된 checkpoint를 조회한다. 대기·실행 중은 PROCESSING, 실패 또는 reader/후속 연결 누락은 NEEDS_ATTENTION, 모두 종료하면 FINISHED다. FINISHED는 취득 완전성을 의미하지 않으며 각 단계의 조문 연결 상태와 이미지 실패 건수를 별도 표시한다. 새로고침 후에도 이력은 다시 조회된다.
+
+전역 누락 점검에서는 이 20건 외에 기존 corpus의 2017도953(2252318, position 29641)의 CURRENT_SOURCE reader 미등록 1건도 확인했다. 기존 Parquet 판례가 빠진 것이 아니며 이번 신규 20건 복구 범위에 포함하지 않았다.
+
+검증: 실제 PostgreSQL 포함 전체 738개 통과·선택 환경 미지정 3개 skip 후, 실제 pg_dump/restore 테스트 모듈 14개 통과로 해당 3개도 검증했다(서로 다른 테스트 총 741개). ruff check/format, mypy, pnpm lint/build 통과. 실제 브라우저 로그인→이력 새로고침→일반 검색→본문, 전수 20건 API, 로그아웃 401을 확인했다. 2026두30417 일반 검색→본문에서 조문 이미지 22곳의 내부 URL HTTP 200·브라우저 naturalWidth>0를 전수 확인했고 외부 요청은 0건이었다.
+
+로컬 증거: `data/reader-recovery-20260915/report.json`에 20건의 원래 job/artifact·복구 job·reader·HTML SHA·조문 결과를 기록했다. Parquet는 89,130행 그대로이고 이번 20건은 DB/reader 보강이다. 정기 실행·commit/push는 하지 않았다.
+
+### 2017도953 후속 복구 — 2026-09-15
+
+사용자 요청으로 별도 누락 2252318도 처리했다. 기존 Parquet position 29641의 검색과 legacy reader 본문은 복구 전에도 HTTP 200으로 정상 제공됐다. 즉 판례 전체 미표시가 아니라 현재 수집 representation의 reader만 미등록이었다. 과거 source job에는 필요한 HTTP metadata receipt가 없어 원문 replay 사전검증을 통과하지 못했고, 이력·원문을 보존한 채 해당 1건만 새 FETCH_SCOURT_DETAIL 명령으로 현재 제공자에서 다시 수집했다.
+
+job `100eb798-a241-4c74-8289-1212d9841224`와 lawgo 후속 job은 SUCCEEDED다. 최신 reader `4b50393a6865fd53542de819b93fddf80be7693c550b8eb7f20a0a9d3d089b01`, lawgo EXACT, 조문 PRESERVED 10곳, 이미지 위치 0곳이다. 과거 raw SHA 불변 및 새 reader HTML과 현재 원문의 SHA 일치, 일반 검색의 최신 reader 1건을 확인했다. 실제 브라우저 검색→현재 수집 본문, 이력 새로고침·reader 미등록 0건, 로그아웃 401·외부 요청 0건을 검증했다. 코드 변경 없이 기존 수집 체인을 실행했다. 로컬 증거는 `data/reader-recovery-20260915/2017do953-report.json`, `2017do953-browser.json`, `2017do953-reader.png`다.

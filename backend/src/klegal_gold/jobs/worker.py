@@ -179,7 +179,22 @@ class Worker:
         def preserve(response: Response) -> None:
             preserve_response(self.records, response, str(job.job_id), SourceSystem.SCOURT)
 
-        source = ScourtPortalSource(preserve=preserve, progress=progress)
+        if job.payload.get("preserved_job_id"):
+            from klegal_gold.sources.scourt_replay import PreservedScourtTransport
+
+            original = self.queue.get(UUID(job.payload["preserved_job_id"]))
+            if (
+                original.kind != "FETCH_SCOURT_DETAIL"
+                or original.payload["source_id"] != job.payload["source_id"]
+            ):
+                raise ValueError("SCOURT_REPLAY_SOURCE_MISMATCH")
+            source = ScourtPortalSource(
+                transport=PreservedScourtTransport(self.records, original),
+                preserve=preserve,
+                progress=progress,
+            )
+        else:
+            source = ScourtPortalSource(preserve=preserve, progress=progress)
         detail = source.fetch_detail(job.payload["source_id"])
         progress()
         artifact_id = save_detail(self.records, detail, str(job.job_id), SourceSystem.SCOURT)
@@ -218,7 +233,7 @@ class Worker:
             body_html, "https://portal.scourt.go.kr/", scourt_id=detail.source_id
         )
         self.records.save_manifest(
-            "scourt-document:" + artifact_id,
+            "scourt-document:" + artifact_id + ":reader:" + reader_document_id,
             "DOCUMENT_OBSERVATION",
             {
                 "parent_artifact_id": artifact_id,

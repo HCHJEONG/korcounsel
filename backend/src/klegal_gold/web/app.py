@@ -324,6 +324,31 @@ def create_app() -> FastAPI:
             "job_ids": [str(job.job_id) for job in jobs],
         }
 
+    @application.get("/api/admin/ingestions")
+    def recent_ingestions(_: object = Depends(require_admin)) -> dict[str, object]:
+        from klegal_gold.jobs.ingestion_status import ingestion_status
+
+        db = Database.from_settings(load_settings())
+        queue = Queue(db, lease_seconds=300)
+        with db.connect() as conn:
+            rows = conn.execute(
+                "SELECT job_id FROM (SELECT DISTINCT ON(payload->>'source_id') "
+                "job_id,created_at FROM jobs WHERE kind='FETCH_SCOURT_DETAIL' "
+                "ORDER BY payload->>'source_id',created_at DESC,job_id DESC) latest "
+                "ORDER BY created_at DESC LIMIT 50"
+            ).fetchall()
+            missing = conn.execute(
+                "SELECT count(DISTINCT s.source_id) AS n FROM source_versions s "
+                "WHERE s.source='scourt' AND NOT EXISTS (SELECT 1 FROM artifacts a "
+                "WHERE a.metadata->>'kind'='READER_DOCUMENT' "
+                "AND a.metadata->>'origin'='CURRENT_SOURCE' "
+                "AND a.metadata->>'source_id'=s.source_id)"
+            ).fetchone()
+        return {
+            "items": [ingestion_status(queue, row["job_id"]) for row in rows],
+            "missing_readers": missing["n"] if missing else 0,
+        }
+
     @application.get("/api/admin/jobs")
     def admin_job_summary(
         job_id: Annotated[list[UUID], Query(min_length=1, max_length=50)],

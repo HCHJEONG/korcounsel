@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import ReaderEnrichment from './ReaderEnrichment'
 import BackupPanel from './BackupPanel'
+import IngestionStatus from './IngestionStatus'
 
 type CaseItem = {
   source: string; display_title: string; court: string | null; case_numbers: string[]
@@ -304,6 +305,7 @@ export default function App() {
           <h2 id="ingestion-title">신규 판례 증보</h2>
           <details><summary>백업 관리</summary><BackupPanel onExpired={clearPrivate} /></details>
           <details><summary>검색 색인 관리</summary><ReaderEnrichment kind="index" documentId="" onExpired={clearPrivate} onOpen={() => {}} /></details>
+          <IngestionStatus onExpired={clearPrivate} />
           <p>scourt 현재 목록을 관찰해 신규·변경 후보를 기록합니다.</p>
           <div className="search-row">
             <label htmlFor="inventory-pages">페이지 수</label>
@@ -329,7 +331,7 @@ export default function App() {
               <button disabled={busy || (adminDelta.counts.NEW ?? 0) + (adminDelta.counts.CHANGED ?? 0) === 0} onClick={() => void submitDetailBatch()}>상세 본문 수집 등록</button>
             </div>
             {detailSubmission && <p role="status">상세 수집 등록 {detailSubmission.registered}건 / 후보 {detailSubmission.candidate_count}건</p>}
-            {detailStatus && <p role="status">상세 수집 완료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')}</p>}
+            {detailStatus && <p role="status">상세 수집 작업 종료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')} · reader·이미지·조문 결과는 수집 후속 처리 이력에서 확인하세요.</p>}
           </>}
         </section>}        <section aria-labelledby="search-title">
           <h2 id="search-title">판례 검색</h2>

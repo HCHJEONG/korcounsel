@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**과거 수집 20건 reader 복구 — 2026-09-15:** 기존 원문과 metadata를 재사용한 영속 replay로 20건의 reader와 lawgo·조문 이미지 후속 처리를 종료했다. 일반 검색 최신 reader·원문 SHA 전수 검증, 조문 554곳·이미지 22곳 취득. 충돌·미연결·모호함·제공 응답 오류는 위치별 상태로 유지한다. 관리자 UI에 전체 후속 단계 이력과 reader 누락 경고를 추가했다. 후속으로 기존 판례 2017도953도 1건 재수집해 reader·조문 10곳을 보강했고, 현재 수집본 reader 미등록은 0건이다. [결과와 한계](docs/incremental-ingestion.md#과거-원문-전용-수집-20건-복구--2026-09-15).
+
 **관리자 웹 백업·전수 로컬 복원 완료 — 2026-09-14:** 덤프 비밀번호 전달 누락과 기존 schema 복원 충돌을 수정·검증했다. 기존 관리자 백업 job이 529,886개 blob·DB dump·Parquet를 보존해 완료됐고, 동결 archive도 별도 복사·hash 검증했다. 새 격리 DB·파일에서 89,130행 검색을 포함한 데이터·작업 이력을 대조하고 legacy/current 검색→본문→조문·저장 이미지 및 401을 실제 브라우저에서 확인했다. 변동 세션·heartbeat와 진행 중 백업 상태는 구분했다. 전체 739개·ruff/mypy·프런트 lint/build 통과. 로컬 실증이며 외부 보관·AWS 복원 완료가 아니다. [결과·범위·한계](docs/backup-restore-rehearsal.md#전수-로컬-백업격리-복원-실증-완료--2026-09-14).
 
 **DB·파일 격리 복원 완료 — 2026-09-14:** 동일 PostgreSQL snapshot의 dump와 등록 blob을 묶는 백업 모듈, 검증기, 명시적 리허설 도구를 추가했다. 새 테스트 DB에 실제 pg_restore 후 전체 테이블 행·계정/세션·대기 작업·일반 검색/본문/반복 이미지 API와 실패 상태를 확인했다. 손상/누락/실패 방어 포함 신규 7개, 전체 732개·ruff/mypy·프런트 lint/build 통과. 합성 fixture의 로컬 복원이며 89,130행 전수 운영 백업·AWS 복원 완료가 아니다. [명령·실증·한계](docs/backup-restore-rehearsal.md).
