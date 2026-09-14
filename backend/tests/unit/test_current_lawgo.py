@@ -51,3 +51,25 @@ def test_article_structure_cannot_be_http_success_only():
         "<tr><td>제246조 내용</td></tr></tbody></table>"
     )
     assert article_table(html) == html
+
+
+@pytest.mark.parametrize("context,expected", [("prec", "20110310"), ("prec20100514", "20100514")])
+def test_provider_selected_date_is_not_replaced(context, expected):
+    from klegal_gold.enrichment.current_lawgo import provider_article_params
+
+    html = f"""<input id="precYd" value="20110310">
+    <a onclick="javascript:fncLawPop('법','JO','003600','{context}');">법 제36조</a>"""
+    day, links = provider_links(html)
+    assert links[0]["provider_context"] == context
+    params = provider_article_params(links[0], day)
+    assert params["lsId"] == "prec" + expected and params["efYd"] == expected
+    assert provider_article_params({"law_name": "법", "article": "003600"}, day)["efYd"] == day
+
+
+@pytest.mark.parametrize(
+    "context", ["prec20101301", "prec20100230", "prec2010", "detc20100514", "prec20100514');evil('"]
+)
+def test_invalid_or_unobserved_context_is_not_requested(context):
+    html = f"""<input id="precYd" value="20110310">
+    <a onclick="javascript:fncLawPop('법','JO','003600','{context}');">법 제36조</a>"""
+    assert provider_links(html)[1] == []

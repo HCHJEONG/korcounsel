@@ -35,7 +35,7 @@ def test_provider_enrichment_preserves_original_positions_and_restarts(db, tmp_p
     )
     before = records.read("reader:" + doc)
     frame = """<input id="precYd" value="20170413">
-    <a onclick="javascript:fncLawPop('형법','JO','024600','prec');">형법 제246조</a>
+    <a onclick="javascript:fncLawPop('형법','JO','024600','prec20160101');">형법 제246조</a>
     <a onclick="javascript:fncLawPop('형법','JO','035500','prec');">형법 제355조</a>"""
     records.put_artifact("frame", frame.encode(), origin="HTTP_RESPONSE", metadata={})
     from klegal_gold.enrichment.current_lawgo import provider_links
@@ -55,6 +55,9 @@ def test_provider_enrichment_preserves_original_positions_and_restarts(db, tmp_p
 
     def request(self, endpoint, params, key):
         calls.append(params["joNo"])
+        if params["joNo"] == "024600":
+            assert params["lsId"] == "prec20160101"
+            assert params["efYd"] == "20160101"
         if params["joNo"] == "035500":
             raise ValueError("LAWGO_TRANSPORT_FAILED")
         table = (
@@ -205,3 +208,37 @@ def test_admin_explicit_refresh_is_limited_to_observed_ids(db, tmp_path, monkeyp
     assert client.post(url, headers=headers).json()["registered"] == 0
     assert client.post(url + "?refresh_source_id=456", headers=headers).status_code == 400
     assert client.post(url + "?refresh_source_id=123", headers=headers).json()["registered"] == 1
+
+
+def test_same_article_with_different_provider_dates_is_ambiguous(db, tmp_path, monkeypatch):
+    from klegal_gold.enrichment.current_lawgo import provider_links
+
+    records = Records(db, FileStore(tmp_path))
+    store = ReaderStore(records)
+    doc = store.preserve(
+        '<a name="linkPrvs">법 제1조</a>',
+        title="date conflict",
+        source_id="123",
+        origin="CURRENT_SOURCE",
+        provenance={},
+        acquisitions={},
+    )
+    frame = '<input id="precYd" value="20110310">' + "".join(
+        f"""<a onclick="fncLawPop('법','JO','000100','prec{day}');">법 제1조</a>"""
+        for day in ["20100101", "20110101"]
+    )
+    _, links = provider_links(frame)
+    records.put_artifact(
+        "current-lawgo:date-conflict:plan",
+        json.dumps({"status": "EXACT", "day": "20110310", "links": links}).encode(),
+        origin="DERIVED",
+        metadata={},
+    )
+
+    def no_request(*args):
+        raise AssertionError("ambiguous versions must not be fetched")
+
+    monkeypatch.setattr(CurrentLawgo, "_request", no_request)
+    revision = CurrentLawgo(records).run(doc, "date-conflict", lambda: None)
+    assert store.read(revision)["statutes"][0]["provider_status"] == "AMBIGUOUS"
+    assert store.read(revision)["html_sha256"] == store.read(doc)["html_sha256"]

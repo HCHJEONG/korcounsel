@@ -30,3 +30,6 @@ CurrentLawgo는 조문 내용과 이미지 위치를 먼저 보존한다. worker
 실제 PostgreSQL 합성 provider popup 시험에 반복 이미지 성공·네트워크 실패·미허용 주소 대기, 이전 revision 불변, 새 조문 이미지 endpoint와 렌더링 검증을 추가했다. 관찰된 기존 ID만 상세 재수집하는 API도 검증했다. 전체 715개 회귀, ruff check/format 및 mypy를 통과했다.
 
 현재 fncLawPop JO 형식에 대한 구현이다. 다른 popup 형식과 연결 문구가 달라 일치하지 않는 조문은 여전히 미연결로 남긴다. 제공자 연결의 추가 형식 대응은 후속 단계다. 실제 표본은 취득된 bytes 재사용이며 제공자에서 새 이미지 bytes를 받는 실증과 구분한다. AWS 변경·환경파일 수정·자동 schedule·commit/push는 하지 않았다.
+
+
+날짜 지정 JO 팝업(precYYYYMMDD)의 후속 지원과 현재 검증 한계는 [별도 기록](lawgo-popup-variants.md)을 따른다.

@@ -4,6 +4,7 @@ import json
 import re
 from collections.abc import Callable
 from copy import deepcopy
+from datetime import datetime
 from hashlib import sha256
 from html.parser import HTMLParser
 from typing import Any
@@ -17,8 +18,10 @@ from klegal_gold.normalize.decision import decision_kind, docket_aliases
 from klegal_gold.sources.law_api import LawOpenApiCaseSource
 from klegal_gold.sources.lawgo_html import fetch_provider_html
 
-VERSION = "current-lawgo-1"
-CALL = re.compile(r"(?:javascript:)?fncLawPop\('([^'<>]+)','JO','([0-9]{6})','prec'\);?")
+VERSION = "current-lawgo-2"
+CALL = re.compile(
+    r"(?:javascript:)?fncLawPop\('([^'<>]+)','JO','([0-9]{6})','(prec(?:[0-9]{8})?)'\);?"
+)
 
 
 def exact_metadata(provenance: dict[str, Any], candidate: dict[str, Any]) -> bool:
@@ -59,6 +62,7 @@ def provider_links(html: str, *, source_id: str | None = None) -> tuple[str, lis
                     self.active = {
                         "law_name": match[1],
                         "article": match[2],
+                        "provider_context": match[3],
                         "text": "",
                         "provider_tag": self.get_starttag_text() or "",
                     }
@@ -78,9 +82,36 @@ def provider_links(html: str, *, source_id: str | None = None) -> tuple[str, lis
         raise ValueError("LAWGO_FRAME_STRUCTURE_CHANGED")
     if source_id is not None and parser.source_id != source_id:
         raise ValueError("LAWGO_FRAME_ID_MISMATCH")
+    valid_links = []
     for link in parser.links:
+        try:
+            provider_article_params(link, parser.day)
+        except ValueError:
+            continue
+        valid_links.append(link)
         link["text"] = " ".join(link["text"].split())
-    return parser.day, parser.links
+    return parser.day, valid_links
+
+
+def provider_article_params(link: dict[str, str], frame_day: str) -> dict[str, str]:
+    """Mirror the observed JO/prec branch; retain provider-selected historical date."""
+    context = link.get("provider_context", "prec")
+    if re.fullmatch(r"prec(?:[0-9]{8})?", context) is None:
+        raise ValueError("UNSUPPORTED_LAWGO_CONTEXT")
+    day = frame_day if context == "prec" else context[4:]
+    if re.fullmatch(r"[0-9]{8}", day) is None:
+        raise ValueError("INVALID_LAWGO_DATE")
+    datetime.strptime(day, "%Y%m%d")
+    return {
+        "joNo": link["article"],
+        "joEfYd": "",
+        "mode": "11",
+        "lsNm": link["law_name"],
+        "ancYd": "",
+        "lsId": "prec" + day,
+        "efYd": day,
+        "lsClsCd": "L",
+    }
 
 
 def article_table(html: str) -> str:
@@ -238,7 +269,14 @@ class CurrentLawgo:
             if article["payload"]:
                 continue
             links = [link for link in plan["links"] if link["text"] == article["text"]]
-            targets = {(link["law_name"], link["article"]) for link in links}
+            targets = {
+                (
+                    link["law_name"],
+                    link["article"],
+                    provider_article_params(link, plan["day"])["efYd"],
+                )
+                for link in links
+            }
             article["provider_status"] = "UNLINKED"
             if len(targets) != 1:
                 if targets:
@@ -250,16 +288,7 @@ class CurrentLawgo:
             )
             progress()
             try:
-                params = {
-                    "joNo": link["article"],
-                    "joEfYd": "",
-                    "mode": "11",
-                    "lsNm": link["law_name"],
-                    "ancYd": "",
-                    "lsId": "prec" + plan["day"],
-                    "efYd": plan["day"],
-                    "lsClsCd": "L",
-                }
+                params = provider_article_params(link, plan["day"])
                 raw = self._request("lsLinkProc.do", params, key)
                 table = article_table(raw.decode("utf-8"))
                 article.update(
@@ -270,6 +299,7 @@ class CurrentLawgo:
                     provider_status="PRESERVED",
                     version_status="UNVERIFIED",
                     provider_link=link,
+                    provider_request=params,
                     lawgo_source_id=plan["source_id"],
                     frame_artifact_id=plan["frame_artifact_id"],
                 )

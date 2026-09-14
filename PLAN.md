@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**lawgo 날짜 지정 팝업 — 2026-09-14:** 실제 precYYYYMMDD 형식을 확인해 제공 날짜를 유지하는 요청·manifest와 날짜 충돌 보류를 구현했다. 2010두9976 한 건에서 날짜 지정 3곳 및 총 24/26 조문 보강, 일반 검색 최신 revision·반환 HTML·원문 불변·401을 검증했다. 회귀 723건 통과. 브라우저 육안 검증은 Windows sandbox 초기화 오류로 미실행이다. [관찰·구현·한계](docs/lawgo-popup-variants.md).
+
 **신규 조문 이미지 — 2026-09-14 완료:** provider popup 내 이미지 위치→취득 ledger→새 reader chain을 연결했다. 2010구합13975 한 건을 관리자 API로 재수집해 조문 10/11곳 보강·이미지 2곳 표시·원문 hash 불변·이미지 401을 확인했다. 이미지 bytes는 기존 성공 파일을 재사용했다. 전체 회귀 715건 통과. 다른 popup 형식은 후속이다. [구현·실증·한계](docs/current-statute-images.md).
 
 **현재 본문 검색·이미지 분할 — 2026-09-14 완료:** CURRENT_SOURCE 제목·HTML 색인을 새 reader 발급과 관리자 재구축에 연결했다. 이미지 50개 배치 checkpoint 재개로 뒤쪽 URL까지 처리하고 전체 처리 후 reader를 발급한다. PostgreSQL 103 URL 시험과 전체 714개 회귀 통과. 로컬 기존 1,836개 revision 색인·원문 전수 대조를 완료했고 본문 검색 표본 0.0354초 및 검색→이미지·조문 표시를 검증했다. [계약과 검증](docs/search-index-and-image-retry.md).
