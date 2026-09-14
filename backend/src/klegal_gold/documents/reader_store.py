@@ -191,6 +191,8 @@ class ReaderStore:
             },
         }
         self.records.put_artifacts(list(entries.values()))
+        if origin == "CURRENT_SOURCE":
+            self.index_current(document_id, title, html)
         return document_id
 
     def refresh_current_images(self, document_id: str) -> str:
@@ -458,6 +460,78 @@ class ReaderStore:
         return [
             {"document_id": r["artifact_id"].removeprefix("reader:"), **r["metadata"]} for r in rows
         ]
+
+    def index_current(self, document_id: str, title: str, html: str) -> None:
+        with self.records.db.connect() as conn:
+            conn.execute(
+                "INSERT INTO current_reader_search VALUES(%s,%s,%s) "
+                "ON CONFLICT(artifact_id) DO NOTHING",
+                ("reader:" + document_id, title.casefold(), html.casefold()),
+            )
+
+    def rebuild_current_search(self, progress: Any) -> None:
+        # Missing rows are the durable checkpoint. A published immutable reader
+        # remains usable if indexing was interrupted after artifact registration.
+        while True:
+            with self.records.db.connect() as conn:
+                rows = conn.execute(
+                    "SELECT a.artifact_id FROM artifacts a LEFT JOIN current_reader_search s "
+                    "USING(artifact_id) WHERE a.metadata->>'kind'='READER_DOCUMENT' "
+                    "AND a.metadata->>'origin'='CURRENT_SOURCE' AND s.artifact_id IS NULL "
+                    "ORDER BY a.artifact_id LIMIT 100"
+                ).fetchall()
+            if not rows:
+                return
+            for row in rows:
+                document_id = row["artifact_id"].removeprefix("reader:")
+                manifest = self.read(document_id)
+                html = self.records.read(manifest["html_artifact_id"]).decode()
+                if sha256(html.encode()).hexdigest() != manifest["html_sha256"]:
+                    raise ValueError("READER_PARENT_MISMATCH")
+                self.index_current(document_id, manifest["title"], html)
+                progress({"phase": "CURRENT_READER_INDEX"})
+
+    def search_indexed(self, query: str, *, limit: int) -> list[dict[str, Any]] | None:
+        if "\x00" in query:
+            return None
+        latest = """WITH latest AS (
+            SELECT DISTINCT ON(a.metadata->>'source_id')
+                a.artifact_id,a.metadata,a.created_at
+            FROM artifacts a LEFT JOIN artifacts root ON root.artifact_id=
+                'reader:' || (a.metadata->>'current_root_document_id')
+            WHERE a.metadata->>'kind'='READER_DOCUMENT'
+                AND a.metadata->>'origin'='CURRENT_SOURCE'
+            ORDER BY a.metadata->>'source_id', COALESCE(root.created_at,a.created_at) DESC,
+                a.created_at DESC,a.artifact_id DESC
+        ) """
+        needle = query.casefold()
+        pattern = "%" + needle.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+        with self.records.db.connect() as conn:
+            missing = conn.execute(
+                latest + "SELECT 1 FROM latest LEFT JOIN current_reader_search USING(artifact_id) "
+                "WHERE title_text IS NULL LIMIT 1"
+            ).fetchone()
+            if missing:
+                return None
+            # Keep the existing title-first policy; only use body matches when
+            # there are no title hits. Filter after choosing the latest revision.
+            for column in ("title_text", "html_text"):
+                rows = conn.execute(
+                    latest
+                    + "SELECT latest.* FROM latest JOIN current_reader_search USING(artifact_id) "
+                    f"WHERE {column} LIKE %s ORDER BY created_at DESC,artifact_id DESC LIMIT %s",
+                    (pattern, limit),
+                ).fetchall()
+                if rows:
+                    return [
+                        {
+                            "document_id": row["artifact_id"].removeprefix("reader:"),
+                            **row["metadata"],
+                            "indexed_column": column,
+                        }
+                        for row in rows
+                    ]
+        return []
 
     def find_legacy(self, body_hash: str, position: int, snapshot: str) -> str | None:
         with self.records.db.connect() as conn:

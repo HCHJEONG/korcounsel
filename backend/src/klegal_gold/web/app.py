@@ -86,14 +86,20 @@ def _current_reader_pages(store: ReaderStore) -> Iterator[dict[str, Any]]:
 def _current_reader_matches(store: ReaderStore, query: str, *, limit: int) -> list[CaseSearchItem]:
     needle = query.casefold()
     matches: list[CaseSearchItem] = []
-    title_matches = store.search(query, limit=limit)
-    for item in title_matches if title_matches else _current_reader_pages(store):
+    indexed = store.search_indexed(query, limit=limit)
+    title_matches = store.search(query, limit=limit) if indexed is None else []
+    candidates = (
+        indexed
+        if indexed is not None
+        else (title_matches if title_matches else _current_reader_pages(store))
+    )
+    for item in candidates:
         manifest = store.read(item["document_id"])
         title = _text(manifest.get("title")) or "현재 제공 본문"
-        html = store.records.read(manifest["html_artifact_id"]).decode()
+        html = store.records.read(manifest["html_artifact_id"]).decode() if indexed is None else ""
         if needle in title.casefold():
             matched_columns = ["current_reader_title"]
-        elif needle in html.casefold():
+        elif item.get("indexed_column") == "html_text" or needle in html.casefold():
             matched_columns = ["current_reader_html"]
         else:
             continue

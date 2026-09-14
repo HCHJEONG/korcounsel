@@ -42,4 +42,18 @@ CURRENT_SOURCE까지 합친 일반 검색 API의 사건번호 표본은 앞선 �
 
 ## 범위와 한계
 
-검색 색인은 추가 DB 공간을 사용한다. 이전 snapshot은 자동 삭제하지 않는다. 아주 짧거나 흔한 검색어는 trigram 선택도가 낮을 수 있다. CURRENT_SOURCE 본문 fallback은 아직 별도의 파일 조회 경로다. 이미지 취득 child job은 기존 기본 한도인 최대 50개 URL을 처리한다. 50개를 넘는 문서의 후속 URL 분할·계속 처리는 추가 구현이 필요하다. 이미지 재취득은 저장된 주소 기준이며 현재 제공자 mapping을 다시 관찰하는 작업이나 legacy reader 재보강을 대신하지 않는다. 다른 lawgo popup 형식과 조문 내부 추가 이미지 취득은 별도 범위로 남는다.
+검색 색인은 추가 DB 공간을 사용한다. 이전 snapshot은 자동 삭제하지 않는다. 아주 짧거나 흔한 검색어는 trigram 선택도가 낮을 수 있다. CURRENT_SOURCE 본문 색인과 50개 초과 URL 처리는 아래 후속 구현으로 확장했다. 기존 단일 배치 job의 한도 계약은 유지한다. 이미지 재취득은 저장된 주소 기준이며 현재 제공자 mapping을 다시 관찰하는 작업이나 legacy reader 재보강을 대신하지 않는다. 다른 lawgo popup 형식과 조문 내부 추가 이미지 취득은 별도 범위로 남는다.
+
+
+## CURRENT_SOURCE 본문 색인·이미지 분할 — 2026-09-14 후속
+
+migration 0015는 current_reader_search 파생 projection을 추가한다. 새 CURRENT_SOURCE reader를 불변 artifact로 저장한 뒤 제목·원문 HTML의 casefold 검색 문자열을 등록한다. 기존 reader와 artifact 등록 직후 중단된 누락분은 관리자 ‘검색 색인 구축’ job에서 채운다. 누락 행 자체가 재개 기준이며 원본·기존 manifest를 수정하지 않는다. 최신 source/root/revision을 먼저 선택한 뒤 제목 우선, 제목 일치가 없으면 본문 일치라는 기존 검색 계약을 적용한다. 최신 reader의 색인이 하나라도 없으면 기존 파일 검색으로 돌아간다. 색인이 준비되면 결과가 아닌 HTML 파일은 읽지 않는다. 보강 조문의 별도 payload까지 검색 범위를 확장하지는 않는다.
+
+신규 수집과 새 관리자 이미지 재취득 명령은 all_urls 모드로 URL을 50개씩 처리한다. 각 URL 처리 후 image_next_url과 누적 성공·실패·bytes를 영속 checkpoint에 저장한다. 50개 배치가 끝나면 CHECKPOINTED로 큐에 돌아가며 worker 재시작 후 다음 URL부터 계속한다. 배치마다 bytes 상한을 새로 적용한다. 전체 URL 범위의 처리가 끝나거나 job이 최종 실패해야 후속 reader refresh가 실행된다. 개별 이미지 실패는 위치별로 남고 다른 URL 처리를 막지 않는다. 이미 등록된 단일 배치 job의 payload는 변경하지 않으므로 과거 한도 job에는 새 관리자 재취득 명령을 사용한다.
+
+실제 PostgreSQL의 합성 103 URL 시험에서 50→100→103 재개, worker 교체, 후속 refresh 대기, 102개 성공·1개 실패, 원문 hash 불변을 확인했다. 이는 실제 제공자에게 103개를 다운로드한 실증과 구분한다. 검색 회귀는 최신 revision, Unicode casefold·literal 특수문자, 누락 색인 fallback·재구축, 검색 시 HTML 파일 미접근을 포함한다. 전체 Python/PostgreSQL 회귀 714건 통과.
+
+
+로컬 관리자 웹에서 구축 job `f4c3c748-c61c-41f7-9f6f-582cd32b72ff`가 성공했고 CURRENT_SOURCE의 보존 revision 1,836개 모두 색인을 등록했다. 전수 HTML SHA-256과 title/html casefold 문자열 일치를 확인했다. `닭 날개` 본문 검색은 현재 판례 3건, 직접 색인 조회 0.0354초였으며 `2024도8174` 제목 검색은 1건·0.0197초였다. 없는 검색어는 0건·0.2568초였다. 이는 로컬 표본으로 일반 API 전체 응답 시간과 구분한다. 증거는 `data/search-index-audit-20260914/current-verified.json`에 보존했다.
+
+일반 웹의 본문 문자열 검색→2009다47340 최신 reader에서 이미지 4곳 정상 로딩·미확보 2곳·조문 4곳을 확인했다. 미인증 검색·본문·색인 명령은 401이다. ruff format/check·mypy·전체 pytest 714건·pnpm lint/build·git diff --check 통과. 로컬 migration 0015와 API/worker/web 반영을 완료했으며 환경파일 변경·자동 schedule·commit/push는 하지 않았다.

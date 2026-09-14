@@ -104,6 +104,7 @@ class Queue:
         manifest_artifact_id: str,
         *,
         max_urls: int = 50,
+        all_urls: bool = False,
         max_total_bytes: int = 512 * 1024 * 1024,
     ) -> Job:
         if (
@@ -120,6 +121,7 @@ class Queue:
             {
                 "manifest_artifact_id": manifest_artifact_id,
                 "max_urls": max_urls,
+                **({"all_urls": True} if all_urls else {}),
                 "max_total_bytes": max_total_bytes,
             },
             3,

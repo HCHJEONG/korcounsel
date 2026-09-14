@@ -345,9 +345,18 @@ class ImageAcquirer:
             ):
                 seen.add(ref.resolved_url)
                 urls.append(ref.resolved_url)
-        selected = urls[: max(0, max_urls)]
-        acquired = skipped = failed = total_bytes = consumed_bytes = 0
+        all_urls = job.payload.get("all_urls", False)
+        start = int(job.checkpoint.get("image_next_url", 0)) if all_urls else 0
+        selected = urls[start : start + max_urls] if all_urls else urls[: max(0, max_urls)]
+        acquired = int(job.checkpoint.get("image_acquired", 0)) if all_urls else 0
+        skipped = int(job.checkpoint.get("image_skipped", 0)) if all_urls else 0
+        failed = int(job.checkpoint.get("image_failed", 0)) if all_urls else 0
+        total_bytes = int(job.checkpoint.get("image_bytes_stored", 0)) if all_urls else 0
+        consumed_bytes = 0
         for index, url in enumerate(selected, start=1):
+            # Each chunk has its own bounded byte budget; the cursor is durable.
+            if all_urls and (start + index - 1) % max_urls == 0:
+                consumed_bytes = 0
             status = self._current_status(url)
             if status == "ACQUIRED":
                 self._record_attempt(job.job_id, url, "SKIPPED", None, None, "ALREADY_ACQUIRED")
@@ -394,15 +403,18 @@ class ImageAcquirer:
             if progress is not None:
                 progress(
                     {
-                        "image_urls_done": index,
-                        "image_urls_total": len(selected),
+                        "image_urls_done": start + index,
+                        **({"image_next_url": start + index} if all_urls else {}),
+                        "image_urls_total": len(urls) if all_urls else len(selected),
                         "image_acquired": acquired,
                         "image_skipped": skipped,
                         "image_failed": failed,
                         "image_bytes_stored": total_bytes,
                     }
                 )
-        return AcquisitionResult(len(refs), len(selected), acquired, skipped, failed, total_bytes)
+        return AcquisitionResult(
+            len(refs), start + len(selected), acquired, skipped, failed, total_bytes
+        )
 
     def _preserve_rejected_response(
         self, job: Job, url: str, response: DownloadedImage, error_code: str

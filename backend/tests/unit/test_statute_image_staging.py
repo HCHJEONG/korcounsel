@@ -43,6 +43,8 @@ class MemoryRecords:
         yield self
 
     def execute(self, sql, values):
+        if "INSERT INTO current_reader_search" in sql:
+            return Query([])
         if "SELECT artifact_id FROM artifacts" in sql:
             body_hash, position, snapshot = values
             found = [

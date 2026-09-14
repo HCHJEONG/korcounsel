@@ -182,6 +182,7 @@ def test_upgrade_backfills_without_mutating_history(empty_db):
         "0012_current_reader_refresh.sql",
         "0013_current_lawgo.sql",
         "0014_legacy_search_index.sql",
+        "0015_current_reader_search.sql",
     ]
     with empty_db.connect() as conn:
         extension = conn.execute(

@@ -95,7 +95,9 @@ class Worker:
             origin="MANIFEST",
             metadata={},
         )
-        image_job = self.queue.submit_image_batch("image-retry:" + str(job.job_id), artifact_id)
+        image_job = self.queue.submit_image_batch(
+            "image-retry:" + str(job.job_id), artifact_id, all_urls=True
+        )
         refresh = self.queue.submit_current_reader_refresh(document_id, image_job.job_id)
         self.queue.heartbeat(
             job, {"image_job_id": str(image_job.job_id), "follow_up_job_id": str(refresh.job_id)}
@@ -119,6 +121,7 @@ class Worker:
                 if self.stop.is_set() or self.queue.drain_status()["draining"]:
                     raise CheckpointRequested
 
+        self.readers.rebuild_current_search(progress)
         LegacySearchIndex(self.queue.db).build(path, job.payload["snapshot_key"], progress)
 
     def _fetch_law(self, job: Job) -> None:
@@ -273,6 +276,7 @@ class Worker:
             image_job = self.queue.submit_image_batch(
                 "current-reader-images:" + str(job.job_id),
                 str(checkpoint["image_manifest_id"]),
+                all_urls=True,
             )
             refresh_job = self.queue.submit_current_reader_refresh(
                 str(checkpoint["reader_document_id"]), image_job.job_id
@@ -363,9 +367,14 @@ class Worker:
             max_total_bytes=job.payload["max_total_bytes"],
             progress=progress,
         )
+        if job.payload.get("all_urls"):
+            saved = self.queue.get(job.job_id).checkpoint
+            if saved.get("image_next_url", 0) < saved.get("image_urls_total", 0):
+                raise CheckpointRequested
         self.queue.heartbeat(
             job,
             {
+                **self.queue.get(job.job_id).checkpoint,
                 "image_references": result.references,
                 "image_urls_considered": result.urls_considered,
                 "image_acquired": result.acquired,

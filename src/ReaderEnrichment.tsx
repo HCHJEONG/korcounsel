@@ -86,7 +86,7 @@ export default function ReaderEnrichment({ kind = 'lawgo', documentId, onExpired
   }
 
   return <div aria-label={actionLabel}>
-    <p>{kind === 'index' ? '현재 기존 corpus 전체의 검색 색인을 구축합니다. 구축 중에는 기존 검색을 이용하며 완료된 색인만 적용합니다.' : kind === 'images' ? '보존된 제공자 주소에서 미취득 이미지를 다시 취득합니다. 이미 저장한 파일은 재사용하며 주소 미확보 위치는 그대로 표시합니다.' : '이 본문에 제공자가 연결한 조문을 다시 확인합니다.'}{kind !== 'index' && ' 기존 본문은 보존하며 결과는 새 버전으로 열 수 있습니다.'}</p>
+    <p>{kind === 'index' ? '기존 corpus와 현재 수집 본문의 검색 색인을 구축합니다. 구축 중에는 기존 검색을 이용하며 완료된 색인만 적용합니다.' : kind === 'images' ? '보존된 제공자 주소에서 미취득 이미지를 다시 취득합니다. 이미 저장한 파일은 재사용하며 주소 미확보 위치는 그대로 표시합니다.' : '이 본문에 제공자가 연결한 조문을 다시 확인합니다.'}{kind !== 'index' && ' 기존 본문은 보존하며 결과는 새 버전으로 열 수 있습니다.'}</p>
     <button disabled={submitting || (!!jobId && !terminal)} onClick={() => void submit()}>
       {submitting ? '등록 확인 중…' : terminal ? label + ' 다시 실행' : requestId && !jobId ? '같은 요청 확인' : actionLabel}
     </button>

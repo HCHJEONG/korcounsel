@@ -269,3 +269,100 @@ def test_image_retry_coordinator_preserves_positions_and_replays(db, tmp_path, m
     assert readers.read(original)["images"][0]["status"] == "PENDING"
     assert any("b.gif" in url and count == 2 for url, count in attempts.items())
     assert queue.submit_current_image_retry("explicit-retry", original).job_id == retry.job_id
+
+
+def test_more_than_fifty_images_checkpoint_before_refresh(db, tmp_path, monkeypatch):
+    records = Records(db, FileStore(tmp_path))
+    readers = ReaderStore(records)
+    html = "".join(
+        f'<input class="contImagePath" name="a{i}" value="a{i}.gif"><img name="a{i}">'
+        for i in range(103)
+    )
+    document = readers.preserve(
+        html,
+        title="batch",
+        source_id="456",
+        origin="CURRENT_SOURCE",
+        provenance={},
+        acquisitions={},
+    )
+    queue = Queue(db)
+    retry = queue.submit_current_image_retry("many", document)
+    attempts = []
+
+    def fetch(url, limit):
+        attempts.append(url)
+        if url.endswith("a51.gif"):
+            raise ValueError("IMAGE_NETWORK_ERROR")
+        return DownloadedImage(GIF, "image/gif", {})
+
+    monkeypatch.setattr(
+        "klegal_gold.jobs.worker.ImageAcquirer",
+        lambda records: ImageAcquirer(records, fetcher=fetch),
+    )
+    worker = Worker(queue, records)
+    worker.run_once()
+    done = queue.get(retry.job_id)
+    image_id = UUID(done.checkpoint["image_job_id"])
+    refresh_id = UUID(done.checkpoint["follow_up_job_id"])
+    worker.run_once()
+    assert queue.get(image_id).checkpoint["image_next_url"] == 50
+    assert queue.get(image_id).status == "QUEUED"
+    assert queue.get(refresh_id).attempts == 0
+    worker = Worker(queue, records)  # Process restart uses persisted cursor.
+    worker.run_once()
+    assert queue.get(image_id).checkpoint["image_next_url"] == 100
+    assert queue.get(refresh_id).attempts == 0
+    worker.run_once()
+    assert queue.get(image_id).status == "SUCCEEDED"
+    assert queue.get(image_id).checkpoint["image_acquired"] == 102
+    assert queue.get(image_id).checkpoint["image_failed"] == 1
+    worker.run_once()
+    result = readers.read(queue.get(refresh_id).checkpoint["reader_document_id"])
+    assert len(attempts) == len(set(attempts)) == 103
+    assert sum(r["status"] == "ACQUIRED" for r in result["images"]) == 102
+    assert result["images"][51]["status"] == "FAILED"
+    assert readers.read(document)["html_sha256"] == result["html_sha256"]
+
+
+def test_current_search_index_latest_and_rebuild(db, tmp_path, monkeypatch):
+    records = Records(db, FileStore(tmp_path))
+    store = ReaderStore(records)
+    old = store.preserve(
+        "<p>old-only</p>",
+        title="old",
+        source_id="case",
+        origin="CURRENT_SOURCE",
+        provenance={},
+        acquisitions={},
+    )
+    latest = store.preserve(
+        "<p>Straße 100% a_b</p>",
+        title="new",
+        source_id="case",
+        origin="CURRENT_SOURCE",
+        provenance={"current_root_document_id": old},
+        acquisitions={},
+    )
+    assert store.search_indexed("old-only", limit=30) == []
+    for query in ("STRASSE", "%", "_", "new"):
+        assert [r["document_id"] for r in store.search_indexed(query, limit=30)] == [latest]
+    with db.connect() as conn:
+        conn.execute(
+            "DELETE FROM current_reader_search WHERE artifact_id=%s", ("reader:" + latest,)
+        )
+    assert store.search_indexed("STRASSE", limit=30) is None
+    store.rebuild_current_search(lambda _: None)
+    store.rebuild_current_search(lambda _: None)
+    from klegal_gold.web.app import _current_reader_matches
+
+    original_read = records.read
+
+    def no_html_read(artifact):
+        assert not artifact.startswith("reader-html:")
+        return original_read(artifact)
+
+    monkeypatch.setattr(records, "read", no_html_read)
+    matches = _current_reader_matches(store, "STRASSE", limit=30)
+    assert matches[0].reader_document_id == latest
+    assert matches[0].matched_columns == ["current_reader_html"]
