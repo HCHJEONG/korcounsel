@@ -97,6 +97,8 @@ compose.env.example의 비밀번호는 폐기 가능한 로컬 개발 전용입�
 
 Compose의 `LOCAL_DATA_DIR`은 기본 `./data`이며 필요한 경우 실제 공통 저장소의 절대 경로로 지정합니다. `LOCAL_UID`/`LOCAL_GID`는 그 폴더 소유자의 `id -u`/`id -g` 값으로 맞춥니다(기본 1000:1000). 컨테이너는 해당 비-root 사용자로 실행하며 기존 파일 소유자를 일괄 변경하지 않습니다. `LEGACY_PARQUET_CONTAINER_PATH`는 컨테이너 내부 경로로 기본 `/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet`입니다. 호스트용 `LEGACY_PARQUET_PATH`와 구분합니다. 로그인 검증 시 `WEB_ORIGIN`은 실제 접속 주소인 `http://127.0.0.1:8080`에 맞춥니다.
 
+관리자 화면의 **백업 관리**에서 DB·등록 파일·설정된 Parquet의 수동 백업을 실행하고 진행 이력을 확인할 수 있습니다. 저장 위치·포함 범위·실패 재개는 [관리자 웹 백업](docs/backup-restore-rehearsal.md#관리자-웹-백업--2026-09-14)을 따릅니다.
+
 로컬 DB·파일의 격리 복원 리허설은 [백업·복원 검증](docs/backup-restore-rehearsal.md)을 따릅니다. 명시적 명령으로 합성 fixture를 별도 테스트 DB에 dump/restore하며 운영 corpus는 복원하지 않습니다.
 
 ## 설정과 CLI

@@ -77,7 +77,7 @@ export default function BackupPanel({ onExpired }: { onExpired: () => void }) {
     <ol>{data?.items.map(item => <li key={item.job_id}>
       <p><time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('ko-KR')}</time> · {statuses[item.status] ?? item.status} · 시도 {item.attempts}회</p>
       <p>{phases[item.checkpoint.phase ?? ''] ?? '실행 대기'}{item.checkpoint.files_total !== undefined && ` · 파일 ${item.checkpoint.files_done ?? 0} / ${item.checkpoint.files_total}개`}</p>
-      {item.status === 'SUCCEEDED' && <p>파일 {((item.checkpoint.bytes_done ?? 0) / 1024 ** 3).toFixed(2)} GiB · DB {((item.checkpoint.dump_bytes ?? 0) / 1024 ** 2).toFixed(1)} MiB · Parquet {item.checkpoint.parquet_included ? '포함' : '미포함'} · 복원 검증 미실행</p>}
+      {item.status === 'SUCCEEDED' && <p>파일 {((item.checkpoint.bytes_done ?? 0) / 1024 ** 3).toFixed(2)} GiB · DB {((item.checkpoint.dump_bytes ?? 0) / 1024 ** 2).toFixed(1)} MiB · Parquet {item.checkpoint.parquet_included ? '포함' : '미포함'} · 복원 검증은 별도 절차</p>}
       <details><summary>백업 식별자</summary><code>{item.checkpoint.backup_id ?? item.job_id}</code></details>
     </li>)}</ol>
   </section>

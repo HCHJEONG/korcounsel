@@ -153,3 +153,58 @@ def test_backup_api_roles_origin_history_and_lost_response(db, tmp_path, monkeyp
             ).status_code
             == 409
         )
+
+
+def test_container_dump_adapter_accepts_exported_snapshot(db):
+    """Exercise the shipped pg_dump binary and environment adapter, without corpus data."""
+    import os
+    import re
+    import subprocess
+
+    container = os.environ.get("KLEGAL_TEST_BACKUP_WORKER_CONTAINER")
+    if not container:
+        pytest.skip("Set KLEGAL_TEST_BACKUP_WORKER_CONTAINER for shipped dump adapter verification")
+    assert re.fullmatch(r"[a-zA-Z0-9_.-]+", container)
+    with db.connect() as conn:
+        assert conn.execute("SELECT current_database() AS n").fetchone()["n"] == "korcounsel_test"
+        conn.execute("CREATE TABLE backup_adapter_probe(value text)")
+        conn.execute("INSERT INTO backup_adapter_probe VALUES ('synthetic')")
+    code = """
+import sys,tempfile
+from pathlib import Path
+from types import SimpleNamespace
+from klegal_gold.config import load_settings
+from klegal_gold.db.session import Database
+from klegal_gold.jobs.backup import dump_snapshot
+s=load_settings()
+db=Database(s.database_url.get_secret_value(),schema=sys.argv[1])
+with tempfile.TemporaryDirectory(prefix="backup-adapter-probe-") as tmp:
+    path=Path(tmp)/"database.dump"
+    dump_snapshot(SimpleNamespace(queue=SimpleNamespace(db=db)),sys.argv[2],path,lambda _:None)
+    assert path.read_bytes().startswith(b"PGDMP")
+    assert path.stat().st_size>100
+print("EXPORTED_SNAPSHOT_DUMP_OK")
+"""
+    with db.connect() as conn:
+        conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
+        snapshot = conn.execute("SELECT pg_export_snapshot() AS id").fetchone()["id"]
+        result = subprocess.run(
+            [
+                "docker",
+                "exec",
+                "-i",
+                "-e",
+                "POSTGRES_DB=korcounsel_test",
+                container,
+                "python",
+                "-",
+                db.schema,
+                snapshot,
+            ],
+            input=code,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    assert result.returncode == 0, "Container dump adapter failed; diagnostics suppressed"
+    assert result.stdout.strip() == "EXPORTED_SNAPSHOT_DUMP_OK"

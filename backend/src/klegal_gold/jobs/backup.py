@@ -21,7 +21,11 @@ def dump_snapshot(worker: "Worker", snapshot: str, path: Path, progress: Any) ->
     # Password stays in the child environment, never argv or captured diagnostics.
     with worker.queue.db.connect() as conn:
         info = conninfo_to_dict(conn.info.dsn)
+        # Psycopg deliberately strips the password from ConnectionInfo.dsn.
+        # Use the established libpq connection, and pass it only in the child environment.
+        password = conn.pgconn.password.decode("utf-8")
     env = os.environ.copy()
+    env["PGPASSWORD"] = password
     env["PGDATABASE"] = str(info.pop("dbname"))
     for key, value in info.items():
         if key != "options" and value is not None:

@@ -45,8 +45,9 @@ def table_rows(db):
         }
 
 
+@pytest.mark.parametrize("precreate_schema", [False, True])
 def test_postgres_dump_and_files_restore_reader_accounts_and_pending_jobs(
-    db, tmp_path, monkeypatch
+    db, tmp_path, monkeypatch, precreate_schema
 ):
     container = os.environ.get("KLEGAL_TEST_PG_CONTAINER")
     if not container:
@@ -160,10 +161,19 @@ def test_postgres_dump_and_files_restore_reader_accounts_and_pending_jobs(
             created = True
         with psycopg.connect(target_dsn) as conn:
             conn.execute("CREATE EXTENSION pg_trgm WITH SCHEMA public")
+            if precreate_schema:
+                conn.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(db.schema)))
         with (bundle / "database.dump").open("rb") as stream:
             pgtool(
                 "pg_restore",
-                ["-d", target_name, "--no-owner", "--no-privileges", "--exit-on-error"],
+                [
+                    "-d",
+                    target_name,
+                    "--no-owner",
+                    "--no-privileges",
+                    "--exit-on-error",
+                    *(["--schema=" + db.schema] if precreate_schema else []),
+                ],
                 input_file=stream,
             )
         restored_db = Database(target_dsn, schema=db.schema)

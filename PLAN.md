@@ -1,5 +1,7 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**관리자 웹 백업·전수 로컬 복원 완료 — 2026-09-14:** 덤프 비밀번호 전달 누락과 기존 schema 복원 충돌을 수정·검증했다. 기존 관리자 백업 job이 529,886개 blob·DB dump·Parquet를 보존해 완료됐고, 동결 archive도 별도 복사·hash 검증했다. 새 격리 DB·파일에서 89,130행 검색을 포함한 데이터·작업 이력을 대조하고 legacy/current 검색→본문→조문·저장 이미지 및 401을 실제 브라우저에서 확인했다. 변동 세션·heartbeat와 진행 중 백업 상태는 구분했다. 전체 739개·ruff/mypy·프런트 lint/build 통과. 로컬 실증이며 외부 보관·AWS 복원 완료가 아니다. [결과·범위·한계](docs/backup-restore-rehearsal.md#전수-로컬-백업격리-복원-실증-완료--2026-09-14).
+
 **DB·파일 격리 복원 완료 — 2026-09-14:** 동일 PostgreSQL snapshot의 dump와 등록 blob을 묶는 백업 모듈, 검증기, 명시적 리허설 도구를 추가했다. 새 테스트 DB에 실제 pg_restore 후 전체 테이블 행·계정/세션·대기 작업·일반 검색/본문/반복 이미지 API와 실패 상태를 확인했다. 손상/누락/실패 방어 포함 신규 7개, 전체 732개·ruff/mypy·프런트 lint/build 통과. 합성 fixture의 로컬 복원이며 89,130행 전수 운영 백업·AWS 복원 완료가 아니다. [명령·실증·한계](docs/backup-restore-rehearsal.md).
 
 **증보 중단·재개 회귀 완료 — 2026-09-14:** 이미지 commit 직후 및 reader 발급 후 완료 checkpoint 전의 비정상 종료를 주입한 PostgreSQL 회귀 2개를 추가했다. lease 만료 후 새 worker가 성공 bytes·reader revision을 재사용하고 중복 job 방지·최신 검색·실패/대기 위치·기존 artifact/취득 이력을 유지했다. 별도 korcounsel_test DB 전체 725개·ruff/mypy·프런트 lint/build 통과. 제품 코드 변경 없음. [범위·검증](docs/incremental-ingestion.md#증보-강제-종료-경계-회귀--2026-09-14).
