@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
+import ReaderEnrichment from './ReaderEnrichment'
 
 type CaseItem = {
   source: string; display_title: string; court: string | null; case_numbers: string[]
@@ -14,6 +15,15 @@ type AdminDelta = { artifact_id: string; counts: Record<string, number> }
 type DetailSubmission = { candidate_count: number; registered: number; job_ids: string[] }
 type DetailStatus = { total: number; completed: number; statuses: Record<string, number> }
 
+function readerLocation(params: URLSearchParams) {
+  const previous = new URLSearchParams(window.location.search)
+  for (const key of ['index_request', 'index_job']) {
+    const value = previous.get(key)
+    if (value) params.set(key, value)
+  }
+  window.history.replaceState(null, '', params.size ? '?' + params : window.location.pathname)
+}
+
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false)
   const [checking, setChecking] = useState(true)
@@ -28,6 +38,8 @@ export default function App() {
   const [selection, setSelection] = useState<Selection | null>(null)
   const [document, setDocument] = useState('')
   const [readerStatus, setReaderStatus] = useState('')
+  const [currentReader, setCurrentReader] = useState('')
+  const [currentImageCount, setCurrentImageCount] = useState(0)
   const [adminJob, setAdminJob] = useState('')
   const [adminJobStatus, setAdminJobStatus] = useState('')
   const [adminDelta, setAdminDelta] = useState<AdminDelta | null>(null)
@@ -50,6 +62,7 @@ export default function App() {
     setDocument('')
     setBusy(false)
     setReaderStatus('')
+    setCurrentReader('')
     setAdminJob('')
     setAdminJobStatus('')
     setAdminDelta(null)
@@ -231,14 +244,17 @@ export default function App() {
 
   const openDocument = useCallback(async (next: Selection) => {
     const docMatch = next.url.match(/^\/api\/reader\/([a-f0-9]{64})\/html$/)
-    if (docMatch) window.history.replaceState(null, '', '?document=' + docMatch[1])
+    if (docMatch) {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('document') !== docMatch[1]) readerLocation(new URLSearchParams({ document: docMatch[1] }))
+    }
     else {
       const route = new URL(next.url, window.location.origin)
       const row = route.pathname.match(/^\/api\/cases\/(\d+)\/body$/)
-      if (row) window.history.replaceState(null, '', '?' + new URLSearchParams({ row: row[1], body_hash: route.searchParams.get('body_hash') ?? '' }))
+      if (row) readerLocation(new URLSearchParams({ row: row[1], body_hash: route.searchParams.get('body_hash') ?? '' }))
     }
     const own = ++readerRequest.current
-    setSelection(next); setDocument(''); setReaderStatus('본문을 불러오고 있습니다.')
+    setCurrentReader(''); setSelection(next); setDocument(''); setReaderStatus('본문을 불러오고 있습니다.')
     try {
       const response = await fetch(next.url, { cache: 'no-store', signal: AbortSignal.timeout(30000) })
       if (own !== readerRequest.current) return
@@ -252,6 +268,8 @@ export default function App() {
           params.set('reader_revision', revision)
           window.history.replaceState(null, '', '?' + params)
         }
+        setCurrentImageCount(Number(response.headers.get('X-Reader-Image-Count') ?? '0'))
+        setCurrentReader(response.headers.get('X-Reader-Origin') === 'CURRENT_SOURCE' ? docMatch?.[1] ?? '' : '')
         setDocument(html); setReaderStatus('')
       }
     } catch { if (own === readerRequest.current) setReaderStatus('본문을 불러올 수 없습니다. 다시 선택해 주세요.') }
@@ -283,6 +301,7 @@ export default function App() {
       </section> : <>
         {role === 'admin' && <section aria-labelledby="ingestion-title" className="admin-panel">
           <h2 id="ingestion-title">신규 판례 증보</h2>
+          <details><summary>검색 색인 관리</summary><ReaderEnrichment kind="index" documentId="" onExpired={clearPrivate} onOpen={() => {}} /></details>
           <p>scourt 현재 목록을 관찰해 신규·변경 후보를 기록합니다.</p>
           <div className="search-row">
             <label htmlFor="inventory-pages">페이지 수</label>
@@ -340,8 +359,10 @@ export default function App() {
           </details>
         </section>
         {selection && <section className="document-panel" aria-labelledby="document-title">
-          <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); window.history.replaceState(null, '', window.location.pathname) }}>닫기</button></div>
+          <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); readerLocation(new URLSearchParams()) }}>닫기</button></div>
           <p>{selection.note}</p>
+          {role === 'admin' && currentReader && <ReaderEnrichment key={currentReader} documentId={currentReader} onExpired={clearPrivate} onOpen={id => void openDocument({ title: selection.title, url: `/api/reader/${id}/html`, note: '보강 결과 본문입니다. 위치별 취득 상태와 적용 버전을 확인하세요.' })} />}
+          {role === 'admin' && currentReader && currentImageCount > 0 && <ReaderEnrichment key={'images-' + currentReader} kind="images" documentId={currentReader} onExpired={clearPrivate} onOpen={id => void openDocument({ title: selection.title, url: `/api/reader/${id}/html`, note: '보강 결과 본문입니다. 위치별 취득 상태와 적용 버전을 확인하세요.' })} />}
           {readerStatus && <p role="status">{readerStatus}</p>}
           {document && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} onLoad={event => {
             const frameDocument = event.currentTarget.contentDocument

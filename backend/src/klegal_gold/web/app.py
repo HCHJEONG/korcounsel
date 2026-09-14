@@ -20,6 +20,7 @@ from klegal_gold.domain.inventory import InventorySnapshot
 from klegal_gold.ingestion.delta import InventoryDelta, compare_inventory, detail_fetch_candidates
 from klegal_gold.ingestion.legacy_catalog import LegacySourceCatalog
 from klegal_gold.jobs.queue import Queue
+from klegal_gold.search.index import LegacySearchIndex, snapshot_key
 from klegal_gold.search.parquet import search_legacy_parquet
 from klegal_gold.storage.files import FileStore
 from klegal_gold.web.auth import require_admin, require_user, same_origin
@@ -136,6 +137,34 @@ def create_app() -> FastAPI:
         if request.url.path.startswith("/api/") and request.url.path != "/api/health":
             response.headers["Cache-Control"] = "no-store"
         return response
+
+    @application.post(
+        "/api/admin/readers/{document_id}/images", dependencies=[Depends(same_origin)]
+    )
+    def retry_reader_images(
+        document_id: str, body: AdminEnrichmentRequest, _: object = Depends(require_admin)
+    ) -> dict[str, str]:
+        settings = load_settings()
+        db = Database.from_settings(settings)
+        manifest = ReaderStore(Records(db, FileStore(settings.data_dir))).read(document_id)
+        if manifest["origin"] != "CURRENT_SOURCE" or not manifest["images"]:
+            raise ValueError("CURRENT_READER_IMAGES_REQUIRED")
+        job = Queue(db).submit_current_image_retry(
+            "web-image-retry:" + str(body.request_id), document_id
+        )
+        return {"job_id": str(job.job_id), "status": job.status}
+
+    @application.post("/api/admin/search-index", dependencies=[Depends(same_origin)])
+    def build_search_index(
+        body: AdminEnrichmentRequest, _: object = Depends(require_admin)
+    ) -> dict[str, str]:
+        settings = load_settings()
+        if settings.legacy_parquet_path is None:
+            raise ValueError("LEGACY_PARQUET_UNAVAILABLE")
+        job = Queue(Database.from_settings(settings)).submit_legacy_search(
+            "web-search-index:" + str(body.request_id), snapshot_key(settings.legacy_parquet_path)
+        )
+        return {"job_id": str(job.job_id), "status": job.status}
 
     @application.post("/api/admin/scourt-inventory", dependencies=[Depends(same_origin)])
     def submit_scourt_inventory(
@@ -300,11 +329,17 @@ def create_app() -> FastAPI:
             if settings.database_url is not None
             else []
         )
-        legacy_results = (
-            search_legacy_parquet(settings.legacy_parquet_path, q, limit=limit)
-            if settings.legacy_parquet_path is not None
-            else []
-        )
+        legacy_results = None
+        if settings.legacy_parquet_path is not None and settings.database_url is not None:
+            legacy_results = LegacySearchIndex(Database.from_settings(settings)).search(
+                settings.legacy_parquet_path, q, limit
+            )
+        if legacy_results is None:
+            legacy_results = (
+                search_legacy_parquet(settings.legacy_parquet_path, q, limit=limit)
+                if settings.legacy_parquet_path is not None
+                else []
+            )
         legacy_items = [
             CaseSearchItem(
                 source="LEGACY_PARQUET",

@@ -1,5 +1,11 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**검색 전용 색인·이미지 재취득 — 2026-09-14 완료:** PostgreSQL 전 컬럼 검색 projection 89,130행 구축과 원행 위치·본문 hash 전수 대조를 완료했다. 관리자 명시적 색인 구축·이미지 재취득→새 reader UI와 재개 계약을 구현했다. 최종 직접 색인 조회 표본은 사건번호 0.019초·소유권 0.041초이고 기존 스캔과 결과가 일치한다. 일반 검색 API 사건번호 표본은 약 0.09초다. 이미지 저장 4곳·미확보 2곳·조문 4곳 계승을 브라우저에서 검증했다. 회귀 712건·ruff/mypy·프런트 lint/build 통과. 추가 DB 공간은 약 3.30GB이며 CURRENT_SOURCE 본문 색인과 50개 초과 이미지 URL 분할은 남아 있다. [구현과 실측](docs/search-index-and-image-retry.md).
+
+**웹 조문 재확인·반복 검색 개선 — 2026-09-14:** 관리자 조문 재확인 버튼, URL의 요청/job ID를 통한 새로고침·응답 유실 복구, 완료 revision 열기를 연결했다. 실제 동일 요청 job 1건·이미지 6곳/조문 5곳 계승·미인증 401/편집자 403을 검증했다. legacy 검색은 파일 변경 감지·64건 결과 캐시로 반복 요청 약 0.057초이며 최초 검색 약 18초는 미해결이다. PostgreSQL 회귀 708건·ruff/mypy·프런트 lint/build 통과. 다음은 검색 전용 projection과 이미지 재취득 UI다. [상세 기록](docs/current-reader-enrichment.md#웹-재확인과-검색-캐시--2026-09-14-추가).
+
+**신규 이미지 취득 실증 — 2026-09-14 추가:** 관리자 inventory→NEW 1건→상세 증보로 2024도8174를 등록했다. 이미지 6개·13,086바이트를 새로 취득하고 이미지 refresh→lawgo 후속 job이 모두 완료됐다. 일반 검색→최신 본문→내부 이미지 6곳·제공 조문 5곳 표시를 실제 브라우저에서 확인했다. 원문 HTML hash·위치 불변, 이미지 응답 SHA-256, 미인증 401을 확인했다. 코드 변경 없는 실증이며 전체 회귀 706건은 앞선 실행 결과다. [상세 실행 기록](docs/current-reader-enrichment.md#신규-이미지-bytes-취득-실증--2026-09-14-추가).
+
 **현재 본문 후속 보강 — 2026-09-14:** 이미지 취득의 영속 terminal 상태를 확인하는 별도 reader refresh job, 원문 불변 revision, source_id별 최신 본문/revision 검색, lawgo 제공 링크의 별도 보강 job과 관리자 API 재확인을 구현했다. 로컬 이미지 표본은 4위치 저장 bytes 재사용·2위치 미확보, lawgo 조문 4위치 연결이며 일반 검색→본문→내부 이미지→조문 이동을 실제 브라우저에서 확인했다. 신규 2025년 판례 1건도 관리자 증보로 수집했으나 이미지 0건이므로 새 이미지 bytes 취득 실증과 구분한다. 최종 Python/PostgreSQL 회귀 706건과 ruff check/format·mypy·pnpm lint/build·git diff --check를 통과했다. [구현·실제 결과·남은 한계](docs/current-reader-enrichment.md).
 
 **기존 corpus 전수 보강 확대 — 2026-09-11 전수 적용·검증 완료:** 기본 892개 worker 배치로 89,130행 모두 보강 reader를 등록했고, scourt 19개 wave·추가 이미지 취득 후 1,806행을 19배치로 갱신했다. 최종 전수 coverage는 89,130행 모두 STAGED_VERIFIED·오류 0이며, 본문 이미지 7,561위치와 lawgo 조문 이미지 4,698/4,698위치의 실물을 연결했다. 고유 artifact/blob 320,460개 hash와 이미지 5,356개 decode, 원본 Parquet·기존 import 불변을 확인했다. 미취득·미연결·법령 버전 미확인은 표시하며 모든 이미지/조문 완성을 뜻하지 않는다. 일반 검색 desktop/mobile 28개·최종 Python/PostgreSQL 회귀 688개를 통과했다. 별도 저장 루트에 있던 등록 원본 178,314개를 exact copy로 복구하고 등록 전체 529,551개의 host 경로·크기 및 원본 DB metadata 불변을 확인했다. 로컬 Compose API/worker의 파일 저장소도 통일했다. [실행·최종 집계·한계](docs/legacy-reader-scale.md), [배치/재개](docs/legacy-reader-batches.md).

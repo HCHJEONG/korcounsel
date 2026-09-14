@@ -52,7 +52,13 @@ def document_html(
     except (ValueError, OSError):
         raise HTTPException(404, "본문이 없거나 보존본 검증에 실패했습니다.") from None
     return HTMLResponse(
-        html, headers={"Content-Security-Policy": CSP, "X-Content-Type-Options": "nosniff"}
+        html,
+        headers={
+            "Content-Security-Policy": CSP,
+            "X-Content-Type-Options": "nosniff",
+            "X-Reader-Origin": store.read(document_id)["origin"],
+            "X-Reader-Image-Count": str(len(store.read(document_id)["images"])),
+        },
     )
 
 

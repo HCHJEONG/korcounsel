@@ -1,9 +1,9 @@
 """Direct string search over the corrected legacy Parquet snapshot."""
 
 import json
-import re
 from dataclasses import dataclass
 from datetime import date
+from functools import lru_cache
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
@@ -92,7 +92,7 @@ def _literal_query(query: str) -> bool:
 
 def _string_matches(column: Any, query: str, *, literal: bool) -> Any:
     if literal:
-        return pc.fill_null(pc.match_substring_regex(column, re.escape(query)), False)
+        return pc.fill_null(pc.match_substring(column, query), False)
     return pa.array(
         [value is not None and query in value.casefold() for value in column.to_pylist()]
     )
@@ -126,12 +126,23 @@ def search_legacy_parquet(
     normalized = query.strip().casefold()
     if not normalized:
         return []
-    safe_limit = max(1, min(limit, 100))
+    resolved = path.resolve()
+    stat = resolved.stat()
+    fingerprint = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+    return list(_cached_search(resolved, fingerprint, normalized, max(1, min(limit, 100))))
+
+
+@lru_cache(maxsize=64)
+def _cached_search(
+    path: Path, fingerprint: tuple[int, int, int, int, int], normalized: str, safe_limit: int
+) -> tuple[ParquetCaseSearchResult, ...]:
+    # Only small immutable result records are cached, never corpus tables or credentials.
+    # The stat signature invalidates replacement and in-place updates between requests.
     parquet = pq.ParquetFile(path)
     results: list[ParquetCaseSearchResult] = []
     column_names = parquet.schema_arrow.names
     literal = _literal_query(normalized)
-    for batch in parquet.iter_batches(batch_size=256):
+    for batch in parquet.iter_batches(batch_size=4096):
         candidates = pa.array([False] * len(batch))
         for column in batch.columns:
             candidates = pc.or_(candidates, _column_matches(column, normalized, literal=literal))
@@ -158,8 +169,8 @@ def search_legacy_parquet(
                 )
             )
             if len(results) >= safe_limit:
-                return results
-    return results
+                return tuple(results)
+    return tuple(results)
 
 
 def read_legacy_body(path: Path, position: int, expected_hash: str) -> tuple[str, str]:

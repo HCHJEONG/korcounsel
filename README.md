@@ -4,7 +4,7 @@
 
 기존 **89,130행 전체**에 일반 검색의 보강 reader를 적용하고 전수 검증했습니다. scourt의 보존 HTML 구조에 본문 이미지 실물 **7,561위치**, lawgo 조문 내부 이미지 **4,698위치**를 연결했습니다. 저장된 조문 내용과 미취득·미연결·과거 보강 실패·적용 법령 버전 미확인 상태를 함께 표시합니다. [전수 결과와 남은 항목](docs/legacy-reader-scale.md), [화면·회귀 검증](docs/legacy-reader-scale-qa.md), [배치와 재개](docs/legacy-reader-batches.md)를 참고하세요. 모든 이미지 취득이나 법령 버전 확인이 완료됐다는 뜻은 아닙니다.
 
-pickle은 동결 원본으로 유지하고, 전체 60컬럼 corrected Parquet과 기존 PostgreSQL FULL_ROW 보존 import를 계승합니다. 현재 검색은 `LEGACY_PARQUET_PATH`의 Parquet을 FastAPI가 직접 읽으며, 이미지·보강 이력은 PostgreSQL과 공통 `data/`의 불변 파일에 연결됩니다. [보존·검색 계약](docs/legacy-full-row-import.md), [저장 루트 복구](docs/exact-blob-store-recovery.md)를 따릅니다.
+pickle은 동결 원본으로 유지하고, 전체 60컬럼 corrected Parquet과 기존 PostgreSQL FULL_ROW 보존 import를 계승합니다. 현재 검색은 `LEGACY_PARQUET_PATH`와 일치하는 완료된 PostgreSQL 검색 색인을 우선 사용하고, 준비되지 않은 경우 Parquet을 직접 읽으며, 이미지·보강 이력은 PostgreSQL과 공통 `data/`의 불변 파일에 연결됩니다. [보존·검색 계약](docs/legacy-full-row-import.md), [저장 루트 복구](docs/exact-blob-store-recovery.md)를 따릅니다.
 
 환경변수로 지정한 관리자 1개·편집자 1개만 로그인할 수 있습니다. 첫 로그인에서 안전한 비밀번호 해시를 등록하며 자체 회원가입은 제공하지 않습니다. [.env.example](.env.example)과 [계정 설정](docs/site-login.md)을 참고하세요. 같은 DB를 사용하는 호스트와 Compose는 같은 파일 저장소를 사용해야 합니다. 호스트 연결은 `127.0.0.1:55432/korcounsel_dev`, Compose 내부 연결은 `postgres:5432`이며 [저장·worker 운영 계약](docs/persistence-and-jobs.md)에 설명합니다.
 
@@ -49,11 +49,11 @@ uv run uvicorn klegal_gold.web.app:app --host 127.0.0.1 --port 8000 --reload
 pnpm dev
 ```
 
-브라우저에서 http://127.0.0.1:5173 에 접속해 연결 확인을 누릅니다. Vite가 /api를 로컬 FastAPI로 전달합니다. corrected Parquet 검색을 쓰려면 백엔드 실행 전에 LEGACY_PARQUET_PATH를 절대경로로 지정합니다. 예: LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet. 현재 검색은 Parquet 전체 컬럼의 문자열 값을 직접 스캔하므로 없는 검색어는 시간이 걸릴 수 있습니다.
+브라우저에서 http://127.0.0.1:5173 에 접속해 허용된 계정으로 로그인합니다. Vite가 /api를 로컬 FastAPI로 전달합니다. corrected Parquet 검색을 쓰려면 백엔드 실행 전에 LEGACY_PARQUET_PATH를 절대경로로 지정합니다. 예: LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet. 관리자의 ‘검색 색인 관리’에서 색인을 구축하면 전체 컬럼 문자열 검색에 PostgreSQL trigram 색인을 사용합니다. 구축 전이나 파일 변경 후에는 Parquet 스캔으로 돌아가므로 검색이 느릴 수 있습니다. [검색 색인·이미지 재취득](docs/search-index-and-image-retry.md)를 참고하세요.
 
 ## Parquet 검증 검색
 
-프론트의 판례 검색 화면은 FastAPI의 /api/cases/search를 호출합니다. 현재 endpoint는 PostgreSQL이 아니라 LEGACY_PARQUET_PATH가 가리키는 corrected Parquet snapshot을 pyarrow로 직접 읽습니다. 이 검색은 snapshot 검증을 위한 것이며 결과에는 row_position, original_index, 법원, 사건번호, 선고일, 매칭 컬럼명이 포함됩니다.
+프론트의 판례 검색 화면은 FastAPI의 /api/cases/search를 호출합니다. 현재 endpoint는 LEGACY_PARQUET_PATH에 연결된 완료 검색 색인을 우선 조회하며, 없으면 corrected Parquet snapshot을 pyarrow로 직접 읽습니다. 이 검색은 snapshot 검증을 위한 것이며 결과에는 row_position, original_index, 법원, 사건번호, 선고일, 매칭 컬럼명이 포함됩니다.
 
 ```bash
 cd backend
@@ -61,7 +61,7 @@ LEGACY_PARQUET_PATH=/home/hchjeong/IntelliJProjects/korcounsel/data/corrected-pa
   uv run uvicorn klegal_gold.web.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-DuckDB와 Polars는 아직 채택하지 않았습니다. 89,130행 규모의 단순 검증 검색은 pyarrow batch scan으로 시작하고, 빠른 반복 검색·SQL 집계·여러 Parquet 조인이 필요해지면 DuckDB를, DataFrame 분석 파이프라인이 필요해지면 Polars를 별도 검토합니다. 운영 배포에서도 Parquet 파일을 배치하고 LEGACY_PARQUET_PATH만 지정하면 같은 UI를 사용할 수 있습니다.
+DuckDB와 Polars는 아직 채택하지 않았습니다. 문자열 검색은 pyarrow 스캔과 PostgreSQL의 재생성 가능한 trigram projection을 사용합니다. 별도 분석 도구 도입은 필요할 때 검토합니다. 운영 배포에서도 Parquet 파일을 배치하고 LEGACY_PARQUET_PATH만 지정하면 같은 UI를 사용할 수 있습니다.
 
 ## 이미지 취득 ledger
 

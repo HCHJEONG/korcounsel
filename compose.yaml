@@ -73,6 +73,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
       DATA_DIR: /data
+      LEGACY_PARQUET_PATH: ${LEGACY_PARQUET_CONTAINER_PATH:-/data/corrected-parquet-20260911-v1/legacy-corrected-full.parquet}
       LAW_GO_KR_OC: ${LAW_GO_KR_OC:-${LAW_OPEN_API_OC:-}}
     volumes:
       - ${LOCAL_DATA_DIR:-./data}:/data

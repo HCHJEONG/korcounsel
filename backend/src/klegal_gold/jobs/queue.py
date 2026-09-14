@@ -82,6 +82,12 @@ class Queue:
             3,
         )
 
+    def submit_current_image_retry(self, request_key: str, document_id: str) -> Job:
+        return self._submit(request_key, "RETRY_CURRENT_IMAGES", {"document_id": document_id}, 3)
+
+    def submit_legacy_search(self, request_key: str, snapshot_key: str) -> Job:
+        return self._submit(request_key, "BUILD_LEGACY_SEARCH", {"snapshot_key": snapshot_key}, 3)
+
     def submit_legacy_import(self, request_key: str, manifest_hash: str) -> Job:
         from pydantic import TypeAdapter
 

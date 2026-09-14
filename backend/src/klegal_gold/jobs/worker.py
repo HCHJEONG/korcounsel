@@ -67,6 +67,60 @@ class Worker:
             progress=progress,
         )
 
+    def _retry_current_images(self, job: Job) -> None:
+        document_id = job.payload["document_id"]
+        manifest = self.readers.read(document_id)
+        if manifest["origin"] != "CURRENT_SOURCE" or not manifest["images"]:
+            raise ValueError("CURRENT_READER_IMAGES_REQUIRED")
+        references = []
+        for ref in manifest["images"]:
+            url = ref.get("resolved_url")
+            resolved = isinstance(url, str) and valid_scourt_image_url(url)
+            references.append(
+                {
+                    **ref,
+                    "source_system": "scourt",
+                    "source_id": manifest["source_id"],
+                    "reader_document_id": document_id,
+                    "image_name": ref.get("name"),
+                    "resolved_url": url if resolved else None,
+                    "reference_status": "RESOLVED" if resolved else "UNRESOLVED",
+                    "reason": "explicit retry of preserved provider mapping",
+                }
+            )
+        artifact_id = "image-manifest:reader-retry:" + document_id
+        self.records.put_artifact(
+            artifact_id,
+            json.dumps({"references": references}, sort_keys=True).encode(),
+            origin="MANIFEST",
+            metadata={},
+        )
+        image_job = self.queue.submit_image_batch("image-retry:" + str(job.job_id), artifact_id)
+        refresh = self.queue.submit_current_reader_refresh(document_id, image_job.job_id)
+        self.queue.heartbeat(
+            job, {"image_job_id": str(image_job.job_id), "follow_up_job_id": str(refresh.job_id)}
+        )
+
+    def _build_legacy_search(self, job: Job) -> None:
+        from klegal_gold.search.index import LegacySearchIndex
+
+        path = load_settings().legacy_parquet_path
+        if path is None:
+            raise ValueError("LEGACY_PARQUET_UNAVAILABLE")
+        last_beat = 0.0
+
+        def progress(checkpoint: dict[str, object]) -> None:
+            nonlocal last_beat
+            now = time.monotonic()
+            if now - last_beat > 5 or checkpoint.get("phase") == "READY":
+                self.queue.worker_heartbeat(self.worker_id)
+                self.queue.heartbeat(job, checkpoint)
+                last_beat = now
+                if self.stop.is_set() or self.queue.drain_status()["draining"]:
+                    raise CheckpointRequested
+
+        LegacySearchIndex(self.queue.db).build(path, job.payload["snapshot_key"], progress)
+
     def _fetch_law(self, job: Job) -> None:
         settings = load_settings()
         credential = settings.law_api_credential
@@ -446,6 +500,10 @@ class Worker:
                 self._enrich_current_lawgo(job)
             elif job.kind == "REFRESH_CURRENT_READER_IMAGES":
                 self._refresh_current_reader_images(job)
+            elif job.kind == "RETRY_CURRENT_IMAGES":
+                self._retry_current_images(job)
+            elif job.kind == "BUILD_LEGACY_SEARCH":
+                self._build_legacy_search(job)
             elif job.kind == "ACQUIRE_IMAGE_BATCH":
                 self._acquire_images(job)
             else:

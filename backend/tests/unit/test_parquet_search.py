@@ -201,3 +201,26 @@ def test_search_fast_path_treats_regex_symbols_as_literal_text(tmp_path):
         assert [
             (r.row_position, r.matched_columns, r.body_hash) for r in results
         ] == _reference_rows(path, query)
+
+
+def test_search_cache_invalidates_replacement_and_does_not_share_mutable_results(
+    tmp_path, monkeypatch
+):
+    from klegal_gold.search import parquet as module
+
+    path = tmp_path / "cached.parquet"
+    write_parquet(path)
+    first = search_legacy_parquet(path, "고유문구")
+    original = module.pq.ParquetFile
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("cached request scanned corpus")
+
+    monkeypatch.setattr(module.pq, "ParquetFile", forbidden)
+    first.clear()
+    assert len(search_legacy_parquet(path, "고유문구")) == 1
+    monkeypatch.setattr(module.pq, "ParquetFile", original)
+    replacement = tmp_path / "replacement.parquet"
+    pq.write_table(pa.Table.from_pylist([{"case_txt_scraped_with_tags": "다른 자료"}]), replacement)
+    replacement.replace(path)
+    assert search_legacy_parquet(path, "고유문구") == []
