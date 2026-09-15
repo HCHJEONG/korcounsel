@@ -1,5 +1,12 @@
 # KorCounsel Agent Instructions
 
+**배포 대상 변경 — 2026-09-15 사용자 확정:** KorCounsel 배포 대상은
+aws-bastion에서 **aws-demo**로 변경한다. 로컬 완료 후 일관된 snapshot을
+aws-demo로 이관·복원·검증하고 실제 운영을 먼저 확인한다. Onju AI KR은
+aws-prod에 유지하며 이후 이전 여부를 천천히 별도 검토한다. Onju 이전을
+KorCounsel 배포와 묶거나 선행 조건으로 추가하지 않는다. aws-bastion은 SSH
+경유지로 유지한다. 이번 요청은 문서 변경이며 원격 배포·증설·이전 실행은 아니다.
+
 **전체 사건번호 교정 — 2026-09-15:** `current-lawgo-4`는 검색 목록의 대표
 번호와 상세의 전체 번호를 구분하며 보존 scourt metadata에 연결된 전체
 병합·지역 표기를 비교한다. 괄호·지역·역할을 지우거나 부분 집합으로 연결하지
@@ -138,7 +145,7 @@ scourt source ID 수다. canonical 등록·active source link는 각각 0행이�
 - CLI도 작업 상태와 종료 준비 정책을 공유한다. 웹을 우회해 중복 실행하거나 종료 준비 중 새 작업을 시작하지 않는다.
 - migration은 버전 관리하고 실제 PostgreSQL에서 제약·동시성·복구를 테스트한다. 운영 DB를 개발 테스트·reset 대상으로 사용하지 않는다.
 - run_id와 dataset_version을 분리하고 입력 snapshot, 코드·규칙·설정 버전, 건수, checksum을 남긴다.
-- 작은 connection pool, batch 처리와 낮은 동시성으로 시작한다. DB 전용 서버의 메모리 설정을 공유 bastion에 그대로 적용하지 않는다.
+- 작은 connection pool, batch 처리와 낮은 동시성으로 시작한다. DB 전용 서버의 메모리 설정을 앱과 DB가 함께 사용하는 aws-demo에 그대로 적용하지 않는다.
 
 ## 검토 이력과 Phase 1.5
 
@@ -173,8 +180,8 @@ scourt source ID 수다. canonical 등록·active source link는 각각 0행이�
 
 ## AWS 운영 및 배포
 
-- 운영 대상은 기존 aws-bastion, 도메인은 korcounsel.com이다. 실제 인스턴스 ID·리전·계열·OS·포트·서비스·SSH/NAT 역할·DNS를 먼저 확인한다.
-- micro→호환 small로 시작하고 부하 측정 후 medium을 검토한다. 현재 타입이나 변경 완료를 확인 없이 단정하지 않는다.
+- 운영 대상은 aws-demo(i-0fa95bb4eff77caf2, ap-northeast-2), 도메인은 korcounsel.com이다. aws-bastion은 SSH 접속 경유지로 유지한다. 배포 전 OS·포트·서비스·디스크·실제 HTTPS 진입 경로·DNS를 확인한다.
+- 현재 aws-demo의 t3a.medium(2 vCPU·4GiB)을 초기 기준으로 삼고 부하 측정 후 추가 증설을 검토한다. EBS 증설은 실제 용량·유형 확인과 별도 실행 범위를 따른다.
 - 프런트 정적 파일, FastAPI, PostgreSQL, worker를 같은 EC2에서 운영한다. 별도 Node.js frontend runtime, RDS, ALB, NAT Gateway, Redis를 기본 요구로 추가하지 않는다.
 - 빌드·검증은 로컬 또는 선택된 CI에서 수행하고 배포 결과를 대상에 옮긴다. CI 가능성을 자동 배포 파이프라인 설치 요구로 해석하지 않는다.
 - 배포 준비와 실제 운영 변경을 분리한다. 실행 권한이 있는 범위에서 진행하고 구체적 대상·변경·migration·복구 절차를 제시한다. onju 사용자에게만 적용된 수동 실행 제한을 현재 사용자의 추가 제한으로 복사하지 않는다.
@@ -191,7 +198,7 @@ scourt source ID 수다. canonical 등록·active source link는 각각 0행이�
 - Asia/Seoul 월~금 10:00 시작, 17:00 종료 준비. 토·일 자동 시작 없음, 평일 공휴일은 운영한다.
 - 기동/종료 제어는 EC2 외부의 AWS 예약 기능을 이용한다. 이 계획만으로 실제 Scheduler를 생성하지 않는다.
 - 17:00부터 새 작업 등록 및 대기 작업 claim을 막고 진행 작업 완료 또는 checkpoint 저장 후 중지한다. 최대 유예·고장난 worker 처리 기준을 구현 시 정한다.
-- 중지 중 해당 웹과 bastion 경유 SSH가 끊긴다는 점을 운영 문서에 명시한다. 다른 서버의 시간 외 관리 필요와 대체·수동 시작 경로를 확인한다.
+- aws-demo 중지 중 KorCounsel 웹과 aws-demo SSH가 끊긴다는 점을 명시한다. aws-bastion·aws-prod는 이 기동/종료 대상에 포함하지 않는다. 시간 외 aws-demo 수동 시작 경로를 확인한다.
 - 단순 예약 StopInstances로 진행 작업을 끊지 않는다. 종료 준비와 job claim의 경쟁 및 재시작 복구를 검증한다.
 
 ## Secret 및 배포 staging
@@ -209,7 +216,7 @@ scourt source ID 수다. canonical 등록·active source link는 각각 0행이�
 - AI 실행·주석 편집·SES·editor roster → 현재 제외 또는 별도 미래 범위.
 - 원문 정규화 후 checksum → 원본 바이트 hash와 별도 변환 기록.
 - 날짜별 강제 중복 archive → 문서 ID+내용 hash 기반 원본 재사용 및 수집 이력.
-- ALB·별도 target host → 기존 bastion 한 대의 직접 HTTPS 서비스.
+- ALB·별도 신규 target host → 기존 aws-demo 한 대에 앱·DB·worker 배치. HTTPS 진입 경로는 기존 인프라를 확인해 구성하며 aws-bastion은 SSH 경유지로 유지.
 - 참조 프로젝트 전용 단계 승인·수동 배포·backup 비활성 기본값·Compose 고정 버전·secret 경로는 그대로 이식하지 않는다. 현재 PLAN과 실제 사용자 지시를 따른다.
 
 ## 추가 identity·incremental·fidelity 지침

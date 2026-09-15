@@ -209,7 +209,13 @@ Step 0의 네 API 요청 기록과 소스·표본 해시는 docs/step0/에 보�
 
 ## 목표 운영과 데이터 원칙
 
-운영 대상은 기존 aws-bastion 한 대이며 micro→호환 small, 필요 시 medium을 검토합니다. korcounsel.com에서 인증된 소수 사용자가 접근하고 같은 EC2에 API·worker·PostgreSQL·정적 웹을 둡니다. 월~금 한국 시간 10시 기동, 17시 작업 접수 중단·checkpoint 후 중지를 구현할 예정입니다. 평일 공휴일은 운영하며 주말은 자동 시작하지 않습니다.
+**2026-09-15 확정:** 로컬 수집·정리를 마친 일관된 DB·파일 snapshot을
+**aws-demo**로 이관하고 KorCounsel 운영을 먼저 확인합니다. **Onju AI KR은
+당분간 aws-prod에서 유지**하며, 이전 여부는 이후 별도로 검토합니다.
+PhysicalAI 컨테이너는 중지했으나 EBS 증설·KorCounsel 배포는 아직 실행하지
+않았습니다. [서버 실측과 배포 결정](docs/aws-demo-prod-capacity-20260915.md).
+
+운영 대상은 **aws-demo**이며 현재 t3a.medium(2 vCPU·4GiB)으로 시작하고 실측에 따라 추가 증설을 검토합니다. aws-bastion은 SSH 접속 경유지로 유지합니다. korcounsel.com에서 인증된 소수 사용자가 접근하고 같은 EC2에 API·worker·PostgreSQL·정적 웹을 둡니다. 월~금 한국 시간 10시 기동, 17시 작업 접수 중단·checkpoint 후 중지를 구현할 예정입니다. 평일 공휴일은 운영하며 주말은 자동 시작하지 않습니다.
 
 기존 약 9만 건을 초기 corpus로 계승하고 신규·변경분을 확장합니다. **contId·serialno는 출처 ID로 보존하고 신규 canonical ID는 출처와 독립적으로 발급합니다.** 기존 번호 미조회와 다른 번호 후보가 발견되어 공식 ID의 영구 안정성을 전제하지 않습니다. [정책 및 구현 대기 사항](docs/case-identity.md)을 따르며 UUID를 강제하지 않습니다. **법원명+사건번호**를 고유 업무키로 함께 유지하여 정부 ID 없는 LawnB 보유 판례에도 사용합니다. source ID·내용 버전·연결 revision의 역할과 원본 근거를 보존합니다. 판시사항·요지가 없거나 scan만 있어도 정상 판례로 수용합니다. gold에는 확실한 연결과 유효 evidence가 있는 쟁점만 포함하며 자동 검증과 사람 승인을 구분합니다. 이미지 탐지·참조 보존 뒤 취득·위치 복원·OCR를 순차 확장합니다. LLM·학습·GPU·OCR 해석은 초기 범위 밖입니다.
 

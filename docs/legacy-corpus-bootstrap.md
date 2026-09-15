@@ -109,7 +109,7 @@ uv run --no-project --with pandas==2.2.3 --with numpy==1.26.4 python scripts/ana
   --output docs/step0/legacy-identity-analysis.json
 ```
 
-입력 경로는 분석 명령의 명시적 인자이며 앱 런타임에 hard-code하지 않는다. 대형 pickle 분석은 충분한 메모리가 있는 개발 환경에서 수행한다. 이 pandas 분석 작업을 bastion small의 상시 작업으로 배포하지 않는다.
+입력 경로는 분석 명령의 명시적 인자이며 앱 런타임에 hard-code하지 않는다. 대형 pickle 분석은 충분한 메모리가 있는 개발 환경에서 수행한다. 이 pandas 분석 작업을 aws-demo 운영 worker의 상시 작업으로 배포하지 않는다.
 
 ## 내용 보강·증분 목적의 추가 확인
 

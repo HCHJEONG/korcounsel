@@ -1,5 +1,31 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**배포 대상 확정 — 2026-09-15 사용자 결정:** KorCounsel은 **aws-demo**에
+우선 배포한다. aws-bastion 배포 계획을 대체하며 bastion은 SSH 경유지로
+유지한다. 로컬 수집·정리 → 일관된 DB·참조 파일 snapshot → aws-demo 복원·
+검증 → 운영 확인 순서다. **Onju AI KR은 aws-prod에 유지하고, KorCounsel이
+운영되는 것을 확인한 뒤 이전 여부를 별도 검토한다.** Onju 이전은 이번 배포의
+선행 조건이나 실행 범위가 아니다. 현재 demo는 t3a.medium이며 PhysicalAI
+10개 중지 완료, EBS 증설·KorCounsel 전송/배포는 미실행이다.
+아래 배치 대안·최초 용량 조사에서의 미확정 표현은 당시 이력이다.
+
+**PhysicalAI 중지 완료 — 2026-09-15:** 사용자 명시 요청으로 aws-demo의
+PhysicalAI 컨테이너 10개를 중지했다. 전체 실행 컨테이너 0개, available
+메모리 3,285MiB를 확인했다. 컨테이너·이미지·DB 볼륨은 보존했으며 디스크
+증설·앱 이관은 미실행이다. [중지 기록](docs/aws-demo-prod-capacity-20260915.md).
+
+**배치 대안 — 2026-09-15 후속 논의:** 사용자가 PhysicalAI는 중지 가능하고
+디스크 증설·EC2 간 재배치도 가능하다고 밝혔다. 네 유지 앱은 이미 prod에
+있으므로 demo를 KorCounsel 전용으로 쓰는 안을 우선 제안한다. 실제 중지·
+증설·이전은 미실행이며 종속 서비스는 별도 확인한다.
+[새 조건의 배치·비용 검토](docs/aws-demo-prod-capacity-20260915.md).
+
+**배포 후보 읽기 전용 조사 — 2026-09-15:** 사용자 요청으로 aws-demo/prod를
+조사했다. 둘 다 t3a.medium이며 디스크 여유는 약 23/65GiB다. 현재 KorCounsel
+운영 데이터 약 35GiB 기준 prod는 조건부 후보, demo는 저장 공간 확장이
+필요하다. 기존 aws-bastion 배포 결정은 변경하지 않았고 원격 변경·전송은
+없다. [실측·기존 서비스·제약](docs/aws-demo-prod-capacity-20260915.md).
+
 **전체 사건번호 비교 교정·35건 재발행 완료 — 2026-09-15 17:20 KST:**
 대표 번호만 전달하고 목록·상세를 같은 기준으로 비교하던 원인을 교정했다.
 `current-lawgo-4`가 보존 원본의 전체 번호를 사용하며 신규 수집에도 적용된다.
@@ -187,7 +213,7 @@ Phase 1은 공식 API에서 공개 판례 100건 이상을 실제 수집하고, 
 
 ### Phase 1에 포함
 
-공식 판례 API adapter, 원본 저장, domain model, metadata 및 법률 텍스트 정규화, 구조 파싱, 판시사항·요지 alignment, evidence/provenance, 검증 보고서, 버전·manifest, JSONL·Parquet, 단계별 CLI, 테스트와 재현 문서를 구현한다. 처음부터 korcounsel.com에서 일반 브라우저로 접속하는 소수 사용자용 인증 웹 앱을 제공하고, 운영 환경의 수집·가공·검증·export 로직은 기존 aws-bastion EC2에서 실행한다. 실행 요약 대시보드, 원문·쟁점 검수 화면, 작업 등록·진행 조회 및 평일 가동 자동화를 포함한다. 프런트는 React 19 + Vite + TypeScript, 백엔드는 FastAPI, 운영 DB는 같은 EC2의 PostgreSQL로 확정한다.
+공식 판례 API adapter, 원본 저장, domain model, metadata 및 법률 텍스트 정규화, 구조 파싱, 판시사항·요지 alignment, evidence/provenance, 검증 보고서, 버전·manifest, JSONL·Parquet, 단계별 CLI, 테스트와 재현 문서를 구현한다. 처음부터 korcounsel.com에서 일반 브라우저로 접속하는 소수 사용자용 인증 웹 앱을 제공하고, 운영 환경의 수집·가공·검증·export 로직은 aws-demo EC2에서 실행한다. 실행 요약 대시보드, 원문·쟁점 검수 화면, 작업 등록·진행 조회 및 평일 가동 자동화를 포함한다. 프런트는 React 19 + Vite + TypeScript, 백엔드는 FastAPI, 운영 DB는 같은 EC2의 PostgreSQL로 확정한다.
 
 추가 초기 범위: 독립 canonical identity와 source별 ID, scourt/law_go_kr inventory·증분/refresh, optional editorial fields, source artifact 분류 및 Stage A/B 탐지·참조 보존. 기존 100건 API 데모와 아래 identity/incremental·fidelity 완료 기준을 각각 검증한다.
 
@@ -490,22 +516,22 @@ data/                 # runtime 데이터, Git 제외
 
 완료 기준: 브라우저에서 인증 후 작업 실행·상태 조회·원문 검수가 가능하고 CLI와 같은 core 및 artifact를 사용한다. Phase 1의 내용 검수 UI는 조회 중심이며, 쟁점 수정·승인 기능은 Phase 1.5로 분리한다.
 
-### Step 11B — 기존 bastion 배포와 평일 운영 자동화
+### Step 11B — aws-demo 배포와 평일 운영 자동화
 
-- [ ] `ssh aws-bastion`의 실제 인스턴스 ID·리전·계열·OS·디스크·기존 서비스·SSH 경유 및 NAT 등 네트워크 역할을 확인한다.
-- [ ] 기존 서비스와의 충돌 및 재시작 영향을 확인한 뒤 호환되는 small로 변경한다. 변경 전후 부팅·접속·기존 역할을 검증한다.
+- [ ] `ssh aws-demo` 대상(i-0fa95bb4eff77caf2, ap-northeast-2, 172.31.76.194)의 사양·디스크·기존 서비스와 aws-bastion 경유 SSH·실제 HTTPS 진입 경로를 배포 직전에 재확인한다.
+- [ ] 현재 t3a.medium(2 vCPU·4GiB)을 초기 기준으로 사용한다. PhysicalAI 중지·데이터 보존 상태를 재확인하고, EBS 용량·유형·이관 소요량을 확정해 필요한 증설을 수행한 뒤 부팅·접속을 검증한다.
 - [ ] 사용자가 보유한 korcounsel.com의 DNS 관리 위치와 기존 레코드를 확인하고 HTTPS 접속을 구성한다. 재시작 후에도 도메인 연결이 유지되도록 기존 Elastic IP 유무 등을 확인한다.
-- [ ] 웹 서버는 `/`에서 React 정적 빌드 결과를 제공하고 `/api/*`를 FastAPI로 전달한다. 프런트 빌드는 로컬 또는 CI에서 수행해 운영 bastion에는 결과를 배포한다.
+- [ ] 웹 서버는 `/`에서 React 정적 빌드 결과를 제공하고 `/api/*`를 FastAPI로 전달한다. 프런트 빌드는 로컬 또는 CI에서 수행해 aws-demo에는 결과를 배포한다.
 - [ ] API 프로세스 1개, 처리 worker 1개와 PostgreSQL로 시작한다. DB 준비·migration·서비스 시작 순서를 정의하고 상태 확인 후 요청을 받는다.
 - [ ] API·worker·PostgreSQL의 자동 시작과 장애 복구, worker 자원 제한, 원본·결과·DB의 영속 저장 및 백업·복구를 구성한다.
-- [ ] PostgreSQL 연결 pool, 최대 연결 수와 메모리 설정을 small의 전체 프로세스 예산에 맞춰 조정하고 DB 포트는 외부에 공개하지 않는다.
+- [ ] PostgreSQL 연결 pool, 최대 연결 수와 메모리 설정을 aws-demo의 4GiB 전체 프로세스 예산에 맞춰 조정하고 DB 포트는 외부에 공개하지 않는다.
 - [ ] DB 및 참조 artifact를 함께 복구할 수 있는 백업 지점·보관 정책을 정하고 격리된 환경에서 실제 복원을 검증한다.
 - [ ] AWS EventBridge Scheduler 기반 평일 10시 시작, 17시 종료 준비를 구성한다. Scheduler의 기동 제어는 EC2 외부에서 실행한다.
-- [ ] bastion 중지에 따른 다른 서버의 관리 접속 영향을 확인한다. 시간 외 접속이 필요하면 운영 시간 또는 수동 시작·대체 접속 경로를 확정한 뒤 중지 예약을 적용한다.
+- [ ] 예약 기동·종료 대상은 aws-demo로 한정한다. aws-demo 중지 중 KorCounsel과 해당 서버 SSH는 이용할 수 없지만 aws-bastion 및 aws-prod는 중지 대상에 포함하지 않는다. 시간 외 aws-demo 수동 시작 경로를 확인한다.
 - [ ] 새 작업 접수 중단, 실행 중 작업 완료/체크포인트 저장, 중지 및 다음 시작 시 재개 흐름을 검증한다.
-- [ ] 실제 small에서 대표 데이터 처리 시 최대 메모리, swap/OOM, CPU 크레딧, 디스크 증가량, 처리 시간, 웹·SSH 응답을 측정한다.
+- [ ] 실제 aws-demo t3a.medium에서 대표 데이터 처리 시 최대 메모리, swap/OOM, CPU 크레딧, 디스크 증가량, 처리 시간, 웹·SSH 응답을 측정한다.
 
-완료 기준: 운영 시간에 https://korcounsel.com에서 인증된 사용자가 접속하며 모든 운영 pipeline 로직이 해당 EC2에서 실행된다. 재시작·예약 종료·진행 작업 보호·복구와 bastion 기존 역할을 검증하고 측정 결과로 medium 증설 필요성을 판단한다.
+완료 기준: 운영 시간에 https://korcounsel.com에서 인증된 사용자가 접속하며 모든 운영 pipeline 로직이 해당 EC2에서 실행된다. 재시작·예약 종료·진행 작업 보호·복구와 aws-bastion 경유 접속을 검증하고 측정 결과로 추가 증설 필요성을 판단한다. KorCounsel 운영 확인 후 Onju AI KR 이전은 별도 검토한다.
 
 ### Step 12 — 문서와 최종 회귀 검증
 
@@ -565,7 +591,7 @@ stats에는 단계별 판례 수, 쟁점 수, alignment 상태, 검증 통과·�
 - [ ] korcounsel.com 일반 HTTPS 접속·인증 및 비인가 사용자 접근 차단
 - [ ] 대시보드·원문/쟁점/evidence 검수와 표본 오류의 회귀 fixture 반영
 - [ ] 웹 작업 등록·단일 worker·영속 상태·중복 제출 방지·재시작 복구
-- [ ] 기존 aws-bastion small에서 실제 부하와 SSH·기존 서비스 영향 검증
+- [ ] aws-demo t3a.medium에서 실제 부하·SSH·복원 및 종료 보호 검증
 - [ ] 한국 시간 평일 10~17시 운영 예약과 진행 작업 보호·시간 외 접속 절차 검증
 
 ## 8. 선행 확인 사항 및 후속 범위
@@ -582,7 +608,7 @@ stats에는 단계별 판례 수, 쟁점 수, alignment 상태, 검증 통과·�
 
 Phase 1 이후 실제 오류 분포를 근거로 파싱과 alignment를 개선한다. Kiwi optional adapter, KSS 실험, scourt 외 추가 source adapter와 LLM annotation은 별도 계획으로 다루며 현재 핵심 파이프라인의 의존성으로 만들지 않는다.
 
-## 9. 웹 앱 및 AWS 운영 결정 — 2026-09-09
+## 9. 웹 앱 및 AWS 운영 결정 — 2026-09-09 최초 / 2026-09-15 대상 변경
 
 ### 사용자 결정과 현재 확인 상태
 
@@ -591,16 +617,16 @@ Phase 1 이후 실제 오류 분포를 근거로 파싱과 alignment를 개선�
 | 접속 방식 | 처음부터 SSH 터널이 아닌 일반 브라우저 웹 접속 |
 | 서비스 도메인 | 사용자가 korcounsel.com을 이미 확보함. DNS 연결·인증서·배포 여부는 미확인 |
 | 사용자 | 소수의 허용된 사용자. 도메인 공개와 데이터·기능의 익명 공개를 구분 |
-| 운영 서버 | 기존 SSH 별칭 aws-bastion 대상 EC2 활용. 신규 EC2 추가를 기본안으로 삼지 않음 |
-| 현재 크기 | 사용자 설명상 micro. 실제 인스턴스 계열은 아직 확인하지 않음 |
-| 시작 크기 | 호환되는 small로 올린 뒤 시작, 측정상 부족하면 medium 검토 |
+| 운영 서버 | SSH 별칭 aws-demo 대상 EC2. aws-bastion은 접속 경유지로 유지하며 신규 EC2는 기본안이 아님 |
+| 현재 크기 | aws-demo t3a.medium, 2 vCPU·4GiB. 2026-09-15 SSH·IMDS 실측 |
+| 시작 크기 | 현재 t3a.medium으로 시작하고 실제 부하에 따라 추가 증설 검토. EBS 증설은 용량 계획 확정 후 별도 실행 |
 | 프런트 | React 19 + Vite + TypeScript SPA. Next.js는 초기 구성에 사용하지 않음 |
 | 백엔드 | FastAPI + 별도 Python 처리 worker. CLI는 같은 core 호출 |
 | DB | 같은 EC2에서 PostgreSQL 운영. SQLite 우선 검토 방침을 대체 |
 | 로직 실행 위치 | 운영 API·PostgreSQL·수집·가공·검증·export worker 모두 해당 EC2. 브라우저는 표시·상호작용 담당, 프런트 빌드는 로컬/CI |
 | 운영 시간 | Asia/Seoul 기준 월~금 10:00 시작, 17:00 종료 준비. 토·일 자동 시작 없음 |
 | 공휴일 | 현재 범위는 주말 제외이며 평일 공휴일은 운영 |
-| 현재 작업 | 계획 기록 갱신만 수행. SSH 접속·리사이즈·DNS 변경·배포·예약 생성은 아직 미실행 |
+| 현재 작업 | SSH 조사·PhysicalAI 10개 중지 완료. KorCounsel 배포 대상은 aws-demo로 확정. 증설·전송·DNS·예약 생성은 미실행. Onju는 prod 유지 후 별도 검토 |
 
 ### 단일 EC2 애플리케이션 구조
 
@@ -623,7 +649,7 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 - 인증·세션, 상태 변경 요청 보호, 계정별 작업 권한을 적용한다. worker·데이터 저장소 포트는 외부에 직접 공개하지 않는다.
 - 목록·검색·필터는 PostgreSQL의 조회용 데이터를 사용하고 원문 대조·다운로드는 연결된 artifact를 사용한다. 조회만으로 재수집·재파싱하지 않는다. UI에도 원천 텍스트를 안전하게 표시하고 임의 HTML을 실행하지 않는다.
 - 작은 묶음으로 읽고 export하며 worker는 우선 하나만 실행한다. 전체 corpus의 일괄 메모리 적재를 피한다.
-- 배포 전에 기존 포트, reverse proxy, SSH 경유, 네트워크 역할과 서비스 자동 시작 구성을 확인한다. bastion과 앱의 장애 영향이 공유된다는 점을 운영 문서에 기록한다.
+- 배포 전에 기존 포트, reverse proxy, SSH 경유, 네트워크 역할과 서비스 자동 시작 구성을 확인한다. aws-demo의 앱·DB·worker가 장애 영향을 공유하며 aws-bastion은 별도 SSH 경유지라는 점을 운영 문서에 기록한다.
 
 ### 종료 정책과 운영 시간 외 동작
 
@@ -634,16 +660,16 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 - 최대 유예 시간, 응답 없는 worker의 처리와 실패 알림은 자동화 구현 시 운영 설정으로 확정한다. 무기한 종료 연기나 무조건 강제 중지를 기본값으로 삼지 않는다.
 - 시작 예약과 조건부 중지 제어는 EC2 외부의 AWS 관리 기능을 사용한다. 필요한 소규모 제어 함수는 앱의 데이터 처리 로직과 구분하며 별도 EC2를 요구하지 않는다.
 - 토·일에는 자동 시작하지 않는다. 운영 시간 외 수동 시작 시 적용할 종료 정책도 운영 문서에 기록한다.
-- EC2 중지 중에는 도메인의 웹 앱과 이 bastion을 경유하는 SSH도 사용할 수 없다. 자동 깨우기와 시간 외 안내 페이지는 별도 외부 구성 없이는 제공되지 않으며 초기 범위에 넣지 않는다.
+- aws-demo 중지 중에는 KorCounsel 웹 앱과 aws-demo로의 SSH를 사용할 수 없다. 별도 aws-bastion과 aws-prod는 이 중지 대상이 아니다. 자동 깨우기와 시간 외 안내 페이지는 별도 외부 구성 없이는 제공되지 않으며 초기 범위에 넣지 않는다.
 - 다른 서버의 시간 외 관리가 필요한지 확인한 뒤 일정 적용 조건을 확정한다. 이 항목은 배포 선행 확인이며 현재 문서 갱신을 막는 사유가 아니다.
 
 ### 비용·증설 판단
 
 - 월 22영업일, 하루 7시간이면 종료 유예를 제외한 가동 시간은 약 154시간이다. 실제 운영일·부팅·유예·수동 시작에 따라 달라진다.
 - EC2 중지 후에도 EBS, 보유 Elastic IP, 백업 등의 비용은 남는다. 단가·리전·세금·사용량은 배포 시 다시 산정하며 이전 대화의 비용은 추정치로만 취급한다.
-- 메모리 여유 부족, OOM, 지속적인 swap, 웹·SSH 지연을 확인하면 배치 크기·동시성·자원 제한을 조정하고 medium 증설을 검토한다.
-- 현재 계열이 T3a라면 small→medium은 주로 메모리 확장이다. 지속 CPU 성능 부족은 CPU 크레딧과 처리 방식을 별도로 점검한다.
-- 타입 변경 전 호환성과 중지 영향을 확인한다. small로 이미 변경되었거나 medium이 자동 적용된 것으로 기록하지 않는다.
+- 메모리 여유 부족, OOM, 지속적인 swap, 웹·SSH 지연을 확인하면 배치 크기·동시성·자원 제한을 조정하고 현재 t3a.medium보다 큰 메모리 구성 등 추가 증설을 검토한다.
+- 현재 aws-demo는 T3a 계열이다. 지속 CPU 성능 부족은 CPU 크레딧과 처리 방식을 별도로 점검하고, 메모리 부족과 구분해 증설안을 정한다.
+- 타입 변경 전 호환성과 중지 영향을 확인한다. 현재 t3a.medium에서 추가 증설이 실행된 것으로 미리 기록하지 않는다.
 
 ### Phase 1.5 — 사람의 검토와 실행 비교
 
@@ -661,7 +687,7 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 | 프런트 | React 19 + Vite + TypeScript | 대시보드, 판례·쟁점 검수, 작업 실행·진행 조회 |
 | API | FastAPI + ASGI 서버 | 인증·세션, 권한 확인, 조회·작업 등록·상태 API |
 | 데이터 처리 | 별도 Python worker | 수집, 정규화, 파싱, alignment, 검증, export |
-| 운영 DB | PostgreSQL, 같은 aws-bastion EC2 | 사용자·세션, queue·실행 이력, 조회용 판례·쟁점·근거, 검토 이력 |
+| 운영 DB | PostgreSQL, 같은 aws-demo EC2 | 사용자·세션, queue·실행 이력, 조회용 판례·쟁점·근거, 검토 이력 |
 | 파일 저장 | EBS의 원본 및 JSONL/Parquet artifact | 원본 보존, 단계별 재현, dataset export |
 | HTTPS·정적 파일 | reverse proxy/web server | korcounsel.com TLS, React 파일 제공, /api 전달 |
 | 관리 도구 | CLI | API와 같은 core를 이용한 개발·운영 |
@@ -698,8 +724,8 @@ AWS EventBridge Scheduler → EC2 시작 / 종료 준비 제어
 - DB 도입으로 원본 보존과 JSONL/Parquet 정책을 대체하지 않는다. domain model을 DataFrame이나 ORM 중심으로 재구성하지 않는다.
 - schema migration을 코드와 함께 버전 관리하고 신규 설치·업그레이드를 검증한다. 배포 롤백 시 앱과 DB schema의 호환성을 확인하고 필요한 복구 방법을 문서화한다.
 - 같은 EC2의 PostgreSQL은 RDS 추가와 구분한다. 자동 managed backup이 있다고 가정하지 않고 DB와 참조 artifact의 일관된 백업·복구를 구현한다.
-- small은 API·worker·DB·OS·bastion 기능이 메모리를 공유한다. DB 전용 서버 기준의 메모리 비율을 그대로 적용하지 않으며 작은 connection pool과 보수적 설정부터 측정한다.
-- PostgreSQL도 함께 운영하는 조건으로 small 부하 테스트를 다시 수행한다. 필요 시 medium으로 확장하되 기존 bastion 역할과 평일 가동·종료 정책은 유지한다.
+- aws-demo의 API·worker·DB·OS는 현재 4GiB 메모리를 공유한다. aws-bastion의 SSH 중계 역할은 별도 서버에 남는다. DB 전용 서버 기준의 메모리 비율을 그대로 적용하지 않으며 작은 connection pool과 보수적 설정부터 측정한다.
+- PostgreSQL을 함께 운영하는 aws-demo t3a.medium에서 부하 테스트를 수행한다. 필요 시 추가 증설하며 평일 가동·종료 정책은 aws-demo에 적용한다. Onju를 나중에 함께 배치할 경우 운영 시간 정책도 그때 다시 검토한다.
 
 ### 구현 시 선택·고정할 항목
 
@@ -740,7 +766,7 @@ Step 1에서 Node 24.16.0, pnpm 11.23.0, React 19.3.0, Vite 8.2.2, TypeScript 5.
 - [ ] 판시사항·요지 없는 정상 record, source artifact 유형, image reference·문맥·order, requires_ocr/UNKNOWN과 manifest를 검증한다.
 - [ ] case ingestion 성공·asset 부분 실패·OCR 미처리를 독립적으로 표현하고 필요한 evidence가 부족한 gold 발행을 막는다.
 - [ ] 실제 source pairing·이미지 누락 비교·PDF/scan 실물 검증의 미완료를 보고서에 남기고 완료 전 실측한다.
-- [ ] source/identity/asset 이력·snapshot과 DB를 일관되게 백업·복구하고 small EC2에서 browser·asset 자원을 측정한다.
+- [ ] source/identity/asset 이력·snapshot과 DB를 일관되게 백업·복구하고 aws-demo t3a.medium에서 browser·asset 자원을 측정한다.
 
 2026-09-10 최종 검증: backend에서 uv ruff check·ruff format --check·mypy 통과, 로컬 PostgreSQL 연결 포함 pytest **105건 통과**. 기존 upstream deprecation warning 2건 유지. 실제 metadata 15행·저장 HTML 4개 검증 및 git diff --check 통과. 프런트·분석 전용 도구는 변경하지 않았으며 해당 테스트를 이번 작업에서 재실행하지 않았다.
 

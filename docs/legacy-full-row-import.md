@@ -77,7 +77,7 @@ Parquet 구현 전에는 실제 60컬럼별 dtype과 혼합형 값을 분류하�
 
 입력은 기존 최종 DataFrame pickle이다. text 파일로 DataFrame을 재구성하지 않는다. 본문·보강 HTML·metadata를 포함한 원래 60컬럼을 행별로 읽는다. text 파일은 별도 대조/보완 자료이며 이번 FULL_ROW 입력을 대신하지 않는다.
 
-`scripts/export_legacy_rows.py`는 분석용 pandas 2.2.3·NumPy 1.26.4 환경에서 지정한 snapshot만 읽는다. 기존 allowlist unpickler를 재사용하고 레거시 코드를 import하지 않는다. 앱 runtime dependency에 pandas/NumPy를 추가하지 않았다. 대형 pickle은 표본만 선택하더라도 DataFrame 전체를 메모리에 읽어야 한다. 충분한 메모리가 있는 로컬 분석 환경에서 실행하며 bastion small worker에 올리지 않는다.
+`scripts/export_legacy_rows.py`는 분석용 pandas 2.2.3·NumPy 1.26.4 환경에서 지정한 snapshot만 읽는다. 기존 allowlist unpickler를 재사용하고 레거시 코드를 import하지 않는다. 앱 runtime dependency에 pandas/NumPy를 추가하지 않았다. 대형 pickle은 표본만 선택하더라도 DataFrame 전체를 메모리에 읽어야 한다. 충분한 메모리가 있는 로컬 분석 환경에서 실행하며 aws-demo 운영 worker에 올리지 않는다.
 
 export는 입력 SHA-256을 먼저 대조하고 종료 시 크기·mtime·inode 변화를 검사한다. 원래 position과 index, 전체 컬럼 순서·이름·값·타입을 유지한다. 중복 index도 position으로 구분한다. 행 문자열을 과거 HTTP 응답 바이트로 표시하거나 과거 수집시각을 만들지 않는다.
 

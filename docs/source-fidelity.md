@@ -34,7 +34,7 @@ DocumentBlock은 heading/paragraph/image/table/page_image/unknown과 안정적 b
 
 공식 API → direct HTTP → browser-session-assisted HTTP → browser automation 순으로 실제 source의 원문 충실도와 접근 조건을 검증한다. 이 순서는 실패할 때 무조건 우회하라는 뜻이 아니다. 동적 DOM·popup·iframe·세션·download가 필요하면 browser는 정식 adapter가 될 수 있다. 현재 scourt endpoint 동작이나 자동화 허용 조건은 이번 코드 조사로 확정하지 않는다.
 
-Playwright/Selenium 선택은 Python 3.12·uv, headless 안정성, download/popup/iframe, network/DOM/resource 추출, Windows/Linux, testability를 같은 표본에서 비교한 뒤 고정한다. 새 문서 작성 때문에 브라우저 패키지를 설치하거나 수집을 시작하지 않는다. small EC2의 worker/브라우저 메모리·CPU·디스크를 측정하고 다중 브라우저 프로세스를 기본으로 늘리지 않는다.
+Playwright/Selenium 선택은 Python 3.12·uv, headless 안정성, download/popup/iframe, network/DOM/resource 추출, Windows/Linux, testability를 같은 표본에서 비교한 뒤 고정한다. 새 문서 작성 때문에 브라우저 패키지를 설치하거나 수집을 시작하지 않는다. aws-demo t3a.medium의 worker/브라우저 메모리·CPU·디스크를 측정하고 다중 브라우저 프로세스를 기본으로 늘리지 않는다.
 
 ## 독립 실패와 검증
 

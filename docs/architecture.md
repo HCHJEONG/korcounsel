@@ -11,7 +11,7 @@
 > **Identity 정책 개정 — 2026-09-10:** 신규 canonical은 출처 독립 내부 ID다. contId/serialno는 source 관찰·재조회 키이며 숫자나 namespace 조합을 canonical로 발급하지 않는다. 기존 연결·원본·release는 보존한다. [정책·실측·구현 경계](case-identity.md) 참조. legacy mapper 0.2.0과 Registry.register의 출처 독립 발급을 구현했으며 전체 corpus 연결은 후속이다.
 
 
-2026-09-09 추가 지시 반영. 구현 전 계약이다. React 19/Vite/TypeScript, FastAPI, Python 3.12/uv, PostgreSQL과 기존 aws-bastion 운영 결정은 유지한다.
+2026-09-09 추가 지시 반영. 구현 전 계약이다. React 19/Vite/TypeScript, FastAPI, Python 3.12/uv, PostgreSQL 구성은 유지하며, 2026-09-15 사용자 결정에 따라 배포 대상은 aws-demo로 변경한다. aws-bastion은 SSH 경유지로 유지한다. KorCounsel 운영을 확인한 뒤 Onju AI KR 이전을 별도 검토하며 현재 Onju는 aws-prod에 유지한다.
 
 ```text
 sources/scourt      sources/law_go_kr
