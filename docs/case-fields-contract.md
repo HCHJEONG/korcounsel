@@ -2,6 +2,13 @@
 
 규칙 `case-fields-6`.  실제 corrected Parquet 89,130행의 원래 60컬럼을 대조했다. `__legacy_position`·`__legacy_index`는 제외한다. 기존 저장값은 변환·덮어쓰기 없이 조회하며 새 값과 처리 상태/근거를 분리한다.
 
+**2026-09-15 제한 품질 교정 후:** `current-lawgo-3`의 법원명 공백 비교와 서비스
+오류 응답 분류를 적용한 reader 5개에 새 v6 필드를 발행했다. 필드 추출 규칙은
+변경하지 않았다. 현재 고정 433개에서 ERROR/NOT_PROCESSED는 0이며 폐기
+역참조 433개·lawgo 충돌 35개는 REVIEW다. 기존 v6 snapshot과 reader별
+필드는 불변이고 새 aggregate는 로컬 export로 추가했다.
+[전후 값·근거·시각 차이와 snapshot](quality-baseline-20260915.md).
+
 ## 계승과 수정
 
 `web2df/_03_create_new_df.py`의 제목·명시 구획·milestone 규칙과 `_04_concat_old_and_new_df_corpus_then_create_fullest.py`의 사건번호·법원·날짜·당사자·서명 규칙을 읽고 재작성했다. filename 강제 합성, 본문 손실성 치환, 특정 사건 삭제, 잘못된 날짜 fallback, 본문 부재에 따른 미폐기 단정은 계승하지 않는다. legacy 전체 재추출은 실행하지 않았다.

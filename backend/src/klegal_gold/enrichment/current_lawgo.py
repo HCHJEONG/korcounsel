@@ -14,11 +14,11 @@ from klegal_gold.db.records import Records
 from klegal_gold.documents.reader_store import ReaderStore
 from klegal_gold.enrichment.legacy_statutes import statute_occurrences
 from klegal_gold.enrichment.statute_images import current_statute_images
-from klegal_gold.normalize.decision import decision_kind, docket_aliases
+from klegal_gold.normalize.decision import court_comparison_key, decision_kind, docket_aliases
 from klegal_gold.sources.law_api import LawOpenApiCaseSource
 from klegal_gold.sources.lawgo_html import fetch_provider_html
 
-VERSION = "current-lawgo-2"
+VERSION = "current-lawgo-3"
 CALL = re.compile(
     r"(?:javascript:)?fncLawPop\('([^'<>]+)','JO','([0-9]{6})','(prec(?:[0-9]{8})?)'\);?"
 )
@@ -32,8 +32,9 @@ def exact_metadata(provenance: dict[str, Any], candidate: dict[str, Any]) -> boo
         aliases
         and kind
         and re.fullmatch(r"[0-9]{8}", day)
-        and provenance.get("court")
-        and provenance["court"] == candidate.get("법원명")
+        and court_comparison_key(provenance.get("court"))
+        and court_comparison_key(provenance.get("court"))
+        == court_comparison_key(candidate.get("법원명"))
         and set(aliases) == set(docket_aliases(str(candidate.get("사건번호") or "")))
         and kind == decision_kind(candidate.get("판결유형"))
         and day == str(candidate.get("선고일자") or "").replace("-", "").replace(".", "")
@@ -121,9 +122,12 @@ def article_table(html: str) -> str:
             self.depth = 0
             self.parts: list[str] = []
             self.found = 0
+            self.service_error = False
 
         def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
             values = dict(attrs)
+            if tag == "div" and values.get("id") == "error500":
+                self.service_error = True
             if tag == "table" and not self.depth and values.get("summary") == "조문정보":
                 self.found += 1
                 self.depth = 1
@@ -150,6 +154,8 @@ def article_table(html: str) -> str:
 
     parser = Parser()
     parser.feed(html)
+    if parser.service_error and "요청하신 페이지를 정상적으로 제공할 수 없습니다" in html:
+        raise ValueError("LAWGO_SERVICE_UNAVAILABLE")
     table = "".join(parser.parts)
     if parser.found != 1 or parser.depth or 'id="lsLinkTable"' not in table:
         raise ValueError("LAWGO_ARTICLE_STRUCTURE_CHANGED")

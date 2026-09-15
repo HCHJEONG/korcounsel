@@ -1,11 +1,20 @@
 # KorCounsel
 
-**60필드 구현·23건 발행 — 2026-09-15:** `case-fields-3` 대응표·명시 구획 추출·필드별 상태/근거·immutable Parquet를 구현했다. 기존 89,130행 조회와 신규 23건 생성, 일반 검색의 보강 본문/60필드 전환, 관리자 후속 job·요청 재확인·이전 inventory/수집 이력 비교를 연결했다. 신규 23건은 미처리/추출 실패 0건이며 폐기 역참조 검증 보류 23건·lawgo 동일성 충돌 3건은 남아 있다. 따라서 전체 의미 검증 완료로 표시하지 않는다. 초기 추출의 번호/특허 청구항 경계 오류는 수정 규칙의 새 revision으로 대체했고 과거 산출물은 보존했다. [계약·검증·한계](docs/case-fields-contract.md).
+**현재 상태 — 2026-09-15:** 기존 89,130행과 고정 수집 cohort 433개 source ID의
+검색·보강 본문·60필드 조회를 제공합니다. 신규 필드 규칙은 `case-fields-6`입니다.
+실집계와 제한 품질 교정으로 법원명 공백 충돌 4개를 해소하고 조문 8곳을 추가
+보존했습니다. lawgo EXACT 329 / CONFLICT 35 / UNMATCHED 69, 조문 실패 21곳과
+폐기 역참조·법령 버전 검토는 남아 있습니다. 행 수·출처 ID 수는 canonical
+동일성 확정 판례 수와 다릅니다. [현재 실측·교정·보류 근거](docs/quality-baseline-20260915.md).
 
 
 **AWS 이관 순서 — 2026-09-15:** 전체 수집과 60필드 정리·검증, reader/보강 처리를 로컬에서 먼저 마친 뒤 그 완료 시점의 DB와 참조 파일을 일관된 snapshot으로 복사해 AWS에 복원합니다. AWS에서 초기 자료를 다시 수집하지 않으며, 로컬 원본을 유지하고 복원 후 검색·본문·이미지·조문을 대조합니다. [이관 계획](docs/remaining-work-20260915.md)을 따릅니다.
 
-**현재 우선 작업 — 2026-09-15:** 신규 판례도 기존 corpus와 같은 60필드 생성·검증까지 거쳐야 수집 정리가 완료됩니다. 신규 23건은 원문·reader 및 보강 처리까지 진행됐으며 60필드 정리는 아직 남아 있습니다. 기존·신규 판례 상세에서 60필드 전체와 값·상태·원문 근거·이력을 조회하는 UI도 필수 구현 범위입니다. [남은 작업과 완료 기준](docs/remaining-work-20260915.md)에 공통 추출 계약 → 23건 소급 처리 → 관리자 웹의 전체 단계 추적 순서로 정리했습니다.
+**남은 작업:** 동일성·폐기 역참조·역사적 사건기호와 제공 조문 예외의 근거 검토,
+명시적 관리자 명령에 따른 2025년 이후 기간 증보, 로컬 완료 snapshot의 AWS
+이관 준비가 남아 있습니다. 쟁점·답변·이유 근거 구조화와 GOLD·사람 검수는 별도
+후속 개발입니다. 23건 소급 처리·공통 60필드 UI·관리자 후속 체인은 이미
+구현됐습니다. [현재 잔여 작업](docs/remaining-work-20260915.md).
 
 공개 한국 판례를 출처·원본·변경 이력까지 추적하며 검색하고 검수하는 비공개 업무 앱입니다. React·FastAPI·PostgreSQL·별도 worker를 한 저장소에서 관리합니다.
 
@@ -15,7 +24,11 @@ pickle은 동결 원본으로 유지하고, 전체 60컬럼 corrected Parquet과
 
 환경변수로 지정한 관리자 1개·편집자 1개만 로그인할 수 있습니다. 첫 로그인에서 안전한 비밀번호 해시를 등록하며 자체 회원가입은 제공하지 않습니다. [.env.example](.env.example)과 [계정 설정](docs/site-login.md)을 참고하세요. 같은 DB를 사용하는 호스트와 Compose는 같은 파일 저장소를 사용해야 합니다. 호스트 연결은 `127.0.0.1:55432/korcounsel_dev`, Compose 내부 연결은 `postgres:5432`이며 [저장·worker 운영 계약](docs/persistence-and-jobs.md)에 설명합니다.
 
-재판결과 업무키와 출처 독립 canonical 등록 모델은 구현했지만, 전체 corpus의 canonical 연결 확정·신규/변경 수집 자동 운영·쟁점/답변/근거 구조화와 검수/GOLD 생산은 후속입니다. AWS 배포·도메인·운영 예약은 이번 로컬 확장에 포함하지 않았습니다. 전체 실행 순서는 [PLAN.md](PLAN.md), UX 기준은 [DESIGN.md](DESIGN.md)를 따릅니다.
+재판결과 업무키와 출처 독립 canonical 등록 모델은 구현했지만, 전체 corpus의
+canonical 연결 확정·쟁점/답변/근거 구조화와 검수/GOLD 생산은 후속입니다.
+신규·변경 수집과 품질 재처리는 관리자 명시 명령으로 실행하며 정기 schedule은
+만들지 않습니다. AWS 배포·도메인 변경은 이번 작업에 포함하지 않았습니다.
+전체 계획은 [PLAN.md](PLAN.md), UX 기준은 [DESIGN.md](DESIGN.md)를 따릅니다.
 
 ## 폴더 원칙
 
@@ -72,6 +85,9 @@ DuckDB와 Polars는 아직 채택하지 않았습니다. 문자열 검색은 pya
 
 ## 이미지 취득 ledger
 
+아래 50개 표본은 ledger 도입 당시 이력입니다. 현재 전수 보강 coverage는 이
+문서 상단, 이번 고정 433개 품질 집계는 [최신 기준선](docs/quality-baseline-20260915.md)을 따릅니다.
+
 이미지 참조와 실제 bytes 취득은 PostgreSQL job으로 처리한다. `scripts/stage_image_acquisition_manifest.py`는 기존 8,418개 레거시 glaw URL을 직접 취득 URL로 넣지 않고 원참조·파일명·legacy contId를 보존한다. 현재 portal provider mapping을 재관찰해 취득 URL이 생긴 항목만 `klegal ops submit-image-batch`와 worker가 다운로드한다. 수정된 50개 제한 job은 NAME_ONLY 50건을 저장하고 다운로드 시도 0건으로 통과했다. name-only와 ID 불일치 참조는 별도 상태로 보존한다. 자세한 내용은 [이미지 보존 검토](docs/image-preservation-review.md#영속-ledger와-worker-취득-경로--2026-09-11)를 참고하세요.
 
 ## Compose 전체 실행
@@ -106,7 +122,9 @@ Compose의 `LOCAL_DATA_DIR`은 기본 `./data`이며 필요한 경우 실제 공
 
 관리자 화면의 **백업 관리**에서 DB·등록 파일·설정된 Parquet의 수동 백업을 실행하고 진행 이력을 확인할 수 있습니다. 저장 위치·포함 범위·실패 재개는 [관리자 웹 백업](docs/backup-restore-rehearsal.md#관리자-웹-백업--2026-09-14)을 따릅니다.
 
-로컬 DB·파일의 격리 복원 리허설은 [백업·복원 검증](docs/backup-restore-rehearsal.md)을 따릅니다. 명시적 명령으로 합성 fixture를 별도 테스트 DB에 dump/restore하며 운영 corpus는 복원하지 않습니다.
+로컬 DB·파일의 격리 복원 리허설은 [백업·복원 검증](docs/backup-restore-rehearsal.md)을
+따릅니다. 합성 fixture 시험에 이어 2026-09-14에는 전체 corpus 백업을 새 격리
+DB·파일에 복원해 검증했습니다. 원래 corpus DB를 복원 대상으로 덮어쓰지 않습니다.
 
 ## 설정과 CLI
 
@@ -146,10 +164,15 @@ uv run pytest
 기본 pytest는 local DB integration 1건을 건너뜁니다. 개발 PostgreSQL 실행 후 아래 명령은 실제 DB 테스트를 포함합니다.
 
 ```bash
-KLEGAL_TEST_DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_dev' uv run pytest --cov=klegal_gold
+KLEGAL_TEST_DATABASE_URL='postgresql://korcounsel:korcounsel_local_only@127.0.0.1:55432/korcounsel_test' uv run pytest --cov=klegal_gold
 ```
 
-최신 Python 검증: Parquet 검색 unit 12건과 DB 검색 integration 1건 통과, ruff·프론트 typecheck/build 통과. 과거 전체 검증 이력: pytest 84건(로컬 PostgreSQL 포함), ruff·mypy 통과. Step 1 당시 UI 검증: desktop/mobile E2E 6건, 타입·lint·빌드·Compose 실행 통과. 기존 합성 fixture 53건 중 optional editorial 3종을 domain 테스트에 연결했습니다. 전체 parser/resolver 검증을 완료했다는 뜻은 아닙니다. 테스트 의존성의 upstream deprecation warning 2건이 관찰됐습니다.
+검증용 `korcounsel_test` DB는 corpus가 있는 개발 DB와 별도로 준비해야 합니다.
+위 접속값은 예시이며 실제 비밀번호를 문서·로그에 기록하지 않습니다.
+최신 Python 검증은 2026-09-15 품질 교정 기준 **791 passed / 3 skipped**,
+ruff check/format·mypy 통과입니다. 제외 3개는 선택적인 컨테이너 dump/복원
+시험입니다. [검증 범위](docs/quality-baseline-20260915.md)를 참고하세요.
+과거 Step 1의 pytest 84개·브라우저 6개 등은 당시 이력으로 PLAN에 남깁니다.
 
 ## 설계·조사 문서
 

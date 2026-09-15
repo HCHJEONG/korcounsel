@@ -22,6 +22,15 @@ KINDS = {
 DOCKET = re.compile(r"([0-9]{2,4}[가-힣]+)([0-9]+)")
 
 
+def court_comparison_key(raw: str | None) -> str:
+    """Ignore display whitespace only; retain every court/branch character.
+
+    This key is for provider metadata comparisons, not a rewrite of stored
+    court names or historical canonical identity keys.
+    """
+    return re.sub(r"\s+", "", raw or "")
+
+
 def decision_kind(raw: str | None) -> DecisionKind | None:
     """Recognize only observed spellings; retain unknown raw values in source metadata."""
     return KINDS.get(raw.strip()) if raw else None

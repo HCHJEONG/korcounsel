@@ -15,6 +15,7 @@ def transient(code: str) -> bool:
     return code in {
         "LAWGO_TRANSPORT_ERROR",
         "LAWGO_TRANSPORT_FAILED",
+        "LAWGO_SERVICE_UNAVAILABLE",
         "IMAGE_TRANSPORT_ERROR",
         "SOURCE_TRANSPORT_ERROR",
         "IMAGE_NETWORK_ERROR",

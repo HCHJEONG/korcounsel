@@ -53,6 +53,75 @@ def test_article_structure_cannot_be_http_success_only():
     assert article_table(html) == html
 
 
+@pytest.mark.parametrize(
+    "court,branch,docket,day",
+    [
+        ("춘천지방법원", "강릉지원", "2023나31881", "20240903"),
+        ("수원지방법원", "여주지원", "2024고단43", "20240910"),
+        ("인천지방법원", "부천지원", "2023가단109994", "20240911"),
+        ("춘천지방법원", "강릉지원", "2024노158", "20241212"),
+    ],
+)
+def test_branch_display_whitespace_does_not_create_conflict(court, branch, docket, day):
+    # Real observed name pairs; date is synthetic where not material to this regression.
+    provenance = {
+        "court": court + branch,
+        "case_number": docket,
+        "decision_type": "판결",
+        "decision_date": day,
+    }
+    candidate = {
+        "법원명": court + " " + branch,
+        "사건번호": docket,
+        "판결유형": "판결",
+        "선고일자": day,
+    }
+    assert exact_metadata(provenance, candidate)
+    assert provenance["court"] == court + branch
+    assert candidate["법원명"] == court + " " + branch
+    for changed in (
+        {"법원명": court},
+        {"법원명": court + " 다른지원"},
+        {"사건번호": docket + ", 999999"},
+        {"판결유형": "결정"},
+        {"선고일자": "19990101"},
+    ):
+        assert not exact_metadata(provenance, {**candidate, **changed})
+
+
+def test_whitespace_only_court_is_not_exact():
+    assert not exact_metadata(
+        {
+            "court": " \t",
+            "case_number": "2024다1",
+            "decision_type": "판결",
+            "decision_date": "20240101",
+        },
+        {"법원명": " ", "사건번호": "2024다1", "판결유형": "판결", "선고일자": "20240101"},
+    )
+
+
+def test_http_200_provider_error_page_is_not_an_article_structure_change():
+    from klegal_gold.quality.checks import transient
+
+    # Minimal fixture of the saved 1953 Pharmaceutical Affairs Act response.
+    html = (
+        '<html><title>국가법령정보센터 | 오류페이지</title><div id="error500">'
+        "현재 사용자가 많아 요청하신 페이지를 정상적으로 제공할 수 없습니다."
+        "</div></html>"
+    )
+    with pytest.raises(ValueError, match="^LAWGO_SERVICE_UNAVAILABLE$"):
+        article_table(html)
+    assert transient("LAWGO_SERVICE_UNAVAILABLE")
+    # A script-only law popup and arbitrary markup are still non-transient.
+    for other in (
+        '<input id="lnkLsId" value="001783"><script>openPop(url)</script>',
+        '<div id="error500">unrecognized response</div>',
+    ):
+        with pytest.raises(ValueError, match="^LAWGO_ARTICLE_STRUCTURE_CHANGED$"):
+            article_table(other)
+
+
 @pytest.mark.parametrize("context,expected", [("prec", "20110310"), ("prec20100514", "20100514")])
 def test_provider_selected_date_is_not_replaced(context, expected):
     from klegal_gold.enrichment.current_lawgo import provider_article_params
