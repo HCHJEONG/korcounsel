@@ -33,6 +33,7 @@ class AdminEnrichmentRequest(BaseModel):
 
 
 class AdminInventoryRequest(BaseModel):
+    request_id: UUID = Field(default_factory=uuid4)
     query: str = Field(default="", max_length=200)
     max_pages: int = Field(default=1, ge=1, le=10)
     display: int = Field(default=20, ge=1, le=100)
@@ -210,7 +211,7 @@ def create_app() -> FastAPI:
             raise ValueError("DATABASE_NOT_CONFIGURED")
         db = Database.from_settings(settings)
         queue = Queue(db, lease_seconds=300)
-        request_key = "web-scourt-inventory:" + uuid4().hex
+        request_key = "web-scourt-inventory:" + str(body.request_id)
         job = queue.submit_scourt_inventory(
             request_key, query=body.query, max_pages=body.max_pages, display=body.display
         )
@@ -271,7 +272,28 @@ def create_app() -> FastAPI:
         catalog = LegacySourceCatalog.from_payload(json.loads(records.read(row["artifact_id"])))
         if catalog.source != current.source.value:
             raise ValueError("LEGACY_CATALOG_SOURCE_MISMATCH")
-        delta = compare_inventory(current, None, legacy_source_ids=catalog.source_ids)
+        with db.connect() as conn:
+            prior = conn.execute(
+                "SELECT i.artifact_id FROM inventories i JOIN artifacts a USING(artifact_id) "
+                "WHERE i.source=%s AND i.scope_hash=%s AND i.snapshot_id<>%s "
+                "AND a.created_at < (SELECT created_at FROM artifacts WHERE artifact_id=%s) "
+                "ORDER BY a.created_at DESC LIMIT 1",
+                (current.source.value, current.scope_hash, current.snapshot_id, snapshot_artifact),
+            ).fetchone()
+            collected = conn.execute(
+                "SELECT DISTINCT source_id FROM source_versions WHERE source='scourt'"
+            ).fetchall()
+        baseline = (
+            InventorySnapshot.model_validate_json(records.read(prior["artifact_id"]))
+            if prior
+            else None
+        )
+        delta = compare_inventory(
+            current,
+            baseline,
+            legacy_source_ids=catalog.source_ids,
+            collected_source_ids=[item["source_id"] for item in collected],
+        )
         artifact_id = records.save_inventory_delta(delta)
         counts: dict[str, int] = {}
         for entry in delta.entries:
@@ -289,6 +311,7 @@ def create_app() -> FastAPI:
     def submit_scourt_delta_details(
         artifact_id: str,
         max_details: int = Query(default=10, ge=1, le=50),
+        request_id: UUID | None = None,
         refresh_source_id: str | None = Query(default=None, pattern=r"^[0-9]{1,30}$"),
         _: object = Depends(require_admin),
     ) -> dict[str, object]:
@@ -304,13 +327,13 @@ def create_app() -> FastAPI:
         if refresh_source_id is not None:
             if not any(
                 entry.source_id == refresh_source_id
-                and entry.kind in {"NEW", "LEGACY_KNOWN", "CHANGED", "UNCHANGED"}
+                and entry.kind in {"NEW", "LEGACY_KNOWN", "CURRENT_KNOWN", "CHANGED", "UNCHANGED"}
                 for entry in delta.entries
             ):
                 raise HTTPException(status_code=400, detail="SOURCE_NOT_IN_OBSERVED_DELTA")
             candidates = (refresh_source_id,)
         queue = Queue(db, lease_seconds=300)
-        request_key_prefix = "web-scourt-detail:" + uuid4().hex
+        request_key_prefix = "web-scourt-detail:" + str(request_id or artifact_id)
         jobs = [
             queue.submit_scourt_detail(
                 f"{request_key_prefix}:{delta.current_snapshot_id}:{source_id}", source_id
@@ -323,6 +346,25 @@ def create_app() -> FastAPI:
             "registered": len(jobs),
             "job_ids": [str(job.job_id) for job in jobs],
         }
+
+    @application.post(
+        "/api/admin/readers/{document_id}/fields", dependencies=[Depends(same_origin)]
+    )
+    def submit_fields(
+        document_id: str, body: AdminEnrichmentRequest, _: object = Depends(require_admin)
+    ) -> dict[str, object]:
+        from klegal_gold.documents.reader_store import ReaderStore
+
+        settings = load_settings()
+        db = Database.from_settings(settings)
+        records = Records(db, FileStore(settings.data_dir))
+        reader = ReaderStore(records).read(document_id)
+        if reader["origin"] != "CURRENT_SOURCE":
+            raise HTTPException(400, "기존 필드는 보존 Parquet에서 조회합니다.")
+        job = Queue(db).submit_case_fields(
+            document_id, request_key=f"web-fields:{body.request_id}:{document_id}"
+        )
+        return {"job_id": str(job.job_id), "status": job.status}
 
     @application.get("/api/admin/ingestions")
     def recent_ingestions(_: object = Depends(require_admin)) -> dict[str, object]:

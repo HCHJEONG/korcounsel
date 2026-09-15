@@ -106,3 +106,14 @@ def test_delta_payload_round_trip_preserves_sorted_candidates() -> None:
     delta = compare_inventory(current, None)
 
     assert type(delta).from_payload(delta.payload()) == delta
+
+
+def test_collected_ids_are_not_new_without_baseline():
+    current = snapshot("new", {"123": digest("a"), "456": digest("b")})
+    delta = compare_inventory(current, None, collected_source_ids=["123"])
+    assert delta.entries[0].kind == InventoryDeltaKind.CURRENT_KNOWN
+    assert detail_fetch_candidates(delta) == ("456",)
+    changed = compare_inventory(
+        current, snapshot("old", {"123": digest("c")}), collected_source_ids=["123"]
+    )
+    assert changed.entries[0].kind == InventoryDeltaKind.CHANGED

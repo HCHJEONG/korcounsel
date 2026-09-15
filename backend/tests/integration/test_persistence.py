@@ -71,6 +71,7 @@ def test_migrations_upgrade_reapply_and_checksum(empty_db, tmp_path):
         "0014_legacy_search_index.sql",
         "0015_current_reader_search.sql",
         "0016_backup_jobs.sql",
+        "0017_case_fields.sql",
     ]
     assert migrate(empty_db) == []
     with empty_db.connect() as conn:
@@ -91,13 +92,13 @@ def test_migration_failure_rolls_back_whole_batch(empty_db, tmp_path):
         migrate(empty_db, tmp_path)
     with empty_db.connect() as conn:
         assert conn.execute("SELECT to_regclass('rollback_probe') AS t").fetchone()["t"] is None
-    assert len(migrate(empty_db)) == 16
+    assert len(migrate(empty_db)) == 17
 
 
 def test_concurrent_migration(empty_db):
     with ThreadPoolExecutor(2) as pool:
         results = list(pool.map(lambda _: migrate(empty_db), range(2)))
-    assert sorted(map(len, results)) == [0, 16]
+    assert sorted(map(len, results)) == [0, 17]
 
 
 def test_artifacts_idempotent_immutable_and_db_rollback(db, tmp_path):

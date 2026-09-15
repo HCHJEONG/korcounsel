@@ -1,6 +1,6 @@
 """Authenticated immutable document and image delivery."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import HTMLResponse, Response
@@ -132,3 +132,46 @@ def legacy_body(
             **({"X-Reader-Revision": revision} if revision else {}),
         },
     )
+
+
+@router.get("/reader/{document_id}/fields")
+def current_fields(
+    document_id: str, store: Annotated[ReaderStore, Depends(reader_store)]
+) -> dict[str, Any]:
+    from klegal_gold.fields.store import FieldStore, legacy_fields
+
+    try:
+        reader = store.read(document_id)
+        if reader["origin"] == "LEGACY_CORPUS":
+            settings = load_settings()
+            if settings.legacy_parquet_path is None:
+                raise HTTPException(503, "필드 저장소가 설정되지 않았습니다.")
+            if reader["provenance"].get("snapshot_sha256") != legacy_snapshot(
+                settings.legacy_parquet_path
+            ):
+                raise ValueError("LEGACY_SNAPSHOT_MISMATCH")
+            result = legacy_fields(
+                settings.legacy_parquet_path,
+                reader["provenance"]["row_position"],
+                reader["html_sha256"],
+            )
+            result["reader_document_id"] = document_id
+            return result
+        return FieldStore(store.records).read(document_id)
+    except (ValueError, OSError):
+        raise HTTPException(409, "필드 버전을 확인할 수 없습니다. 다시 검색하세요.") from None
+
+
+@router.get("/cases/{position}/fields")
+def stored_legacy_fields(
+    position: int, body_hash: str = Query(pattern="^[0-9a-f]{64}$")
+) -> dict[str, Any]:
+    from klegal_gold.fields.store import legacy_fields
+
+    settings = load_settings()
+    if settings.legacy_parquet_path is None:
+        raise HTTPException(503, "필드 저장소가 설정되지 않았습니다.")
+    try:
+        return legacy_fields(settings.legacy_parquet_path, position, body_hash)
+    except (ValueError, OSError):
+        raise HTTPException(409, "필드 버전이 변경되었습니다. 다시 검색하세요.") from None

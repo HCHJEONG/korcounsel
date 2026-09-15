@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 type Job = { job_id: string; status: string; checkpoint: { reader_document_id?: string; lawgo_status?: string; follow_up_job_id?: string; rows?: number; phase?: string } }
-type Props = { kind?: 'lawgo' | 'images' | 'index'; documentId: string; onExpired: () => void; onOpen: (id: string) => void }
+type Props = { kind?: 'lawgo' | 'images' | 'index' | 'fields'; documentId: string; onExpired: () => void; onOpen: (id: string) => void }
 const statuses: Record<string, string> = { QUEUED: '대기', RUNNING: '실행 중', SUCCEEDED: '처리 완료', FAILED: '실패' }
 const outcomes: Record<string, string> = { EXACT: '판례 연결 확인', UNMATCHED: '연결 후보 없음', AMBIGUOUS: '연결 후보 확인 필요', CONFLICT: '제공 정보 충돌' }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -11,7 +11,7 @@ function routeValue(key: string) {
 }
 
 export default function ReaderEnrichment({ kind = 'lawgo', documentId, onExpired, onOpen }: Props) {
-  const label = kind === 'index' ? '검색 색인' : kind === 'images' ? '이미지 재취득' : '조문 보강'
+  const label = kind === 'fields' ? '60필드 생성·검증' : kind === 'index' ? '검색 색인' : kind === 'images' ? '이미지 재취득' : '조문 보강'
   const actionLabel = kind === 'index' ? '검색 색인 구축' : kind === 'images' ? label : label + ' 재확인'
   const [requestId, setRequestId] = useState(() => routeValue(kind + '_request'))
   const [jobId, setJobId] = useState(() => routeValue(kind + '_job'))
@@ -86,7 +86,7 @@ export default function ReaderEnrichment({ kind = 'lawgo', documentId, onExpired
   }
 
   return <div aria-label={actionLabel}>
-    <p>{kind === 'index' ? '기존 corpus와 현재 수집 본문의 검색 색인을 구축합니다. 구축 중에는 기존 검색을 이용하며 완료된 색인만 적용합니다.' : kind === 'images' ? '보존된 제공자 주소에서 미취득 이미지를 다시 취득합니다. 이미 저장한 파일은 재사용하며 주소 미확보 위치는 그대로 표시합니다.' : '이 본문에 제공자가 연결한 조문을 다시 확인합니다.'}{kind !== 'index' && ' 기존 본문은 보존하며 결과는 새 버전으로 열 수 있습니다.'}</p>
+    <p>{kind === 'fields' ? '보존 원문에서 이 revision의 60필드를 생성합니다. 검증 보류와 미처리는 별도로 표시합니다.' : kind === 'index' ? '기존 corpus와 현재 수집 본문의 검색 색인을 구축합니다. 구축 중에는 기존 검색을 이용하며 완료된 색인만 적용합니다.' : kind === 'images' ? '보존된 제공자 주소에서 미취득 이미지를 다시 취득합니다. 이미 저장한 파일은 재사용하며 주소 미확보 위치는 그대로 표시합니다.' : '이 본문에 제공자가 연결한 조문을 다시 확인합니다.'}{kind !== 'index' && ' 기존 본문은 보존하며 결과는 새 버전으로 열 수 있습니다.'}</p>
     <button disabled={submitting || (!!jobId && !terminal)} onClick={() => void submit()}>
       {submitting ? '등록 확인 중…' : terminal ? label + ' 다시 실행' : requestId && !jobId ? '같은 요청 확인' : actionLabel}
     </button>

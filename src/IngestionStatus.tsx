@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 
 type Stage = { job_id: string; kind: string; status: string; checkpoint: Record<string, unknown> }
 type Item = { job_id: string; source_id: string; state: string; reader_document_id: string | null; stages: Stage[] }
-const kinds: Record<string, string> = { FETCH_SCOURT_DETAIL: '원문·reader 등록', ACQUIRE_IMAGE_BATCH: '이미지 취득', REFRESH_CURRENT_READER_IMAGES: '이미지 reader 반영', ENRICH_CURRENT_LAWGO: '제공 조문 보강' }
-const states: Record<string, string> = { FINISHED: '후속 처리 종료', PROCESSING: '처리 중', NEEDS_ATTENTION: '확인 필요' }
+const kinds: Record<string, string> = { BUILD_CASE_FIELDS: '60필드 생성·검증', FETCH_SCOURT_DETAIL: '원문·reader 등록', ACQUIRE_IMAGE_BATCH: '이미지 취득', REFRESH_CURRENT_READER_IMAGES: '이미지 reader 반영', ENRICH_CURRENT_LAWGO: '제공 조문 보강' }
+const states: Record<string, string> = { FINISHED: '수집 정리 검증 완료', PROCESSING: '처리 중', NEEDS_ATTENTION: '확인 필요' }
 export default function IngestionStatus({ onExpired }: { onExpired: () => void }) {
   const [data, setData] = useState<{ items: Item[]; missing_readers: number } | null>(null)
   const [error, setError] = useState('')
@@ -32,6 +32,7 @@ export default function IngestionStatus({ onExpired }: { onExpired: () => void }
         <summary>{item.source_id} · {states[item.state]} · {item.reader_document_id ? 'reader 등록됨' : 'reader 미등록'}</summary>
         <ul>{item.stages.map(stage => <li key={stage.job_id}>
           {kinds[stage.kind] ?? stage.kind}: {stage.status}
+          {stage.checkpoint.fields_state ? ` · 필드 검증: ${String(stage.checkpoint.fields_state)}` : ''}
           {stage.checkpoint.lawgo_status ? ` · 조문 연결: ${String(stage.checkpoint.lawgo_status)}` : ''}
           {stage.checkpoint.image_failed !== undefined ? ` · 이미지 취득 실패 ${String(stage.checkpoint.image_failed)}건` : ''}
         </li>)}</ul>

@@ -1,3 +1,4 @@
+import CaseFields from './CaseFields'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import ReaderEnrichment from './ReaderEnrichment'
 import BackupPanel from './BackupPanel'
@@ -19,7 +20,7 @@ type DetailStatus = { total: number; completed: number; statuses: Record<string,
 
 function readerLocation(params: URLSearchParams) {
   const previous = new URLSearchParams(window.location.search)
-  for (const key of ['index_request', 'index_job']) {
+  for (const key of ['index_request', 'index_job', 'view']) {
     const value = previous.get(key)
     if (value) params.set(key, value)
   }
@@ -177,17 +178,23 @@ export default function App() {
     } catch { setMessage('로그아웃에 실패했습니다. 다시 시도하세요.'); setBusy(false) }
   }
 
+  function requestId(key: string) {
+    const existing = window.sessionStorage.getItem(key)
+    if (existing) return existing
+    const id = crypto.randomUUID(); window.sessionStorage.setItem(key, id); return id
+  }
   async function startIncremental() {
     setBusy(true); setMessage('증보 작업을 등록하고 있습니다.'); setAdminJob(''); setAdminJobStatus(''); setAdminDelta(null); setDetailSubmission(null); setDetailStatus(null)
     try {
       const response = await fetch('/api/admin/scourt-inventory', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ max_pages: inventoryPages, display: inventoryDisplay }),
+        body: JSON.stringify({ request_id: requestId(`inventory:${inventoryPages}:${inventoryDisplay}`), max_pages: inventoryPages, display: inventoryDisplay }),
       })
       if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
       if (response.status === 403) { setMessage('관리자만 증보 작업을 등록할 수 있습니다.'); return }
       if (!response.ok) throw new Error('submit failed')
       const job = await response.json() as { job_id: string; status: string }
+      window.sessionStorage.removeItem(`inventory:${inventoryPages}:${inventoryDisplay}`)
       setAdminJob(job.job_id); setMessage(`증보 작업이 ${job.status} 상태로 등록되었습니다.`)
     } catch { setMessage('증보 작업 등록에 실패했습니다.') }
     finally { setBusy(false) }
@@ -214,7 +221,7 @@ export default function App() {
     try {
       const response = await fetch(
         '/api/admin/deltas/' + encodeURIComponent(adminDelta.artifact_id) + '/scourt-details?'
-          + new URLSearchParams({ max_details: String(detailBatch) }),
+          + new URLSearchParams({ max_details: String(detailBatch), request_id: requestId('details:' + adminDelta.artifact_id) }),
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
       )
       if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
@@ -244,6 +251,15 @@ export default function App() {
     finally { if (own === generation.current) setBusy(false) }
   }
 
+  const [fieldRefresh, setFieldRefresh] = useState(0)
+  const [fieldView, setFieldView] = useState(() => new URLSearchParams(window.location.search).get('view') === 'fields')
+  function selectFieldView(value: boolean) {
+    setFieldView(value)
+    const params = new URLSearchParams(window.location.search)
+    if (value) params.set('view', 'fields'); else params.delete('view')
+    window.history.replaceState(null, '', '?' + params)
+  }
+
   const openDocument = useCallback(async (next: Selection) => {
     const docMatch = next.url.match(/^\/api\/reader\/([a-f0-9]{64})\/html$/)
     if (docMatch) {
@@ -256,6 +272,7 @@ export default function App() {
       if (row) readerLocation(new URLSearchParams({ row: row[1], body_hash: route.searchParams.get('body_hash') ?? '' }))
     }
     const own = ++readerRequest.current
+    setFieldRefresh(value => value + 1)
     setCurrentReader(''); setSelection(next); setDocument(''); setReaderStatus('본문을 불러오고 있습니다.')
     try {
       const response = await fetch(next.url, { cache: 'no-store', signal: AbortSignal.timeout(30000) })
@@ -322,7 +339,7 @@ export default function App() {
           {adminJob && <p role="status">등록 job: {adminJob} · 상태: {adminJobStatus || "확인 중"}</p>}
           {adminJobStatus === 'SUCCEEDED' && <button disabled={busy} onClick={() => void calculateDelta()}>신규·변경 후보 계산</button>}
           {adminDelta && <>
-            <p role="status">후보 계산 완료 · 신규 {adminDelta.counts.NEW ?? 0}건 · 변경 {adminDelta.counts.CHANGED ?? 0}건 · 미변경 {adminDelta.counts.UNCHANGED ?? 0}건</p>
+            <p role="status">후보 계산 완료 · 신규 {adminDelta.counts.NEW ?? 0}건 · 변경 {adminDelta.counts.CHANGED ?? 0}건 · 미변경 {adminDelta.counts.UNCHANGED ?? 0}건 · 현재 수집 이력 {adminDelta.counts.CURRENT_KNOWN ?? 0}건</p>
             <div className="search-row">
               <label htmlFor="detail-batch">상세 수집 건수</label>
               <select id="detail-batch" value={detailBatch} disabled={busy} onChange={event => setDetailBatch(Number(event.target.value))}>
@@ -331,7 +348,7 @@ export default function App() {
               <button disabled={busy || (adminDelta.counts.NEW ?? 0) + (adminDelta.counts.CHANGED ?? 0) === 0} onClick={() => void submitDetailBatch()}>상세 본문 수집 등록</button>
             </div>
             {detailSubmission && <p role="status">상세 수집 등록 {detailSubmission.registered}건 / 후보 {detailSubmission.candidate_count}건</p>}
-            {detailStatus && <p role="status">상세 수집 작업 종료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')} · reader·이미지·조문 결과는 수집 후속 처리 이력에서 확인하세요.</p>}
+            {detailStatus && <p role="status">원문 단계 종료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')} · 60필드·reader·이미지·조문 결과는 수집 후속 처리 이력에서 확인하세요.</p>}
           </>}
         </section>}        <section aria-labelledby="search-title">
           <h2 id="search-title">판례 검색</h2>
@@ -365,10 +382,14 @@ export default function App() {
         {selection && <section className="document-panel" aria-labelledby="document-title">
           <div className="document-toolbar"><h2 id="document-title">{selection.title}</h2><button onClick={() => { readerRequest.current += 1; setSelection(null); setDocument(''); readerLocation(new URLSearchParams()) }}>닫기</button></div>
           <p>{selection.note}</p>
+          <div role="group" aria-label="본문·필드 전환"><button aria-pressed={!fieldView} onClick={() => selectFieldView(false)}>보강 본문</button><button aria-pressed={fieldView} onClick={() => selectFieldView(true)}>60필드</button></div>
+          {fieldView && <CaseFields key={selection.url + fieldRefresh} url={selection.url.replace('/html', '/fields').replace('/body?', '/fields?')} onExpired={clearPrivate} />}
+
+          {role === 'admin' && currentReader && <ReaderEnrichment kind="fields" key={'fields-' + currentReader} documentId={currentReader} onExpired={clearPrivate} onOpen={id => { selectFieldView(true); void openDocument({ title: selection.title, url: `/api/reader/${id}/html`, note: '60필드 생성 결과와 검증 상태를 확인하세요.' }) }} />}
           {role === 'admin' && currentReader && <ReaderEnrichment key={currentReader} documentId={currentReader} onExpired={clearPrivate} onOpen={id => void openDocument({ title: selection.title, url: `/api/reader/${id}/html`, note: '보강 결과 본문입니다. 위치별 취득 상태와 적용 버전을 확인하세요.' })} />}
           {role === 'admin' && currentReader && currentImageCount > 0 && <ReaderEnrichment key={'images-' + currentReader} kind="images" documentId={currentReader} onExpired={clearPrivate} onOpen={id => void openDocument({ title: selection.title, url: `/api/reader/${id}/html`, note: '보강 결과 본문입니다. 위치별 취득 상태와 적용 버전을 확인하세요.' })} />}
           {readerStatus && <p role="status">{readerStatus}</p>}
-          {document && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} onLoad={event => {
+          {document && !fieldView && <iframe title="판례 본문" sandbox="allow-same-origin" srcDoc={document} onLoad={event => {
             const frameDocument = event.currentTarget.contentDocument
             frameDocument?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
               link.addEventListener('click', click => {

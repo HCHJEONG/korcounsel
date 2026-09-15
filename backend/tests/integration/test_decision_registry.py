@@ -184,6 +184,7 @@ def test_upgrade_backfills_without_mutating_history(empty_db):
         "0014_legacy_search_index.sql",
         "0015_current_reader_search.sql",
         "0016_backup_jobs.sql",
+        "0017_case_fields.sql",
     ]
     with empty_db.connect() as conn:
         extension = conn.execute(

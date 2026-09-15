@@ -322,6 +322,8 @@ class Worker:
             str(checkpoint["reader_document_id"]), dependency_id
         )
         checkpoint["lawgo_job_id"] = str(lawgo.job_id)
+        fields = self.queue.submit_case_fields(str(checkpoint["reader_document_id"]), lawgo.job_id)
+        checkpoint["fields_job_id"] = str(fields.job_id)
         self.queue.heartbeat(job, checkpoint)
 
     def _inventory(self, job: Job) -> None:
@@ -456,6 +458,42 @@ class Worker:
             },
         )
 
+    def _build_case_fields(self, job: Job) -> None:
+        from klegal_gold.fields.store import FieldStore
+
+        document_id = job.payload["document_id"]
+        if job.payload.get("dependency_id"):
+            dependency = self.queue.get(UUID(job.payload["dependency_id"]))
+            if dependency.status not in {"SUCCEEDED", "FAILED"}:
+                raise ValueError("FIELDS_DEPENDENCY_NOT_TERMINAL")
+            requested = self.readers.read(document_id)
+            expected = self.readers.read(dependency.payload["document_id"])
+            if requested["provenance"].get("current_root_document_id", document_id) != expected[
+                "provenance"
+            ].get("current_root_document_id", dependency.payload["document_id"]):
+                raise ValueError("FIELDS_DEPENDENCY_MISMATCH")
+            document_id = dependency.checkpoint.get("reader_document_id", document_id)
+            if dependency.checkpoint.get("follow_up_job_id"):
+                follow = self.queue.get(UUID(dependency.checkpoint["follow_up_job_id"]))
+                if follow.status not in {"SUCCEEDED", "FAILED"}:
+                    raise ValueError("FIELDS_DEPENDENCY_NOT_TERMINAL")
+                document_id = follow.checkpoint.get("reader_document_id", document_id)
+        with self.records.db.connect() as conn:
+            row = conn.execute(
+                "SELECT created_at FROM jobs WHERE job_id=%s", (job.job_id,)
+            ).fetchone()
+        assert row is not None
+        payload = FieldStore(self.records).build(document_id, row["created_at"].isoformat())
+        self.queue.heartbeat(
+            job,
+            {
+                "reader_document_id": document_id,
+                "fields_revision": payload["revision"],
+                "fields_state": payload["state"],
+                "field_counts": payload["counts"],
+            },
+        )
+
     def _refresh_current_reader_images(self, job: Job) -> None:
         dependency = self.queue.get(UUID(job.payload["image_job_id"]))
         if dependency.kind != "ACQUIRE_IMAGE_BATCH" or dependency.status not in {
@@ -540,6 +578,8 @@ class Worker:
                 self._fetch_scourt(job)
             elif job.kind == "FETCH_SCOURT_INVENTORY":
                 self._inventory(job)
+            elif job.kind == "BUILD_CASE_FIELDS":
+                self._build_case_fields(job)
             elif job.kind == "ENRICH_CURRENT_LAWGO":
                 self._enrich_current_lawgo(job)
             elif job.kind == "REFRESH_CURRENT_READER_IMAGES":

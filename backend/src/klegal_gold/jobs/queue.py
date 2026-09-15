@@ -45,6 +45,25 @@ class Queue:
             request_key, "VERIFY_ARTIFACT", {"artifact_id": artifact_id}, max_attempts
         )
 
+    def submit_case_fields(
+        self, document_id: str, dependency_id: UUID | None = None, *, request_key: str | None = None
+    ) -> Job:
+        import re
+
+        if not re.fullmatch("[a-f0-9]{64}", document_id):
+            raise ValueError("INVALID_READER_DOCUMENT_ID")
+        if dependency_id and self.get(dependency_id).kind != "ENRICH_CURRENT_LAWGO":
+            raise ValueError("INVALID_FIELDS_DEPENDENCY")
+        return self._submit(
+            request_key or f"case-fields-3:{dependency_id}:{document_id}",
+            "BUILD_CASE_FIELDS",
+            {
+                "document_id": document_id,
+                "dependency_id": str(dependency_id) if dependency_id else None,
+            },
+            3,
+        )
+
     def submit_backup(self, request_key: str) -> Job:
         return self._submit(request_key, "CREATE_BACKUP", {}, 3)
 
@@ -299,6 +318,15 @@ class Queue:
                      SELECT 1 FROM jobs dependency
                      WHERE dependency.job_id::text=jobs.payload->>'dependency_id'
                      AND dependency.status IN ('SUCCEEDED','FAILED')
+                   ))
+                   AND (kind <> 'BUILD_CASE_FIELDS' OR payload->>'dependency_id' IS NULL OR EXISTS (
+                     SELECT 1 FROM jobs d WHERE d.job_id::text=jobs.payload->>'dependency_id'
+                     AND d.status IN ('SUCCEEDED','FAILED')
+                     AND (d.checkpoint->>'follow_up_job_id' IS NULL OR EXISTS (
+                       SELECT 1 FROM jobs child
+                       WHERE child.job_id::text=d.checkpoint->>'follow_up_job_id'
+                       AND child.status IN ('SUCCEEDED','FAILED')
+                     ))
                    ))
                    ORDER BY created_at,job_id FOR UPDATE SKIP LOCKED LIMIT 1"""
             ).fetchone()

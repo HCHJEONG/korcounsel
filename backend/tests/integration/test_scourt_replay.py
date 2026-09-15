@@ -72,7 +72,9 @@ def test_replay_raw_only_job_and_report_descendants(db, tmp_path, monkeypatch):
         if not worker.run_once():
             break
     status = ingestion_status(queue, replay.job_id)
-    assert status["state"] == "FINISHED"
+    assert status["state"] == "NEEDS_ATTENTION"
+    assert status["fields_state"] == "REVIEW"
+    assert any(stage["kind"] == "BUILD_CASE_FIELDS" for stage in status["stages"])
     assert status["reader_document_id"]
 
 

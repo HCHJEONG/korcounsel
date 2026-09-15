@@ -6,3 +6,6 @@
 .reader-samples summary{cursor:pointer;font-size:18px;font-weight:700}.reader-samples summary:focus-visible{outline:3px solid #b7791f;outline-offset:3px}
 
 .result-table table{min-width:720px}
+
+.case-field { margin-block: .6rem; padding: .6rem; border: 1px solid #aaa; }
+.document-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 32rem; overflow: auto; }

@@ -14,6 +14,7 @@ class InventoryDeltaKind(StrEnum):
     CHANGED = "CHANGED"
     UNCHANGED = "UNCHANGED"
     LEGACY_KNOWN = "LEGACY_KNOWN"
+    CURRENT_KNOWN = "CURRENT_KNOWN"
     MISSING = "MISSING"
     ABSENCE_UNCONFIRMED = "ABSENCE_UNCONFIRMED"
 
@@ -108,6 +109,7 @@ def compare_inventory(
     baseline: InventorySnapshot | None,
     *,
     legacy_source_ids: Iterable[str] = (),
+    collected_source_ids: Iterable[str] = (),
 ) -> InventoryDelta:
     """Compare equal-scope snapshots without treating incomplete listings as absence."""
     if baseline is not None and current.source != baseline.source:
@@ -118,13 +120,16 @@ def compare_inventory(
     current_entries = _indexed(current)
     baseline_entries = _indexed(baseline) if baseline is not None else {}
     known_ids = _known_ids(legacy_source_ids)
+    collected_ids = _known_ids(collected_source_ids)
     entries: list[InventoryDeltaEntry] = []
 
     for source_id, current_hash in current_entries.items():
         previous_hash = baseline_entries.get(source_id)
         if previous_hash is None:
             kind = (
-                InventoryDeltaKind.LEGACY_KNOWN
+                InventoryDeltaKind.CURRENT_KNOWN
+                if source_id in collected_ids
+                else InventoryDeltaKind.LEGACY_KNOWN
                 if source_id in known_ids
                 else InventoryDeltaKind.NEW
             )

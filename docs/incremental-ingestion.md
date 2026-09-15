@@ -95,3 +95,11 @@ scourt metadata snapshot → 이전 snapshot 비교 → 신규 contId 및 실패
 사용자 요청으로 별도 누락 2252318도 처리했다. 기존 Parquet position 29641의 검색과 legacy reader 본문은 복구 전에도 HTTP 200으로 정상 제공됐다. 즉 판례 전체 미표시가 아니라 현재 수집 representation의 reader만 미등록이었다. 과거 source job에는 필요한 HTTP metadata receipt가 없어 원문 replay 사전검증을 통과하지 못했고, 이력·원문을 보존한 채 해당 1건만 새 FETCH_SCOURT_DETAIL 명령으로 현재 제공자에서 다시 수집했다.
 
 job `100eb798-a241-4c74-8289-1212d9841224`와 lawgo 후속 job은 SUCCEEDED다. 최신 reader `4b50393a6865fd53542de819b93fddf80be7693c550b8eb7f20a0a9d3d089b01`, lawgo EXACT, 조문 PRESERVED 10곳, 이미지 위치 0곳이다. 과거 raw SHA 불변 및 새 reader HTML과 현재 원문의 SHA 일치, 일반 검색의 최신 reader 1건을 확인했다. 실제 브라우저 검색→현재 수집 본문, 이력 새로고침·reader 미등록 0건, 로그아웃 401·외부 요청 0건을 검증했다. 코드 변경 없이 기존 수집 체인을 실행했다. 로컬 증거는 `data/reader-recovery-20260915/2017do953-report.json`, `2017do953-browser.json`, `2017do953-reader.png`다.
+
+## 60필드 후속 처리 — 2026-09-15
+
+`FETCH_SCOURT_DETAIL` checkpoint의 `fields_job_id`로 `BUILD_CASE_FIELDS`를 영속 등록한다. lawgo job 및 lawgo가 등록한 image refresh가 terminal일 때만 claim한다. 최종 reader를 확인해 원문 HTML·공식 metadata·보존 lawgo 후보에서 60필드를 생성하고 각 Parquet/필드 artifact를 연결한다. 같은 reader+규칙은 재사용한다. 재시도 후에도 원문/기존 reader/기존 Parquet를 변경하지 않는다.
+
+작업 SUCCEEDED는 처리 실행 종료다. 필드에 REVIEW가 있으면 수집 이력은 NEEDS_ATTENTION, 미처리/오류는 INCOMPLETE로 구분한다. 기존 raw-only job을 전체 완료로 재해석하지 않는다. 일반 검색 상세에 60필드 전체 조회와 관리자 명시적 생성 버튼을 제공한다.
+
+신규 23건 중 초기 2건은 보존 scourt replay로 누락된 metadata/lawgo 체인을 복구했다. 최종 23행 snapshot은 `data/case-fields-20260915/snapshot-v3.json`이며 모든 원문 HTML hash는 고정 입력과 같았다. 폐기 역참조 23건·lawgo 충돌 3건은 검증 보류다. [공통 계약](case-fields-contract.md).
