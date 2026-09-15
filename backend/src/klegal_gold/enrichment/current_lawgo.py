@@ -18,27 +18,68 @@ from klegal_gold.normalize.decision import court_comparison_key, decision_kind, 
 from klegal_gold.sources.law_api import LawOpenApiCaseSource
 from klegal_gold.sources.lawgo_html import fetch_provider_html
 
-VERSION = "current-lawgo-3"
+VERSION = "current-lawgo-4"
 CALL = re.compile(
     r"(?:javascript:)?fncLawPop\('([^'<>]+)','JO','([0-9]{6})','(prec(?:[0-9]{8})?)'\);?"
 )
 
 
-def exact_metadata(provenance: dict[str, Any], candidate: dict[str, Any]) -> bool:
-    aliases = docket_aliases(str(provenance.get("case_number") or ""))
+def exact_metadata(
+    provenance: dict[str, Any], candidate: dict[str, Any], *, detail: bool = False
+) -> bool:
+    # Search results can expose only the representative docket. A detail must
+    # match the complete declaration when the preserved source provides one.
+    docket = str(
+        provenance.get("full_case_number")
+        if detail and provenance.get("full_case_number")
+        else provenance.get("case_number") or ""
+    )
+    other = str(candidate.get("사건번호") or "")
+    aliases = docket_aliases(docket)
+    docket_equal = bool(aliases) and set(aliases) == set(docket_aliases(other))
+    if detail and provenance.get("full_case_number"):
+        # Literal declarations retain regional markers and procedural roles.
+        # Do not erase parentheses or accept only a subset of merged dockets.
+        declaration = (
+            r"(?:\([가-힣]+\))?[0-9]{2,4}[가-힣]+[0-9]+(?:\([가-힣]+\))?"
+            r"(?:,\s*(?:[0-9]{2,4}[가-힣]+)?[0-9]+(?:\([가-힣]+\))?)*"
+        )
+        docket_equal = docket_equal or bool(re.fullmatch(declaration, docket) and docket == other)
     kind = decision_kind(provenance.get("decision_type"))
     day = str(provenance.get("decision_date") or "")
     return bool(
-        aliases
+        docket_equal
         and kind
         and re.fullmatch(r"[0-9]{8}", day)
         and court_comparison_key(provenance.get("court"))
         and court_comparison_key(provenance.get("court"))
         == court_comparison_key(candidate.get("법원명"))
-        and set(aliases) == set(docket_aliases(str(candidate.get("사건번호") or "")))
         and kind == decision_kind(candidate.get("판결유형"))
         and day == str(candidate.get("선고일자") or "").replace("-", "").replace(".", "")
     )
+
+
+def source_identity(records: Records, original: dict[str, Any]) -> dict[str, Any]:
+    """Recover full source metadata for old readers without changing their evidence."""
+    provenance = dict(original["provenance"])
+    digest = provenance.get("metadata_response_hash")
+    if not digest:
+        return provenance
+    artifact_id = "http:" + digest
+    metadata = json.loads(records.read(artifact_id))["data"]["dma_jdcpctDtl"]
+    expected = {
+        "court": metadata.get("cortNm"),
+        "case_number": metadata.get("csNoLstCtt"),
+        "decision_type": metadata.get("adjdTypNm"),
+        "decision_date": metadata.get("prnjdgYmd"),
+    }
+    if str(metadata.get("jisCntntsSrno")) != str(original["source_id"]) or any(
+        provenance.get(key) != value for key, value in expected.items()
+    ):
+        raise ValueError("SCOURT_IDENTITY_EVIDENCE_MISMATCH")
+    provenance["full_case_number"] = metadata.get("mrgCsNoCtt")
+    provenance["identity_metadata_artifact_id"] = artifact_id
+    return provenance
 
 
 def provider_links(html: str, *, source_id: str | None = None) -> tuple[str, list[dict[str, str]]]:
@@ -215,7 +256,7 @@ class CurrentLawgo:
         original = store.read(document_id)
         if original["origin"] != "CURRENT_SOURCE":
             raise ValueError("NOT_CURRENT_READER")
-        provenance = dict(original["provenance"])
+        provenance = source_identity(self.records, original)
         prefix = "current-lawgo:" + job_id
         plan_id = prefix + ":plan"
         if transient_only:
@@ -249,13 +290,28 @@ class CurrentLawgo:
                 )
                 listing = client.list_page(page=1, display=20, docket=provenance["case_number"])
                 plan["candidates"] = list(listing.rows)
-                matching = [row for row in listing.rows if exact_metadata(provenance, row)]
+                matching = [
+                    row
+                    for row in listing.rows
+                    if exact_metadata(provenance, row)
+                    or exact_metadata(provenance, row, detail=True)
+                ]
                 if listing.total > 20 or len(matching) > 1:
                     plan["status"] = "AMBIGUOUS"
                 elif len(matching) == 1:
                     sid = str(matching[0]["판례일련번호"])
                     detail = client.fetch_detail(sid)
-                    if not exact_metadata(provenance, detail.fields):
+                    plan["identity_comparison"] = {
+                        "rule_version": VERSION,
+                        "source_metadata_artifact_id": provenance.get(
+                            "identity_metadata_artifact_id"
+                        ),
+                        "representative_case_number": provenance.get("case_number"),
+                        "full_case_number": provenance.get("full_case_number"),
+                        "candidate_source_id": sid,
+                        "candidate_case_number": detail.fields.get("사건번호"),
+                    }
+                    if not exact_metadata(provenance, detail.fields, detail=True):
                         plan["status"] = "CONFLICT"
                     else:
                         raw = self._request(

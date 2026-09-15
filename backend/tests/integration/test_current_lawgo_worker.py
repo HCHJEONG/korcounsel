@@ -11,6 +11,78 @@ from klegal_gold.storage.files import FileStore
 pytestmark = pytest.mark.integration
 
 
+@pytest.mark.parametrize("listing_docket", ["2024다1", "2024다1, 2"])
+def test_old_reader_full_docket_plan_and_restart(db, tmp_path, monkeypatch, listing_docket):
+    from klegal_gold.enrichment import current_lawgo as module
+
+    records = Records(db, FileStore(tmp_path))
+    store = ReaderStore(records)
+    metadata = {
+        "jisCntntsSrno": "123",
+        "cortNm": "대법원",
+        "csNoLstCtt": "2024다1",
+        "mrgCsNoCtt": "2024다1, 2",
+        "adjdTypNm": "판결",
+        "prnjdgYmd": "20240101",
+    }
+    records.put_artifact(
+        "http:metadata",
+        json.dumps({"data": {"dma_jdcpctDtl": metadata}}).encode(),
+        origin="HTTP_RESPONSE",
+        metadata={},
+    )
+    doc = store.preserve(
+        "<p>원문</p>",
+        title="원문",
+        source_id="123",
+        origin="CURRENT_SOURCE",
+        provenance={
+            "court": "대법원",
+            "case_number": "2024다1",
+            "decision_type": "판결",
+            "decision_date": "20240101",
+            "metadata_response_hash": "metadata",
+        },
+        acquisitions={},
+    )
+    before = records.read("reader:" + doc)
+    row = {
+        "법원명": "대법원",
+        "사건번호": listing_docket,
+        "판결유형": "판결",
+        "선고일자": "20240101",
+        "판례일련번호": "456",
+    }
+    calls = []
+
+    def fetch(sid):
+        calls.append(sid)
+        return SimpleNamespace(fields={**row, "사건번호": "2024다1, 2"})
+
+    monkeypatch.setattr(module, "load_settings", lambda: SimpleNamespace(law_api_credential="test"))
+    monkeypatch.setattr(
+        module,
+        "LawOpenApiCaseSource",
+        lambda *a, **kw: SimpleNamespace(
+            list_page=lambda **kw: SimpleNamespace(rows=[row], total=1), fetch_detail=fetch
+        ),
+    )
+    monkeypatch.setattr(
+        CurrentLawgo,
+        "_request",
+        lambda *a: b'<input id="precYd" value="20240101"><input id="precSeq" value="456">',
+    )
+    result = CurrentLawgo(records).run(doc, "full-docket", lambda: None)
+    assert store.read(result)["provenance"]["lawgo_status"] == "EXACT"
+    assert store.read(result)["provenance"]["full_case_number"] == "2024다1, 2"
+    plan = json.loads(records.read("current-lawgo:full-docket:plan"))
+    assert plan["identity_comparison"]["source_metadata_artifact_id"] == "http:metadata"
+    assert plan["identity_comparison"]["rule_version"] == "current-lawgo-4"
+    assert CurrentLawgo(records).run(doc, "full-docket", lambda: None) == result
+    assert calls == ["456"]
+    assert records.read("reader:" + doc) == before
+
+
 def test_provider_enrichment_preserves_original_positions_and_restarts(db, tmp_path, monkeypatch):
     records = Records(db, FileStore(tmp_path))
     store = ReaderStore(records)

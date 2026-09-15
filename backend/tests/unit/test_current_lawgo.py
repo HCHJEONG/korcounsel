@@ -1,6 +1,65 @@
+import json
+from pathlib import Path
+from unittest.mock import Mock
+
 import pytest
 
-from klegal_gold.enrichment.current_lawgo import article_table, exact_metadata, provider_links
+from klegal_gold.enrichment.current_lawgo import (
+    article_table,
+    exact_metadata,
+    provider_links,
+    source_identity,
+)
+
+OBSERVED = json.loads(
+    (Path(__file__).parents[1] / "fixtures/lawgo_full_docket_35.json").read_text()
+)
+
+
+@pytest.mark.parametrize("case", OBSERVED, ids=lambda c: c["source_id"])
+def test_preserved_full_metadata_resolves_observed_conflicts(case):
+    records = Mock()
+    records.read.return_value = json.dumps(
+        {"data": {"dma_jdcpctDtl": case["source_metadata"]}}
+    ).encode()
+    original = {"source_id": case["source_id"], "provenance": case["provenance"]}
+    p = source_identity(records, original)
+    records.read.assert_called_once_with("http:" + case["metadata_hash"])
+    assert "full_case_number" not in original["provenance"]
+    assert not exact_metadata(case["provenance"], case["candidate"])
+    assert exact_metadata(p, case["candidate"], detail=True)
+    for key, value in (
+        ("법원명", "다른법원"),
+        ("사건번호", p["case_number"]),
+        ("판결유형", "명령"),
+        ("선고일자", "19990101"),
+    ):
+        assert not exact_metadata(p, {**case["candidate"], key: value}, detail=True)
+    records.read.return_value = json.dumps(
+        {"data": {"dma_jdcpctDtl": {**case["source_metadata"], "jisCntntsSrno": "wrong"}}}
+    ).encode()
+    with pytest.raises(ValueError, match="SCOURT_IDENTITY_EVIDENCE_MISMATCH"):
+        source_identity(records, original)
+
+
+def test_role_and_region_are_not_erased():
+    p = {
+        "court": "부산고등법원",
+        "case_number": "2023나11053",
+        "full_case_number": "(울산)2023나11053",
+        "decision_type": "판결",
+        "decision_date": "20240101",
+    }
+    row = {
+        "법원명": p["court"],
+        "사건번호": "(부산)2023나11053",
+        "판결유형": "판결",
+        "선고일자": "20240101",
+    }
+    assert not exact_metadata(p, row, detail=True)
+    p["full_case_number"] = "2023나11053(본소), 2023나11054(반소)"
+    row["사건번호"] = "2023나11053(반소), 2023나11054(본소)"
+    assert not exact_metadata(p, row, detail=True)
 
 
 def test_only_explicit_provider_calls_are_selected():

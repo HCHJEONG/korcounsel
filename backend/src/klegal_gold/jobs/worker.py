@@ -240,6 +240,7 @@ class Worker:
                 "job_id": str(job.job_id),
                 "court": metadata.get("cortNm"),
                 "case_number": metadata.get("csNoLstCtt"),
+                "full_case_number": metadata.get("mrgCsNoCtt"),
                 "decision_date": metadata.get("prnjdgYmd"),
                 "decision_type": metadata.get("adjdTypNm"),
             },

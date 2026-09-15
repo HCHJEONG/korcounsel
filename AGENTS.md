@@ -1,5 +1,12 @@
 # KorCounsel Agent Instructions
 
+**전체 사건번호 교정 — 2026-09-15:** `current-lawgo-4`는 검색 목록의 대표
+번호와 상세의 전체 번호를 구분하며 보존 scourt metadata에 연결된 전체
+병합·지역 표기를 비교한다. 괄호·지역·역할을 지우거나 부분 집합으로 연결하지
+않는다. 기존 35개는 재처리·60필드 재발행을 완료했고 고정 433개에서
+EXACT 364 / CONFLICT 0 / UNMATCHED 69다. 원문·이전 revision은 유지한다.
+미해결 다른 ID 후보를 자동 병합한 것은 아니다. [근거·검증](docs/lawgo-full-docket-correction.md).
+
 **현재 기준선·품질 교정 — 2026-09-15:** 이번 사용자 요청은 실집계·수정 가능한
 품질 오류 처리·보류 근거·문서 정리까지다. legacy 89,130은 행 수, 433은 고정
 scourt source ID 수다. canonical 등록·active source link는 각각 0행이므로

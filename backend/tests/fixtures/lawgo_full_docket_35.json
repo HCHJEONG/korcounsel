@@ -1,0 +1,877 @@
+[
+  {
+    "source_id": "2026000043183",
+    "metadata_hash": "125f70eeff7f78946ce2461bdec9245e92e79ba1ae685ceafe0876109e5e7e0b",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000043183,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2026두30351",
+      "mrgCsNoCtt": "2026두30351, 30352, 30353",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20260625"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2026두30351",
+      "decision_type": "판결",
+      "decision_date": "20260625",
+      "metadata_response_hash": "125f70eeff7f78946ce2461bdec9245e92e79ba1ae685ceafe0876109e5e7e0b"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2026두30351, 30352, 30353",
+      "판결유형": "판결",
+      "선고일자": "20260625"
+    }
+  },
+  {
+    "source_id": "2026000043228",
+    "metadata_hash": "ffc4e729162d8e6f51ae5834084880e873fc0fb389989d673d762db455d5e7d6",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000043228,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2026다201948",
+      "mrgCsNoCtt": "2026다201948, 201949",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20260625"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2026다201948",
+      "decision_type": "판결",
+      "decision_date": "20260625",
+      "metadata_response_hash": "ffc4e729162d8e6f51ae5834084880e873fc0fb389989d673d762db455d5e7d6"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2026다201948, 201949",
+      "판결유형": "판결",
+      "선고일자": "20260625"
+    }
+  },
+  {
+    "source_id": "2026000044594",
+    "metadata_hash": "67e92adf41b0900ea3ea3949ae7599749c0c22420ed9a5f9eb23bc462e1cff6f",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000044594,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2023다290355",
+      "mrgCsNoCtt": "2023다290355, 290362",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20260709"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2023다290355",
+      "decision_type": "판결",
+      "decision_date": "20260709",
+      "metadata_response_hash": "67e92adf41b0900ea3ea3949ae7599749c0c22420ed9a5f9eb23bc462e1cff6f"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2023다290355, 290362",
+      "판결유형": "판결",
+      "선고일자": "20260709"
+    }
+  },
+  {
+    "source_id": "2025000006193",
+    "metadata_hash": "b15e7e0b2a775485ffddb3d6fbccf544b7872b6ddee6f44dc9bae1d7c8463e77",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000006193,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다232752",
+      "mrgCsNoCtt": "2024다232752, 232769",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20240912"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다232752",
+      "decision_type": "판결",
+      "decision_date": "20240912",
+      "metadata_response_hash": "b15e7e0b2a775485ffddb3d6fbccf544b7872b6ddee6f44dc9bae1d7c8463e77"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다232752, 232769",
+      "판결유형": "판결",
+      "선고일자": "20240912"
+    }
+  },
+  {
+    "source_id": "2025000006196",
+    "metadata_hash": "e55d273f54b999ae3f31a6d7d3a68c0375119d3f3c5c74aa724613a5201651bf",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000006196,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다235027",
+      "mrgCsNoCtt": "2024다235027, 235034",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20240912"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다235027",
+      "decision_type": "판결",
+      "decision_date": "20240912",
+      "metadata_response_hash": "e55d273f54b999ae3f31a6d7d3a68c0375119d3f3c5c74aa724613a5201651bf"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다235027, 235034",
+      "판결유형": "판결",
+      "선고일자": "20240912"
+    }
+  },
+  {
+    "source_id": "2025000022022",
+    "metadata_hash": "6e2cc10d94efc8c2eb644651930d667806d98d366910a9f14b625f0296a5b13c",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000022022,
+      "cortNm": "서울북부지방법원",
+      "csNoLstCtt": "2023고단4232",
+      "mrgCsNoCtt": "2023고단4232, 2023고단4908(병합), 2024초기60, 2024초기61, 2024초기62",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20240925"
+    },
+    "provenance": {
+      "court": "서울북부지방법원",
+      "case_number": "2023고단4232",
+      "decision_type": "판결",
+      "decision_date": "20240925",
+      "metadata_response_hash": "6e2cc10d94efc8c2eb644651930d667806d98d366910a9f14b625f0296a5b13c"
+    },
+    "candidate": {
+      "법원명": "서울북부지방법원",
+      "사건번호": "2023고단4232, 2023고단4908(병합), 2024초기60, 2024초기61, 2024초기62",
+      "판결유형": "판결",
+      "선고일자": "20240925"
+    }
+  },
+  {
+    "source_id": "2025000010431",
+    "metadata_hash": "2546a6ee38c049f552a7cc13c4377f235cff2d30603e62ec65717ce08a22f97e",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000010431,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다228401",
+      "mrgCsNoCtt": "2024다228401, 228418",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241008"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다228401",
+      "decision_type": "판결",
+      "decision_date": "20241008",
+      "metadata_response_hash": "2546a6ee38c049f552a7cc13c4377f235cff2d30603e62ec65717ce08a22f97e"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다228401, 228418",
+      "판결유형": "판결",
+      "선고일자": "20241008"
+    }
+  },
+  {
+    "source_id": "2025000010440",
+    "metadata_hash": "95bbb848d902006792945113b26c25f8c55742bdc05ba7e661a9b3a6cd79892f",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000010440,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2023다209625",
+      "mrgCsNoCtt": "2023다209625, 209632",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241008"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2023다209625",
+      "decision_type": "판결",
+      "decision_date": "20241008",
+      "metadata_response_hash": "95bbb848d902006792945113b26c25f8c55742bdc05ba7e661a9b3a6cd79892f"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2023다209625, 209632",
+      "판결유형": "판결",
+      "선고일자": "20241008"
+    }
+  },
+  {
+    "source_id": "3334482",
+    "metadata_hash": "414c3262f93b53bb205eb9e615d794e3eea6a7f74a29f4d012196b7240a64b45",
+    "source_metadata": {
+      "jisCntntsSrno": 3334482,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2021다304779",
+      "mrgCsNoCtt": "2021다304779, 304786",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241008"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2021다304779",
+      "decision_type": "판결",
+      "decision_date": "20241008",
+      "metadata_response_hash": "414c3262f93b53bb205eb9e615d794e3eea6a7f74a29f4d012196b7240a64b45"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2021다304779, 304786",
+      "판결유형": "판결",
+      "선고일자": "20241008"
+    }
+  },
+  {
+    "source_id": "2025000015377",
+    "metadata_hash": "dcefbfbc2555c1e30914722ab6adb423963658779520d804ceaf7eb02122d116",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000015377,
+      "cortNm": "서울고등법원",
+      "csNoLstCtt": "2024나2015320",
+      "mrgCsNoCtt": "2024나2015320(본소), 2024나2015337(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241016"
+    },
+    "provenance": {
+      "court": "서울고등법원",
+      "case_number": "2024나2015320",
+      "decision_type": "판결",
+      "decision_date": "20241016",
+      "metadata_response_hash": "dcefbfbc2555c1e30914722ab6adb423963658779520d804ceaf7eb02122d116"
+    },
+    "candidate": {
+      "법원명": "서울고등법원",
+      "사건번호": "2024나2015320(본소), 2024나2015337(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241016"
+    }
+  },
+  {
+    "source_id": "2026000033679",
+    "metadata_hash": "99ad74f740e2648ef49f4a372b7119d5aa4a2d51155ade405c6d0622179d1c50",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000033679,
+      "cortNm": "서울중앙지방법원",
+      "csNoLstCtt": "2023고합1098",
+      "mrgCsNoCtt": "2023고합1098, 2024고합41(병합), 116(병합)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241016"
+    },
+    "provenance": {
+      "court": "서울중앙지방법원",
+      "case_number": "2023고합1098",
+      "decision_type": "판결",
+      "decision_date": "20241016",
+      "metadata_response_hash": "99ad74f740e2648ef49f4a372b7119d5aa4a2d51155ade405c6d0622179d1c50"
+    },
+    "candidate": {
+      "법원명": "서울중앙지방법원",
+      "사건번호": "2023고합1098, 2024고합41(병합), 116(병합)",
+      "판결유형": "판결",
+      "선고일자": "20241016"
+    }
+  },
+  {
+    "source_id": "2026000030635",
+    "metadata_hash": "b43ec3644ef0a879978e619a48750612ddb3eb332bf966db08a920253ac2351b",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000030635,
+      "cortNm": "울산지방법원",
+      "csNoLstCtt": "2024나11658",
+      "mrgCsNoCtt": "2024나11658(본소), 2024나11665(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241023"
+    },
+    "provenance": {
+      "court": "울산지방법원",
+      "case_number": "2024나11658",
+      "decision_type": "판결",
+      "decision_date": "20241023",
+      "metadata_response_hash": "b43ec3644ef0a879978e619a48750612ddb3eb332bf966db08a920253ac2351b"
+    },
+    "candidate": {
+      "법원명": "울산지방법원",
+      "사건번호": "2024나11658(본소), 2024나11665(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241023"
+    }
+  },
+  {
+    "source_id": "3335462",
+    "metadata_hash": "16d21e54547f0415886dfbb9b24988a9d6e5da28863be19177d2d1f63951aa4b",
+    "source_metadata": {
+      "jisCntntsSrno": 3335462,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다232066",
+      "mrgCsNoCtt": "2024다232066, 232073",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241025"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다232066",
+      "decision_type": "판결",
+      "decision_date": "20241025",
+      "metadata_response_hash": "16d21e54547f0415886dfbb9b24988a9d6e5da28863be19177d2d1f63951aa4b"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다232066, 232073",
+      "판결유형": "판결",
+      "선고일자": "20241025"
+    }
+  },
+  {
+    "source_id": "3335472",
+    "metadata_hash": "36d884ae85cce8e33440e1049eaf785b197e8b8ec9a47dcdcf80f3e157524c11",
+    "source_metadata": {
+      "jisCntntsSrno": 3335472,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024므11526",
+      "mrgCsNoCtt": "2024므11526, 11533",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241025"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024므11526",
+      "decision_type": "판결",
+      "decision_date": "20241025",
+      "metadata_response_hash": "36d884ae85cce8e33440e1049eaf785b197e8b8ec9a47dcdcf80f3e157524c11"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024므11526, 11533",
+      "판결유형": "판결",
+      "선고일자": "20241025"
+    }
+  },
+  {
+    "source_id": "2025000011458",
+    "metadata_hash": "adbcd11f6947ec7bd13c9ba4ec594f5fe77ee2ab265142561c536397c5483032",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000011458,
+      "cortNm": "수원고등법원",
+      "csNoLstCtt": "2022브10020",
+      "mrgCsNoCtt": "2022브10020(본심판), 2022브10021(병합심판), 2024브2(반심판)",
+      "adjdTypNm": "결정",
+      "prnjdgYmd": "20241030"
+    },
+    "provenance": {
+      "court": "수원고등법원",
+      "case_number": "2022브10020",
+      "decision_type": "결정",
+      "decision_date": "20241030",
+      "metadata_response_hash": "adbcd11f6947ec7bd13c9ba4ec594f5fe77ee2ab265142561c536397c5483032"
+    },
+    "candidate": {
+      "법원명": "수원고등법원",
+      "사건번호": "2022브10020(본심판), 2022브10021(병합심판), 2024브2(반심판)",
+      "판결유형": "결정",
+      "선고일자": "20241030"
+    }
+  },
+  {
+    "source_id": "2025000015374",
+    "metadata_hash": "f2e50a0d476b9b3a799f7e9d0ab976e594b8cd0825d7ce12357cd5f95d8e7e3c",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000015374,
+      "cortNm": "서울중앙지방법원",
+      "csNoLstCtt": "2023나54619",
+      "mrgCsNoCtt": "2023나54619(본소), 2023나54626(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241030"
+    },
+    "provenance": {
+      "court": "서울중앙지방법원",
+      "case_number": "2023나54619",
+      "decision_type": "판결",
+      "decision_date": "20241030",
+      "metadata_response_hash": "f2e50a0d476b9b3a799f7e9d0ab976e594b8cd0825d7ce12357cd5f95d8e7e3c"
+    },
+    "candidate": {
+      "법원명": "서울중앙지방법원",
+      "사건번호": "2023나54619(본소), 2023나54626(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241030"
+    }
+  },
+  {
+    "source_id": "2025000010455",
+    "metadata_hash": "b5fe5e53601bd92f92a429e6a2d96262aed95d5c716150b2a8b9ac57e2d1b7b6",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000010455,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다255588",
+      "mrgCsNoCtt": "2024다255588, 255595",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241031"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다255588",
+      "decision_type": "판결",
+      "decision_date": "20241031",
+      "metadata_response_hash": "b5fe5e53601bd92f92a429e6a2d96262aed95d5c716150b2a8b9ac57e2d1b7b6"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다255588, 255595",
+      "판결유형": "판결",
+      "선고일자": "20241031"
+    }
+  },
+  {
+    "source_id": "2025000010479",
+    "metadata_hash": "e532fc1232de0d554c7737a624f4ca04c8ad2263f96d04628325a1b81542f858",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000010479,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다228906",
+      "mrgCsNoCtt": "2024다228906, 228913",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241031"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다228906",
+      "decision_type": "판결",
+      "decision_date": "20241031",
+      "metadata_response_hash": "e532fc1232de0d554c7737a624f4ca04c8ad2263f96d04628325a1b81542f858"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다228906, 228913",
+      "판결유형": "판결",
+      "선고일자": "20241031"
+    }
+  },
+  {
+    "source_id": "2025000017368",
+    "metadata_hash": "1e05af33356d615b308253c36177264d556d6503a16be343626f150e6eef4d72",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000017368,
+      "cortNm": "대전고등법원",
+      "csNoLstCtt": "2023나13921",
+      "mrgCsNoCtt": "2023나13921(본소), 2023나13938(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241107"
+    },
+    "provenance": {
+      "court": "대전고등법원",
+      "case_number": "2023나13921",
+      "decision_type": "판결",
+      "decision_date": "20241107",
+      "metadata_response_hash": "1e05af33356d615b308253c36177264d556d6503a16be343626f150e6eef4d72"
+    },
+    "candidate": {
+      "법원명": "대전고등법원",
+      "사건번호": "2023나13921(본소), 2023나13938(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241107"
+    }
+  },
+  {
+    "source_id": "2025000026304",
+    "metadata_hash": "6eb27cccd9c9d730ddb9c45f0abef8fed9e1e3a0733b0aac9d8c56fe8eb27861",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000026304,
+      "cortNm": "수원지방법원평택지원",
+      "csNoLstCtt": "2024고합143",
+      "mrgCsNoCtt": "2024고합143, 2024초기613",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241113"
+    },
+    "provenance": {
+      "court": "수원지방법원평택지원",
+      "case_number": "2024고합143",
+      "decision_type": "판결",
+      "decision_date": "20241113",
+      "metadata_response_hash": "6eb27cccd9c9d730ddb9c45f0abef8fed9e1e3a0733b0aac9d8c56fe8eb27861"
+    },
+    "candidate": {
+      "법원명": "수원지방법원 평택지원",
+      "사건번호": "2024고합143, 2024초기613",
+      "판결유형": "판결",
+      "선고일자": "20241113"
+    }
+  },
+  {
+    "source_id": "2026000035877",
+    "metadata_hash": "a29968483aba4a3aff3902604ce775c80b66b450b638255162860f56452dd9fd",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000035877,
+      "cortNm": "전주지방법원",
+      "csNoLstCtt": "2023고단1179",
+      "mrgCsNoCtt": "2023고단1179, 2024고단1582(병합)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241113"
+    },
+    "provenance": {
+      "court": "전주지방법원",
+      "case_number": "2023고단1179",
+      "decision_type": "판결",
+      "decision_date": "20241113",
+      "metadata_response_hash": "a29968483aba4a3aff3902604ce775c80b66b450b638255162860f56452dd9fd"
+    },
+    "candidate": {
+      "법원명": "전주지방법원",
+      "사건번호": "2023고단1179, 2024고단1582(병합)",
+      "판결유형": "판결",
+      "선고일자": "20241113"
+    }
+  },
+  {
+    "source_id": "3336247",
+    "metadata_hash": "a0cf5d0622bd35c7936870400ebb504500799d4fb0c92493e9f5344380e91d24",
+    "source_metadata": {
+      "jisCntntsSrno": 3336247,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2021다220062",
+      "mrgCsNoCtt": "2021다220062, 220079, 220086, 220093",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241114"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2021다220062",
+      "decision_type": "판결",
+      "decision_date": "20241114",
+      "metadata_response_hash": "a0cf5d0622bd35c7936870400ebb504500799d4fb0c92493e9f5344380e91d24"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2021다220062, 220079, 220086, 220093",
+      "판결유형": "판결",
+      "선고일자": "20241114"
+    }
+  },
+  {
+    "source_id": "3336253",
+    "metadata_hash": "d6ef6f810669faa2d46b43253593c4f392e81e352077c6164147ed37f316b321",
+    "source_metadata": {
+      "jisCntntsSrno": 3336253,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2021다278931",
+      "mrgCsNoCtt": "2021다278931, 278948",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241120"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2021다278931",
+      "decision_type": "판결",
+      "decision_date": "20241120",
+      "metadata_response_hash": "d6ef6f810669faa2d46b43253593c4f392e81e352077c6164147ed37f316b321"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2021다278931, 278948",
+      "판결유형": "판결",
+      "선고일자": "20241120"
+    }
+  },
+  {
+    "source_id": "2025000026328",
+    "metadata_hash": "b6e23d6d002ab1d9cc45597232a812994cced38a00d085c955f3e83b2733dc81",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000026328,
+      "cortNm": "광주고등법원",
+      "csNoLstCtt": "2024나22510",
+      "mrgCsNoCtt": "2024나22510(본소), 2024나22527(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241127"
+    },
+    "provenance": {
+      "court": "광주고등법원",
+      "case_number": "2024나22510",
+      "decision_type": "판결",
+      "decision_date": "20241127",
+      "metadata_response_hash": "b6e23d6d002ab1d9cc45597232a812994cced38a00d085c955f3e83b2733dc81"
+    },
+    "candidate": {
+      "법원명": "광주고등법원",
+      "사건번호": "2024나22510(본소), 2024나22527(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241127"
+    }
+  },
+  {
+    "source_id": "2026000041917",
+    "metadata_hash": "2045a17c71ccca8a8d3e51e0d70dffb5ff4ee202a910ef070ce61113ec20a5df",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000041917,
+      "cortNm": "부산고등법원",
+      "csNoLstCtt": "2023나11053",
+      "mrgCsNoCtt": "(울산)2023나11053",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241211"
+    },
+    "provenance": {
+      "court": "부산고등법원",
+      "case_number": "2023나11053",
+      "decision_type": "판결",
+      "decision_date": "20241211",
+      "metadata_response_hash": "2045a17c71ccca8a8d3e51e0d70dffb5ff4ee202a910ef070ce61113ec20a5df"
+    },
+    "candidate": {
+      "법원명": "부산고등법원",
+      "사건번호": "(울산)2023나11053",
+      "판결유형": "판결",
+      "선고일자": "20241211"
+    }
+  },
+  {
+    "source_id": "2025000004864",
+    "metadata_hash": "7f1a5412ff4145ca06a5f1dd2b7ae0458115e8b132dc58c426088556014270e0",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000004864,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2022다200317",
+      "mrgCsNoCtt": "2022다200317, 200324",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241212"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2022다200317",
+      "decision_type": "판결",
+      "decision_date": "20241212",
+      "metadata_response_hash": "7f1a5412ff4145ca06a5f1dd2b7ae0458115e8b132dc58c426088556014270e0"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2022다200317, 200324",
+      "판결유형": "판결",
+      "선고일자": "20241212"
+    }
+  },
+  {
+    "source_id": "2025000004876",
+    "metadata_hash": "1dadac0a12a83534fa4fec17cfeee3c5dcf43623d4bb27b479cd0cda580ef5e3",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000004876,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다260405",
+      "mrgCsNoCtt": "2024다260405, 260412",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241212"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다260405",
+      "decision_type": "판결",
+      "decision_date": "20241212",
+      "metadata_response_hash": "1dadac0a12a83534fa4fec17cfeee3c5dcf43623d4bb27b479cd0cda580ef5e3"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다260405, 260412",
+      "판결유형": "판결",
+      "선고일자": "20241212"
+    }
+  },
+  {
+    "source_id": "2025000018570",
+    "metadata_hash": "913902be9fc8db052a03289a5633bc8ad0acbe4db3cd561d40751f96c0d83c02",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000018570,
+      "cortNm": "서울고등법원",
+      "csNoLstCtt": "2024나2015375",
+      "mrgCsNoCtt": "2024나2015375, 2024나2015382(독립당사자참가의소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241212"
+    },
+    "provenance": {
+      "court": "서울고등법원",
+      "case_number": "2024나2015375",
+      "decision_type": "판결",
+      "decision_date": "20241212",
+      "metadata_response_hash": "913902be9fc8db052a03289a5633bc8ad0acbe4db3cd561d40751f96c0d83c02"
+    },
+    "candidate": {
+      "법원명": "서울고등법원",
+      "사건번호": "2024나2015375, 2024나2015382(독립당사자참가의소)",
+      "판결유형": "판결",
+      "선고일자": "20241212"
+    }
+  },
+  {
+    "source_id": "2026000030641",
+    "metadata_hash": "61721f1393b100395ab1718f007448bd850077bfefa6307134fe43ccd74b5779",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000030641,
+      "cortNm": "수원고등법원",
+      "csNoLstCtt": "2020나22908",
+      "mrgCsNoCtt": "2020나22908(본소), 2020나22915(반소)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241212"
+    },
+    "provenance": {
+      "court": "수원고등법원",
+      "case_number": "2020나22908",
+      "decision_type": "판결",
+      "decision_date": "20241212",
+      "metadata_response_hash": "61721f1393b100395ab1718f007448bd850077bfefa6307134fe43ccd74b5779"
+    },
+    "candidate": {
+      "법원명": "수원고등법원",
+      "사건번호": "2020나22908(본소), 2020나22915(반소)",
+      "판결유형": "판결",
+      "선고일자": "20241212"
+    }
+  },
+  {
+    "source_id": "2026000034142",
+    "metadata_hash": "88cf4f0d6ffe282426b242c1888321b13c0b23a51a5505aac7689d25e2e9f181",
+    "source_metadata": {
+      "jisCntntsSrno": 2026000034142,
+      "cortNm": "서울중앙지방법원",
+      "csNoLstCtt": "2020고단4306",
+      "mrgCsNoCtt": "2020고단4306, 2020고단2132(병합), 2020고단7284(병합), 2021고단1043(병합), 2021고단3480(병합), 2021고단6437(병합), 2022고단3805(병합), 2022고단4517(병합)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241212"
+    },
+    "provenance": {
+      "court": "서울중앙지방법원",
+      "case_number": "2020고단4306",
+      "decision_type": "판결",
+      "decision_date": "20241212",
+      "metadata_response_hash": "88cf4f0d6ffe282426b242c1888321b13c0b23a51a5505aac7689d25e2e9f181"
+    },
+    "candidate": {
+      "법원명": "서울중앙지방법원",
+      "사건번호": "2020고단4306, 2020고단2132(병합), 2020고단7284(병합), 2021고단1043(병합), 2021고단3480(병합), 2021고단6437(병합), 2022고단3805(병합), 2022고단4517(병합)",
+      "판결유형": "판결",
+      "선고일자": "20241212"
+    }
+  },
+  {
+    "source_id": "2025000015422",
+    "metadata_hash": "14f977cf8a9a3a194e7f7e6f2db657766ff3cf825f3564b5e6df28b0016d836f",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000015422,
+      "cortNm": "서울남부지방법원",
+      "csNoLstCtt": "2024노851",
+      "mrgCsNoCtt": "2024노851, 2024노1869(병합)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241219"
+    },
+    "provenance": {
+      "court": "서울남부지방법원",
+      "case_number": "2024노851",
+      "decision_type": "판결",
+      "decision_date": "20241219",
+      "metadata_response_hash": "14f977cf8a9a3a194e7f7e6f2db657766ff3cf825f3564b5e6df28b0016d836f"
+    },
+    "candidate": {
+      "법원명": "서울남부지방법원",
+      "사건번호": "2024노851, 2024노1869(병합)",
+      "판결유형": "판결",
+      "선고일자": "20241219"
+    }
+  },
+  {
+    "source_id": "2025000005611",
+    "metadata_hash": "c6af876ef4d89fde693b940a7c67d1c3c7766ba0e18743014c9a1075ea2c736f",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000005611,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2020다275744",
+      "mrgCsNoCtt": "2020다275744, 275751",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241224"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2020다275744",
+      "decision_type": "판결",
+      "decision_date": "20241224",
+      "metadata_response_hash": "c6af876ef4d89fde693b940a7c67d1c3c7766ba0e18743014c9a1075ea2c736f"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2020다275744, 275751",
+      "판결유형": "판결",
+      "선고일자": "20241224"
+    }
+  },
+  {
+    "source_id": "2025000005641",
+    "metadata_hash": "e834312f099844570704a0606867483ee33225565ffdec118725f68d456a7448",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000005641,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2022두49984",
+      "mrgCsNoCtt": "2022두49984, 49991",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241226"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2022두49984",
+      "decision_type": "판결",
+      "decision_date": "20241226",
+      "metadata_response_hash": "e834312f099844570704a0606867483ee33225565ffdec118725f68d456a7448"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2022두49984, 49991",
+      "판결유형": "판결",
+      "선고일자": "20241226"
+    }
+  },
+  {
+    "source_id": "2025000022160",
+    "metadata_hash": "86c8cf56d89bc7c92bfafc52dc7e5b7893a6ebff4dfadbcda48b933aed3ae13e",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000022160,
+      "cortNm": "대법원",
+      "csNoLstCtt": "2024다280898",
+      "mrgCsNoCtt": "2024다280898, 280904",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241226"
+    },
+    "provenance": {
+      "court": "대법원",
+      "case_number": "2024다280898",
+      "decision_type": "판결",
+      "decision_date": "20241226",
+      "metadata_response_hash": "86c8cf56d89bc7c92bfafc52dc7e5b7893a6ebff4dfadbcda48b933aed3ae13e"
+    },
+    "candidate": {
+      "법원명": "대법원",
+      "사건번호": "2024다280898, 280904",
+      "판결유형": "판결",
+      "선고일자": "20241226"
+    }
+  },
+  {
+    "source_id": "2025000013014",
+    "metadata_hash": "3ab062fac65dd050c4f8cf15a9bb13e99d18d69ca8cd280f9c1bae86eeb0a4b5",
+    "source_metadata": {
+      "jisCntntsSrno": 2025000013014,
+      "cortNm": "수원지방법원",
+      "csNoLstCtt": "2023노7060",
+      "mrgCsNoCtt": "2023노7060, 2024노6372(병합)",
+      "adjdTypNm": "판결",
+      "prnjdgYmd": "20241227"
+    },
+    "provenance": {
+      "court": "수원지방법원",
+      "case_number": "2023노7060",
+      "decision_type": "판결",
+      "decision_date": "20241227",
+      "metadata_response_hash": "3ab062fac65dd050c4f8cf15a9bb13e99d18d69ca8cd280f9c1bae86eeb0a4b5"
+    },
+    "candidate": {
+      "법원명": "수원지방법원",
+      "사건번호": "2023노7060, 2024노6372(병합)",
+      "판결유형": "판결",
+      "선고일자": "20241227"
+    }
+  }
+]
