@@ -114,3 +114,16 @@ v3 이유 NOT_PROVIDED 1건을 추가 조사한 결과 실제 원문 `【이    
 실제 Chromium 검색→본문→60필드 화면에서 2023고합1098의 이유/주문 분리, 각주 보존, 당사자 표시와 v5 revision을 확인했다. 앞선 브라우저 표본에서 저장 이미지 표시, 위치별 조문 실패·법령 버전 미확인, 날짜 입력 및 새로고침 복원도 확인했다. PostgreSQL을 포함한 전체 테스트 775개, ruff check/format, mypy, pnpm lint/build, git diff --check를 통과했다.
 
 다음 작업은 사건기호 분류표 대조, 제공자 동일성 충돌 검토, 폐기 역참조 감사와 제공 조문 응답 구조 점검이다. 이후 2025-01~03 구간을 같은 절차로 진행할 수 있다. 이번 실행에서는 2025년 수집·정기 실행·AWS 이관·commit/push를 하지 않았다.
+
+
+## 사건기호 구조화 재발행 — case-fields-6
+
+기존 `case_sort`가 상위 분야만 담거나 미지원 기호를 REVIEW로 남긴 문제를 새 파생 규칙에서 교정했다. 원 사건기호 `code`는 유지하고 공식 코드·분야·심급·재판부·절차·공식 설명·시간 적용 상태를 구조화했다. 대법원 사건구분안내와 2022-07-29 시행 「사건별 부호문자의 부여에 관한 예규」를 근거로 사용하며, 그 이전 판례는 당시 시행본을 확인하기 전까지 REVIEW다.
+
+고정 cohort 433건에 `BUILD_CASE_FIELDS` job 433개를 등록해 모두 SUCCEEDED로 종료했다. 27개 관찰 기호가 모두 지원되며 `case_sort`는 PRESENT 433건이다. 기존 검토 대상 184건의 22개 기호도 여기에 포함된다. 전체 필드 상태에는 폐기 역참조·lawgo 충돌 등 다른 REVIEW가 남을 수 있다.
+
+- [433행·60열 v6 snapshot](../data/window-run-20260915/current-433-v6-fbe7817002493585a3262aa904f713515321bd2f94b86170c291aed040e5dc34.parquet)
+- [v6 snapshot manifest](../data/window-run-20260915/current-433-v6-fbe7817002493585a3262aa904f713515321bd2f94b86170c291aed040e5dc34.json)
+- SHA-256: `fbe7817002493585a3262aa904f713515321bd2f94b86170c291aed040e5dc34`
+
+기존 v5 snapshot SHA-256 `fdd1a395252eeba9fddf917d25b333ba46039ebcf1b2c64bf258d576f8b9cd5f`는 불변임을 재확인했다. 실제 인증 경로에서 `2024가단116437` 검색 1건, reader HTML 200, fields 200, `case-fields-6`, `민사 · 제1심 · 단독` 표시값과 미인증 fields 401을 확인했다.

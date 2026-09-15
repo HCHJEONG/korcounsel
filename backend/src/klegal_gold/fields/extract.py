@@ -5,6 +5,7 @@ from datetime import datetime
 from html.parser import HTMLParser
 from typing import Any
 
+from klegal_gold.fields.case_classification import classify
 from klegal_gold.fields.contract import (
     GMETA,
     HISTORICAL,
@@ -113,13 +114,23 @@ def extract(
         )
         code = re.sub(r"[0-9]", "", docket[0])
         put("code", code, evidence, "대표 사건번호 기호")
-        sorts = {"다": "민사", "도": "형사", "두": "행정", "스": "가사", "모": "형사"}
-        if code in sorts:
-            put("case_sort", sorts[code], evidence, "legacy 사건기호 분류표")
-        else:
-            result["case_sort"] = field(
-                "case_sort", status="REVIEW", reason="사건기호 분류표 대조 필요", evidence=evidence
-            )
+        raw_day = str(metadata.get("prnjdgYmd", "")).replace("-", "")
+        try:
+            classified_day = datetime.strptime(raw_day, "%Y%m%d").date()
+        except ValueError:
+            classified_day = None
+        classification, status, reason = classify(code, classified_day)
+        result["case_sort"] = field(
+            "case_sort",
+            classification,
+            status=status,
+            reason=reason,
+            evidence={
+                "artifact_id": metadata_artifact_id,
+                "keys": ["csNoLstCtt", "prnjdgYmd"],
+                "classification_basis": classification.get("basis") if classification else None,
+            },
+        )
     for name, key in {"decision_date": "prnjdgYmd", "gmeta_sngoDay": "prnjdgYmd"}.items():
         raw = metadata.get(key)
         if raw:

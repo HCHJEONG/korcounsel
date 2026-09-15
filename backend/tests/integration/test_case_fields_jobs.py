@@ -136,7 +136,7 @@ def test_fields_resume_after_publication_before_checkpoint(db, tmp_path, monkeyp
         )
 
 
-@pytest.mark.parametrize("old_version", ["case-fields-3", "case-fields-4"])
+@pytest.mark.parametrize("old_version", ["case-fields-3", "case-fields-4", "case-fields-5"])
 def test_new_field_rule_keeps_previous_revision_bytes(db, tmp_path, old_version):
     from klegal_gold.fields.contract import VERSION
 

@@ -4,6 +4,15 @@ type Field = { name: string; value: unknown; status: string; reason: string; evi
 type Result = { revision: string | null; state: string; reader_document_id?: string; fields: Field[]; processed_at?: string }
 const labels: Record<string, string> = { PRESENT: '값 확인', NOT_PROVIDED: '정보 미제공', NOT_APPLICABLE: '비해당', NOT_PROCESSED: '미처리', ERROR: '추출 실패', REVIEW: '검증 보류', LEGACY_STORED: '기존 저장값', VALIDATED: '검증 통과', INCOMPLETE: '처리 미완료' }
 const format = (value: unknown): string => typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? '값 없음'
+function CaseSort({ value }: { value: unknown }) {
+  if (!value || typeof value !== 'object' || !('label' in value)) return <pre>{format(value)}</pre>
+  const item = value as { label?: string; code?: string; description?: string; temporal_status?: string }
+  return <div className="case-sort">
+    <strong>{item.label ?? item.code}</strong>
+    <p>{item.code} · {item.description}</p>
+    {item.temporal_status === 'HISTORICAL_VERSION_NOT_VERIFIED' && <p>사건 당시 사건부호표 연혁 미확인</p>}
+  </div>
+}
 export default function CaseFields({ url, onExpired }: { url: string; onExpired: () => void }) {
   const [data, setData] = useState<Result | null>(null)
   const [error, setError] = useState('')
@@ -29,7 +38,7 @@ export default function CaseFields({ url, onExpired }: { url: string; onExpired:
       <details><summary>생성 revision·본문 연결</summary><pre>{format({ revision: data.revision, reader_document_id: data.reader_document_id ?? '기존 Parquet 본문 hash에 연결' })}</pre></details>
       {data.fields.map(field => <details key={field.name} className="case-field">
         <summary>{field.name} · {labels[field.status] ?? field.status}</summary>
-        <p>{field.reason}</p><pre>{format(field.value)}</pre>
+        <p>{field.reason}</p>{field.name === 'case_sort' ? <CaseSort value={field.value} /> : <pre>{format(field.value)}</pre>}
         <details><summary>근거·규칙</summary><pre>{format({ evidence: field.evidence, rule_version: field.rule_version ?? '과거 규칙 미확인' })}</pre></details>
       </details>)}
     </>}

@@ -1,6 +1,6 @@
 # 60필드 대응 계약과 구현 — 2026-09-15
 
-규칙 `case-fields-5`.  실제 corrected Parquet 89,130행의 원래 60컬럼을 대조했다. `__legacy_position`·`__legacy_index`는 제외한다. 기존 저장값은 변환·덮어쓰기 없이 조회하며 새 값과 처리 상태/근거를 분리한다.
+규칙 `case-fields-6`.  실제 corrected Parquet 89,130행의 원래 60컬럼을 대조했다. `__legacy_position`·`__legacy_index`는 제외한다. 기존 저장값은 변환·덮어쓰기 없이 조회하며 새 값과 처리 상태/근거를 분리한다.
 
 ## 계승과 수정
 
@@ -45,7 +45,7 @@
 | `folder_file_name` | large_string | legacy 파일/외부 편집 workflow 전용; 현재에는 NOT_APPLICABLE. 과거 경로·시각·주석 생성 금지 |
 | `case_no` | large_string | 첫 사건번호; 병합번호 전체는 gmeta_saNo에서 유지 |
 | `code` | large_string | 대표 사건번호의 기호 |
-| `case_sort` | large_string | 다/도/두/스/모 분류; 미지원 기호는 REVIEW |
+| `case_sort` | large_string | 사건기호의 공식 코드·분야·심급·재판부·절차·설명·시간 적용 상태를 구조화; 과거 시행본 미확인·미등록 기호는 REVIEW |
 | `court_name` | large_string | scourt cortNm; 법원 지원·지부 표기 유지 |
 | `decision_date` | tagged cell (원 타입·encoding·값) | scourt prnjdgYmd 달력 검증, ISO 날짜 문자열; 임의 2072년 fallback 금지 |
 | `judge` | tagged cell (원 타입·encoding·값) | 명시 서명 줄의 직역→이름·역할 원표기 |
@@ -115,3 +115,10 @@ WSL Chromium에서 신규 23건의 일반 검색→최신 reader→60필드 API 
 첫 기간 410건의 결측 점검에서 `【원    고】`, `【피 고 인】`, `【상 고 인】`처럼 공백이 든 표제 때문에 119건의 당사자 정보가 NOT_PROVIDED로 잘못 분류된 것을 확인했다. v5는 표제 비교에서만 공백을 정규화하고, 관찰된 항소인 표제도 역할 목록에 포함한다. 원래 제목·이름·본문 문자열과 HTML은 유지한다. 임의 인물 추론이나 값 보완이 아니다.
 
 현재 종료 자료 437건(이번 snapshot cohort 외 기존 보강 자료 포함)의 v4→v5 비교에서 당사자 두 필드만 바뀌었다. party_info 값 변경 144건, party_info_dict 146건이며 그 외 필드값은 처리 시각을 제외하고 같다. 기존 v3/v4 bytes는 유지했다. 공백 원고·피고·피고인·상고인·항소인·군검사 6종 및 이전 revision 불변 회귀를 포함해 전체 775개가 통과했다. 현재 조회/생성 기본값은 v5이며 과거 snapshot은 당시 버전의 이력이다.
+
+
+## 사건기호 상세 분류 — case-fields-6
+
+원 사건기호 `code`를 유지하면서 `case_sort`를 구조화된 값으로 발행한다. 신규 433건에서 관찰한 27개 기호를 공식 대법원 사건구분안내와 2022-07-29 시행 예규에 연결했고, 기존 REVIEW 184건의 22개 기호를 포함해 미등록 0건을 확인했다. UI는 예컨대 `가단`을 “민사 · 제1심 · 단독”으로 표시하고 공식 설명·근거·시간 적용 상태를 함께 제공한다.
+
+2022-07-29 이전 판례에는 현행 설명을 참고값으로 제공하더라도 당시 시행본을 확인하기 전까지 REVIEW를 유지한다. 접미 글자만으로 재판부나 절차를 추론하지 않는다. 기존 89,130행의 문자열 `case_sort`, v5 이하 artifact와 Parquet는 변경하지 않는다. 상세 계약은 [사건기호 구조화 분류](case-symbol-classification.md)를 따른다.

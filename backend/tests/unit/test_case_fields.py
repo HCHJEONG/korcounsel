@@ -1,9 +1,11 @@
+from datetime import date
 from hashlib import sha256
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
+from klegal_gold.fields.case_classification import SYMBOLS, classify
 from klegal_gold.fields.contract import NAMES
 from klegal_gold.fields.extract import extract
 from klegal_gold.fields.store import encoded, legacy_fields, parquet_bytes
@@ -65,6 +67,50 @@ def test_bad_date_and_repeated_heading_are_not_success():
     f = {x["name"]: x for x in run(HTML + "<p>【주문】다른 주문</p>", prnjdgYmd="20260230")}
     assert f["decision_date"]["status"] == "ERROR"
     assert f["main_decision"]["status"] == "REVIEW"
+
+
+def test_case_symbol_keeps_full_official_meaning():
+    f = {x["name"]: x for x in run(csNoLstCtt="2024가단123", prnjdgYmd="20240930")}
+    assert f["code"]["value"] == "가단"
+    assert f["case_sort"]["status"] == "PRESENT"
+    assert f["case_sort"]["value"]["label"] == "민사 · 제1심 · 단독"
+    assert f["case_sort"]["value"]["description"] == "민사1심단독사건"
+    assert f["case_sort"]["value"]["temporal_status"] == "VERIFIED_EFFECTIVE_RANGE"
+
+
+def test_historical_case_symbol_is_described_without_claiming_period_match():
+    value, status, reason = classify("가단", date(1998, 1, 1))
+    assert value and value["category"] == "민사"
+    assert value["temporal_status"] == "HISTORICAL_VERSION_NOT_VERIFIED"
+    assert status == "REVIEW" and "연혁 미확인" in reason
+
+
+def test_all_observed_2024_review_symbols_have_structured_rules():
+    observed = {
+        "나",
+        "노",
+        "누",
+        "가단",
+        "구합",
+        "고단",
+        "구단",
+        "가합",
+        "마",
+        "후",
+        "고합",
+        "라",
+        "브",
+        "허",
+        "가소",
+        "드단",
+        "르",
+        "므",
+        "보",
+        "즈기",
+        "추",
+        "카기",
+    }
+    assert observed <= SYMBOLS.keys()
 
 
 def test_sixty_column_parquet_roundtrip():

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-VERSION = "case-fields-5"
+VERSION = "case-fields-6"
 NAMES = """case_txt_scraped_with_tags case_txt_in_file case_full_no case_official_name
 case_unofficial_name citedPlace previous_case decision_items decision_gists main_decision
 reasoning case_comment related_articles applicable_acts applicable_precedents applicable_acts_tail
