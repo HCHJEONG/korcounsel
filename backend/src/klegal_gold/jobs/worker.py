@@ -80,6 +80,13 @@ class Worker:
             raise ValueError("CURRENT_READER_IMAGES_REQUIRED")
         references = []
         for ref in manifest["images"] + manifest.get("statute_images", []):
+            if job.payload.get("transient_only"):
+                from klegal_gold.quality.checks import transient
+
+                if ref["status"] == "ACQUIRED" or not transient(
+                    str(ref.get("acquisition", {}).get("error", ""))
+                ):
+                    continue
             url = ref.get("resolved_url")
             statute = "article_reference_id" in ref
             resolved = isinstance(url, str) and (
@@ -97,7 +104,11 @@ class Worker:
                     "reason": "explicit retry of preserved provider mapping",
                 }
             )
-        artifact_id = "image-manifest:reader-retry:" + document_id
+        artifact_id = (
+            "image-manifest:reader-retry:"
+            + document_id
+            + (":transient" if job.payload.get("transient_only") else "")
+        )
         self.records.put_artifact(
             artifact_id,
             json.dumps({"references": references}, sort_keys=True).encode(),
@@ -108,6 +119,11 @@ class Worker:
             "image-retry:" + str(job.job_id), artifact_id, all_urls=True
         )
         refresh = self.queue.submit_current_reader_refresh(document_id, image_job.job_id)
+        if job.payload.get("transient_only"):
+            fields = self.queue.submit_case_fields(document_id, refresh.job_id)
+            self.queue.heartbeat(
+                job, {**self.queue.get(job.job_id).checkpoint, "fields_job_id": str(fields.job_id)}
+            )
         self.queue.heartbeat(
             job,
             {
@@ -455,7 +471,12 @@ class Worker:
 
         revision = job.checkpoint.get("reader_document_id")
         if not revision:
-            revision = CurrentLawgo(self.records).run(document_id, str(job.job_id), progress)
+            if job.payload.get("transient_only"):
+                revision = CurrentLawgo(self.records).run(
+                    document_id, str(job.job_id), progress, transient_only=True
+                )
+            else:
+                revision = CurrentLawgo(self.records).run(document_id, str(job.job_id), progress)
             self.queue.heartbeat(job, {"reader_document_id": revision})
         if self.readers.read(revision).get("statute_images"):
             self._submit_reader_images(job, revision)
@@ -574,7 +595,15 @@ class Worker:
                 )
             ):
                 raise ValueError("UNSUPPORTED_HANDLER_VERSION")
-            if job.kind == "STAGE_LEGACY_READER_BATCH":
+            if job.kind == "AUDIT_CURRENT_QUALITY":
+                from klegal_gold.quality.service import audit
+
+                audit(self, job)
+            elif job.kind == "REPROCESS_QUALITY":
+                from klegal_gold.quality.service import dispatch
+
+                dispatch(self, job)
+            elif job.kind == "STAGE_LEGACY_READER_BATCH":
                 self._stage_legacy_reader(job)
             elif job.kind == "IMPORT_LEGACY_BUNDLE":
                 self._import_legacy(job)

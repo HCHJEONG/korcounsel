@@ -1,3 +1,4 @@
+import QualityPanel from './QualityPanel'
 import CaseFields from './CaseFields'
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import ReaderEnrichment from './ReaderEnrichment'
@@ -58,6 +59,7 @@ export default function App() {
   const readerRequest = useRef(0)
 
   const clearPrivate = useCallback(() => {
+    sessionStorage.removeItem('quality_pending')
     generation.current += 1
     readerRequest.current += 1
     setAuthenticated(false)
@@ -322,6 +324,7 @@ export default function App() {
         </form>
         <p className="login-help">허용된 관리자 또는 편집자 계정으로 로그인하세요.</p>
       </section> : <>
+        {role === 'admin' && <QualityPanel onExpired={clearPrivate} />}
         {role === 'admin' && <section aria-labelledby="ingestion-title" className="admin-panel">
           <h2 id="ingestion-title">신규 판례 증보</h2>
           <details><summary>백업 관리</summary><BackupPanel onExpired={clearPrivate} /></details>

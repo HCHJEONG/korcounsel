@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 type Stage = { job_id: string; kind: string; status: string; checkpoint: Record<string, unknown> }
 type Item = { job_id: string; source_id: string; state: string; reader_document_id: string | null; stages: Stage[] }
 const kinds: Record<string, string> = { BUILD_CASE_FIELDS: '60필드 생성·검증', FETCH_SCOURT_DETAIL: '원문·reader 등록', ACQUIRE_IMAGE_BATCH: '이미지 취득', REFRESH_CURRENT_READER_IMAGES: '이미지 reader 반영', ENRICH_CURRENT_LAWGO: '제공 조문 보강' }
-const states: Record<string, string> = { FINISHED: '수집 정리 검증 완료', PROCESSING: '처리 중', NEEDS_ATTENTION: '확인 필요' }
+const states: Record<string, string> = { FINISHED: '후속 작업 종료', PROCESSING: '처리 중', NEEDS_ATTENTION: '확인 필요' }
 export default function IngestionStatus({ onExpired }: { onExpired: () => void }) {
   const [data, setData] = useState<{ items: Item[]; missing_readers: number } | null>(null)
   const [error, setError] = useState('')

@@ -144,6 +144,9 @@ def create_app() -> FastAPI:
 
     application.include_router(auth_router)
     application.include_router(reader_router)
+    from klegal_gold.web.quality import router as quality_router
+
+    application.include_router(quality_router)
 
     @application.middleware("http")
     async def private_cache(

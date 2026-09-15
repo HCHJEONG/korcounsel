@@ -197,7 +197,14 @@ class CurrentLawgo:
             raise ValueError("LAWGO_HTTP_ERROR")
         return raw
 
-    def run(self, document_id: str, job_id: str, progress: Callable[[], None]) -> str:
+    def run(
+        self,
+        document_id: str,
+        job_id: str,
+        progress: Callable[[], None],
+        *,
+        transient_only: bool = False,
+    ) -> str:
         store = ReaderStore(self.records)
         original = store.read(document_id)
         if original["origin"] != "CURRENT_SOURCE":
@@ -205,10 +212,15 @@ class CurrentLawgo:
         provenance = dict(original["provenance"])
         prefix = "current-lawgo:" + job_id
         plan_id = prefix + ":plan"
+        if transient_only:
+            previous = provenance.get("lawgo_plan_artifact_id")
+            if not previous:
+                raise ValueError("LAWGO_RETRY_PLAN_REQUIRED")
+            plan_id = previous
         try:
             plan = json.loads(self.records.read(plan_id))
         except ValueError as exc:
-            if str(exc) != "ARTIFACT_NOT_FOUND":
+            if transient_only or str(exc) != "ARTIFACT_NOT_FOUND":
                 raise
             settings = load_settings()
             plan = {"status": "UNMATCHED", "candidates": [], "links": []}
@@ -266,6 +278,13 @@ class CurrentLawgo:
             deepcopy(existing.get(item["reference_id"], item)) for item in statute_occurrences(html)
         ]
         for article in statutes:
+            if transient_only:
+                from klegal_gold.quality.checks import transient
+
+                if article.get("provider_status") != "FAILED" or not transient(
+                    str(article.get("provider_error", ""))
+                ):
+                    continue
             if article["payload"]:
                 continue
             links = [link for link in plan["links"] if link["text"] == article["text"]]

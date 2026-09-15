@@ -54,7 +54,10 @@ class Queue:
 
         if not re.fullmatch("[a-f0-9]{64}", document_id):
             raise ValueError("INVALID_READER_DOCUMENT_ID")
-        if dependency_id and self.get(dependency_id).kind != "ENRICH_CURRENT_LAWGO":
+        if dependency_id and self.get(dependency_id).kind not in {
+            "ENRICH_CURRENT_LAWGO",
+            "REFRESH_CURRENT_READER_IMAGES",
+        }:
             raise ValueError("INVALID_FIELDS_DEPENDENCY")
         return self._submit(
             request_key or f"{VERSION}:{dependency_id}:{document_id}",

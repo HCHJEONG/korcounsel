@@ -9,3 +9,4 @@
 
 .case-field { margin-block: .6rem; padding: .6rem; border: 1px solid #aaa; }
 .document-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 32rem; overflow: auto; }
+.admin-panel>details>summary{cursor:pointer;font-size:18px;font-weight:700}.admin-panel>details>summary:focus-visible{outline:3px solid #b7791f;outline-offset:3px}.admin-panel details ul{padding-left:22px}.admin-panel details li{margin:8px 0}.admin-panel select{max-width:100%;border:1px solid #c8d0d9;border-radius:4px;padding:9px;font:inherit;background:white}.admin-panel label{font-size:14px;font-weight:600}.admin-panel code{overflow-wrap:anywhere}
