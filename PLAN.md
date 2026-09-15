@@ -1,5 +1,12 @@
 # Korean Legal Golden Dataset Factory — 구현 계획
 
+**동일성 후보 감사 — 2026-09-15 16:46 KST 관찰:** 기존 89,130행·현재
+2,260개 ID에서 다른 ID 후보 300묶음과 같은 ID 반복 68묶음을 분리했다.
+번호 변경 후보 3쌍의 보존 본문을 대조했고, lawgo 충돌 35개는 scourt의
+전체 병합 번호·법원·종류·날짜가 lawgo 상세와 일치함을 확인했다. 감사
+완료와 운영 교정은 구분한다. canonical 병합·reader 재발행은 미실행이며
+운영 CONFLICT 35개는 유지된다. [근거·산출물·개별 보류](docs/identity-audit-20260915.md).
+
 **현재 기준선·제한 품질 교정 완료 — 2026-09-15 16:07 KST:** 사용자 요청 범위의
 실집계와 교정·보류 근거 정리를 마쳤다. legacy 89,130행과 고정 cohort 433개
 source ID를 구분하며 canonical/active source link 등록은 0행이다. 법원 지원명
