@@ -26,6 +26,15 @@
 
 작업 전 루트 PLAN.md를 읽고 현재 범위·순서·완료 기준을 확인한다. UI 작업 전 DESIGN.md를 읽는다. README.md는 사용자 안내와 운영 진입점, PLAN.md는 실행 계획·상태, DESIGN.md는 UX 기준, 이 문서는 작업 규칙이다.
 
+## Tool-call string safety
+
+- Never embed Markdown or source-file content in JavaScript template literals.
+- Backticks in file content must not affect tool-call parsing.
+- Use `apply_patch` with safely encoded string input for all manual file edits.
+- If a tool call fails before execution because of quoting or parsing, silently correct the encoding and retry once.
+- Do not spend user-facing commentary or tokens explaining routine quoting, escaping, or tool-wrapper mistakes.
+- Never repeat the same malformed command.
+
 이 문서는 인접 onju-ai-kr/AGENTS.md의 명시적 작업 범위, domain/adapters 경계, immutable evidence, 검수 이력, 배포·비밀정보 관리 및 검증 원칙을 이 프로젝트에 맞게 이전했다. 참조 저장소의 지침을 현재 저장소의 실행 명령이나 구현 완료 사실로 취급하지 않는다. 사용자의 최신 명시적 결정이 과거 문서의 상충하는 전제보다 우선한다.
 
 ## 프로젝트 목적과 작업 범위
