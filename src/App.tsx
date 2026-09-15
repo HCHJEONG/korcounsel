@@ -15,12 +15,12 @@ type ReaderItem = {
 }
 type Selection = { title: string; url: string; note: string }
 type AdminDelta = { artifact_id: string; counts: Record<string, number> }
-type DetailSubmission = { candidate_count: number; registered: number; job_ids: string[] }
+type DetailSubmission = { candidate_count: number; registered: number; job_ids: string[]; next_offset: number; exhausted: boolean }
 type DetailStatus = { total: number; completed: number; statuses: Record<string, number> }
 
 function readerLocation(params: URLSearchParams) {
   const previous = new URLSearchParams(window.location.search)
-  for (const key of ['index_request', 'index_job', 'view']) {
+  for (const key of ['index_request', 'index_job', 'view', 'inventory_job']) {
     const value = previous.get(key)
     if (value) params.set(key, value)
   }
@@ -43,12 +43,15 @@ export default function App() {
   const [readerStatus, setReaderStatus] = useState('')
   const [currentReader, setCurrentReader] = useState('')
   const [currentImageCount, setCurrentImageCount] = useState(0)
-  const [adminJob, setAdminJob] = useState('')
+  const [adminJob, setAdminJob] = useState(() => new URLSearchParams(window.location.search).get('inventory_job') ?? '')
   const [adminJobStatus, setAdminJobStatus] = useState('')
   const [adminDelta, setAdminDelta] = useState<AdminDelta | null>(null)
   const [detailBatch, setDetailBatch] = useState(10)
   const [detailSubmission, setDetailSubmission] = useState<DetailSubmission | null>(null)
   const [detailStatus, setDetailStatus] = useState<DetailStatus | null>(null)
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
+  const [detailOffset, setDetailOffset] = useState(0)
   const [inventoryPages, setInventoryPages] = useState(1)
   const [inventoryDisplay, setInventoryDisplay] = useState(20)
   const generation = useRef(0)
@@ -188,13 +191,14 @@ export default function App() {
     try {
       const response = await fetch('/api/admin/scourt-inventory', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ request_id: requestId(`inventory:${inventoryPages}:${inventoryDisplay}`), max_pages: inventoryPages, display: inventoryDisplay }),
+        body: JSON.stringify({ request_id: requestId(`inventory:${inventoryPages}:${inventoryDisplay}:${dateFrom}:${dateTo}`), max_pages: inventoryPages, display: inventoryDisplay, date_from: dateFrom || null, date_to: dateTo || null }),
       })
       if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
       if (response.status === 403) { setMessage('관리자만 증보 작업을 등록할 수 있습니다.'); return }
       if (!response.ok) throw new Error('submit failed')
       const job = await response.json() as { job_id: string; status: string }
-      window.sessionStorage.removeItem(`inventory:${inventoryPages}:${inventoryDisplay}`)
+      window.sessionStorage.removeItem(`inventory:${inventoryPages}:${inventoryDisplay}:${dateFrom}:${dateTo}`)
+      const route = new URLSearchParams(window.location.search); route.set('inventory_job', job.job_id); window.history.replaceState(null, '', '?' + route)
       setAdminJob(job.job_id); setMessage(`증보 작업이 ${job.status} 상태로 등록되었습니다.`)
     } catch { setMessage('증보 작업 등록에 실패했습니다.') }
     finally { setBusy(false) }
@@ -210,7 +214,7 @@ export default function App() {
       if (response.status === 403) { setMessage('관리자만 후보를 계산할 수 있습니다.'); return }
       if (!response.ok) throw new Error('delta failed')
       const delta = await response.json() as AdminDelta
-      setAdminDelta(delta)
+      setAdminDelta(delta); setDetailOffset(0)
       setMessage('신규·변경 후보를 계산했습니다.')
     } catch { setMessage('신규·변경 후보 계산에 실패했습니다.') }
     finally { setBusy(false) }
@@ -221,14 +225,14 @@ export default function App() {
     try {
       const response = await fetch(
         '/api/admin/deltas/' + encodeURIComponent(adminDelta.artifact_id) + '/scourt-details?'
-          + new URLSearchParams({ max_details: String(detailBatch), request_id: requestId('details:' + adminDelta.artifact_id) }),
+          + new URLSearchParams({ max_details: String(detailBatch), offset: String(detailOffset), request_id: requestId('details:' + adminDelta.artifact_id) }),
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
       )
       if (response.status === 401) { clearPrivate(); setMessage('로그인이 만료되었습니다.'); return }
       if (response.status === 403) { setMessage('관리자만 상세 수집을 등록할 수 있습니다.'); return }
       if (!response.ok) throw new Error('detail submit failed')
       const submitted = await response.json() as DetailSubmission
-      setDetailSubmission(submitted)
+      setDetailSubmission(submitted); setDetailOffset(submitted.next_offset)
       setMessage(`${submitted.registered}건의 상세 본문 수집 작업을 등록했습니다.`)
     } catch { setMessage('상세 본문 수집 작업 등록에 실패했습니다.') }
     finally { setBusy(false) }
@@ -325,29 +329,32 @@ export default function App() {
           <IngestionStatus onExpired={clearPrivate} />
           <p>scourt 현재 목록을 관찰해 신규·변경 후보를 기록합니다.</p>
           <div className="search-row">
+            <label htmlFor="date-from">선고일 시작</label><input id="date-from" type="date" value={dateFrom} disabled={busy} onChange={e => setDateFrom(e.target.value)} />
+            <label htmlFor="date-to">선고일 종료</label><input id="date-to" type="date" value={dateTo} disabled={busy} onChange={e => setDateTo(e.target.value)} />
             <label htmlFor="inventory-pages">페이지 수</label>
             <select id="inventory-pages" value={inventoryPages} disabled={busy} onChange={event => setInventoryPages(Number(event.target.value))}>
               {[1, 2, 3, 5, 10].map(value => <option key={value} value={value}>{value}페이지</option>)}
             </select>
             <label htmlFor="inventory-display">페이지당 건수</label>
             <select id="inventory-display" value={inventoryDisplay} disabled={busy} onChange={event => setInventoryDisplay(Number(event.target.value))}>
-              {[20, 50, 100].map(value => <option key={value} value={value}>{value}건</option>)}
+              {[20, 50, 80, 100].map(value => <option key={value} value={value}>{value}건</option>)}
             </select>
             <button disabled={busy} onClick={() => void startIncremental()}>신규 판례 증보 시작</button>
           </div>
-          <p>이번 실행 범위: 최대 {inventoryPages * inventoryDisplay}건. 목록 관찰만 등록하며 상세 수집은 결과를 확인한 뒤 별도로 실행합니다.</p>
+          <p>이번 실행 범위: {dateFrom && dateTo ? `${dateFrom}~${dateTo} 선고 · ` : ''}최대 {inventoryPages * inventoryDisplay}건. 기간은 양쪽 날짜를 입력하고 최대 93일로 지정하세요. 목록 관찰만 등록하며 상세 수집은 결과를 확인한 뒤 별도로 실행합니다.</p>
           {adminJob && <p role="status">등록 job: {adminJob} · 상태: {adminJobStatus || "확인 중"}</p>}
           {adminJobStatus === 'SUCCEEDED' && <button disabled={busy} onClick={() => void calculateDelta()}>신규·변경 후보 계산</button>}
           {adminDelta && <>
-            <p role="status">후보 계산 완료 · 신규 {adminDelta.counts.NEW ?? 0}건 · 변경 {adminDelta.counts.CHANGED ?? 0}건 · 미변경 {adminDelta.counts.UNCHANGED ?? 0}건 · 현재 수집 이력 {adminDelta.counts.CURRENT_KNOWN ?? 0}건</p>
+            <p role="status">후보 계산 완료 · 신규 {adminDelta.counts.NEW ?? 0}건 · 변경 {adminDelta.counts.CHANGED ?? 0}건 · 미수집 {adminDelta.counts.UNPRESERVED ?? 0}건 · 미변경 {adminDelta.counts.UNCHANGED ?? 0}건 · 현재 수집 이력 {adminDelta.counts.CURRENT_KNOWN ?? 0}건</p>
             <div className="search-row">
               <label htmlFor="detail-batch">상세 수집 건수</label>
               <select id="detail-batch" value={detailBatch} disabled={busy} onChange={event => setDetailBatch(Number(event.target.value))}>
                 {[1, 5, 10, 25, 50].map(value => <option key={value} value={value}>{value}건</option>)}
               </select>
-              <button disabled={busy || (adminDelta.counts.NEW ?? 0) + (adminDelta.counts.CHANGED ?? 0) === 0} onClick={() => void submitDetailBatch()}>상세 본문 수집 등록</button>
+              <button disabled={busy || detailSubmission?.exhausted || (adminDelta.counts.NEW ?? 0) + (adminDelta.counts.CHANGED ?? 0) + (adminDelta.counts.UNPRESERVED ?? 0) === 0} onClick={() => void submitDetailBatch()}>상세 본문 수집 등록</button>
             </div>
             {detailSubmission && <p role="status">상세 수집 등록 {detailSubmission.registered}건 / 후보 {detailSubmission.candidate_count}건</p>}
+            <p>이번 후보 중 등록 위치: {detailOffset}건. 다음 묶음은 이전 등록 뒤부터 이어집니다. 기간 목록이 일부만 조회됐으면 전체를 확인한 뒤 등록할 수 있습니다.</p>
             {detailStatus && <p role="status">원문 단계 종료 {detailStatus.completed}/{detailStatus.total}건 · {Object.entries(detailStatus.statuses).map(([status, count]) => `${status} ${count}건`).join(' · ')} · 60필드·reader·이미지·조문 결과는 수집 후속 처리 이력에서 확인하세요.</p>}
           </>}
         </section>}        <section aria-labelledby="search-title">

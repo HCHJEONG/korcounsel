@@ -117,3 +117,17 @@ def test_collected_ids_are_not_new_without_baseline():
         current, snapshot("old", {"123": digest("c")}), collected_source_ids=["123"]
     )
     assert changed.entries[0].kind == InventoryDeltaKind.CHANGED
+
+
+def test_unchanged_listing_is_not_proof_of_body_preservation():
+    old = snapshot("old", {"1": digest("a"), "2": digest("b"), "3": digest("c")})
+    new = snapshot("new", {"1": digest("a"), "2": digest("b"), "3": digest("c")})
+    result = compare_inventory(
+        new, old, legacy_source_ids=["1"], collected_source_ids=["2"], preservation_checked=True
+    )
+    assert [x.kind for x in result.entries] == [
+        InventoryDeltaKind.UNCHANGED,
+        InventoryDeltaKind.UNCHANGED,
+        InventoryDeltaKind.UNPRESERVED,
+    ]
+    assert detail_fetch_candidates(result) == ("3",)

@@ -115,3 +115,36 @@ def test_patent_claims_and_prayer_remain_inside_parent_sections():
     assert "청구 내용" in f["main_decision"]["value"]
     assert "조성물" in f["reasoning"]["value"]
     assert "마지막 판단" in f["reasoning"]["value"]
+
+
+@pytest.mark.parametrize("heading", ["이    유주1)", "이유주12)주13)"])
+def test_heading_footnotes_preserve_reasoning_and_evidence(heading):
+    html = (
+        "<p>【주문】기각</p>"
+        f"<p>【{heading}】</p><p>【범죄사실】사실과 판단</p>"
+        "<p>【청구항 1】인용된 내용</p><p>[관련문헌]후주</p>"
+    )
+    f = {x["name"]: x for x in run(html)}
+    assert f["reasoning"]["status"] == "PRESENT"
+    assert "사실과 판단" in f["reasoning"]["value"]
+    assert "인용된 내용" in f["reasoning"]["value"]
+    assert "사실과 판단" not in f["main_decision"]["value"]
+    assert "후주" not in f["reasoning"]["value"]
+    assert heading in f["reasoning"]["value"]
+    start, end = f["reasoning"]["evidence"]["ranges"][0]
+    assert f["case_txt_in_file"]["value"][start:end].strip() == f["reasoning"]["value"]
+    assert f["case_txt_scraped_with_tags"]["value"] == html
+
+
+@pytest.mark.parametrize(
+    "role", ["원    고", "피       고", "피 고 인", "상 고 인", "항 소 인", "군 검 사"]
+)
+def test_spaced_party_headings_are_not_missing(role):
+    html = f"<p>【전 문】</p><p>【{role}】갑</p><p>【주 문】기각</p><p>【이 유】판단</p>"
+    f = {x["name"]: x for x in run(html)}
+    assert f["party_info"]["status"] == "PRESENT"
+    assert f"【{role}】갑" in f["party_info"]["value"]
+    assert f["party_info_dict"]["value"][role.replace(" ", "")] == "갑"
+    assert "기각" not in f["party_info"]["value"]
+    assert "갑" not in f["main_decision"]["value"]
+    assert f["case_txt_scraped_with_tags"]["value"] == html

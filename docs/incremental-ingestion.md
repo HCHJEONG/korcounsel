@@ -103,3 +103,12 @@ job `100eb798-a241-4c74-8289-1212d9841224`와 lawgo 후속 job은 SUCCEEDED다. 
 작업 SUCCEEDED는 처리 실행 종료다. 필드에 REVIEW가 있으면 수집 이력은 NEEDS_ATTENTION, 미처리/오류는 INCOMPLETE로 구분한다. 기존 raw-only job을 전체 완료로 재해석하지 않는다. 일반 검색 상세에 60필드 전체 조회와 관리자 명시적 생성 버튼을 제공한다.
 
 신규 23건 중 초기 2건은 보존 scourt replay로 누락된 metadata/lawgo 체인을 복구했다. 최종 23행 snapshot은 `data/case-fields-20260915/snapshot-v3.json`이며 모든 원문 HTML hash는 고정 입력과 같았다. 폐기 역참조 23건·lawgo 충돌 3건은 검증 보류다. [공통 계약](case-fields-contract.md).
+
+
+## 기간별 순차 증보 — 2026-09-15
+
+관리자 날짜 입력은 ISO 날짜 쌍과 최대 93일 범위를 검증한다. 날짜 범위는 관찰한 scourt 날짜 검색 endpoint와 inventory scope에 함께 보존한다. 범위의 전체 보고 행수와 관찰 행수가 같고 실패 페이지가 없을 때만 상세 등록한다. 이 조건은 제공자의 frozen snapshot 보장이 아니며 원격 자료가 변경되지 않았다는 의미도 아니다.
+
+같은 관찰 실행의 페이지 snapshot은 서로의 이전 baseline이 아니다. 목록 metadata가 같아도 legacy/source_versions 보존 이력이 없으면 `UNPRESERVED`로 상세 대상에 포함한다. 기간별 불변 delta를 보존 페이지의 선고일·source ID 순으로 정렬하고 offset/최대 50건 단위로 등록한다. 동일 delta의 같은 대상은 request UUID가 달라도 같은 job으로 재사용한다. 페이지 수 제한/실패로 불완전한 inventory는 범위를 줄이거나 페이지 수를 늘려 다시 관찰하며, 중단 전후의 변동 가능한 원격 페이지를 한 snapshot으로 이어 붙이지 않는다.
+
+실제 첫 구간·대상 수·실행 증거는 [첫 3개월 증보 기록](chronological-ingestion-window.md)을 따른다. 정기 실행을 추가하지 않았다.

@@ -357,13 +357,23 @@ class Worker:
 
         query = job.payload["query"]
         display = job.payload["display"]
-        source = ScourtPortalSource(preserve=preserve, progress=progress)
+        from klegal_gold.sources.scourt import window_params
+
+        date_from, date_to = job.payload.get("date_from"), job.payload.get("date_to")
+        source = ScourtPortalSource(
+            preserve=preserve, progress=progress, date_from=date_from, date_to=date_to
+        )
+        scope = (
+            window_params(query, 1, display, date_from, date_to)
+            if date_from and date_to
+            else listing_params(query, 1, display)
+        )
         # Every completed page is persisted. After interruption a new bounded observation
         # starts from page 1; a mutable provider result must not be spliced into an old snapshot.
         capture = collect_inventory(
             source,
             system=SourceSystem.SCOURT,
-            scope=listing_params(query, 1, display),
+            scope=scope,
             max_pages=job.payload["max_pages"],
             display=display,
             query=query,

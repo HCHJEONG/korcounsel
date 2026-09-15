@@ -186,6 +186,29 @@ def test_admin_explicit_refresh_is_limited_to_observed_ids(db, tmp_path, monkeyp
     monkeypatch.setattr(web.Database, "from_settings", lambda _: db)
     records = Records(db, FileStore(tmp_path))
     records.put_artifact(
+        "inventory:sample",
+        json.dumps(
+            {
+                "snapshot_id": "sample",
+                "source": "scourt",
+                "retrieved_at": "2026-01-01T00:00:00Z",
+                "started_at": "2026-01-01T00:00:00Z",
+                "finished_at": "2026-01-01T00:00:00Z",
+                "total_count": 1,
+                "entries": [{"source_id": "123", "metadata_hash": "a" * 64}],
+                "observed_unique_count": 1,
+                "metadata_hash": "a" * 64,
+                "scope": "{}",
+                "scope_hash": "a" * 64,
+                "collector_version": "test",
+                "hash_rules_version": "test",
+                "completeness": "UNKNOWN",
+            }
+        ).encode(),
+        origin="DERIVED",
+        metadata={},
+    )
+    records.put_artifact(
         "observed-delta",
         json.dumps(
             {

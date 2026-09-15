@@ -50,12 +50,14 @@ class Queue:
     ) -> Job:
         import re
 
+        from klegal_gold.fields.contract import VERSION
+
         if not re.fullmatch("[a-f0-9]{64}", document_id):
             raise ValueError("INVALID_READER_DOCUMENT_ID")
         if dependency_id and self.get(dependency_id).kind != "ENRICH_CURRENT_LAWGO":
             raise ValueError("INVALID_FIELDS_DEPENDENCY")
         return self._submit(
-            request_key or f"case-fields-3:{dependency_id}:{document_id}",
+            request_key or f"{VERSION}:{dependency_id}:{document_id}",
             "BUILD_CASE_FIELDS",
             {
                 "document_id": document_id,
@@ -95,7 +97,14 @@ class Queue:
         )
 
     def submit_scourt_inventory(
-        self, request_key: str, *, query: str = "", max_pages: int = 2, display: int = 20
+        self,
+        request_key: str,
+        *,
+        query: str = "",
+        max_pages: int = 2,
+        display: int = 20,
+        date_from: str | None = None,
+        date_to: str | None = None,
     ) -> Job:
         if (
             not isinstance(query, str)
@@ -106,6 +115,9 @@ class Queue:
             or not 1 <= display <= 100
         ):
             raise ValueError("INVALID_INVENTORY_REQUEST")
+        from klegal_gold.sources.scourt import validate_window
+
+        validate_window(date_from, date_to)
         return self._submit(
             request_key,
             "FETCH_SCOURT_INVENTORY",
@@ -113,6 +125,7 @@ class Queue:
                 "query": query,
                 "max_pages": max_pages,
                 "display": display,
+                **({"date_from": date_from, "date_to": date_to} if date_from else {}),
             },
             3,
         )

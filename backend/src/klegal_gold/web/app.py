@@ -4,11 +4,11 @@ import json
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager
 from datetime import date
-from typing import Annotated, Any
+from typing import Annotated, Any, Self
 from uuid import UUID, uuid4
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from starlette.responses import Response
 
 from klegal_gold import __version__
@@ -35,8 +35,17 @@ class AdminEnrichmentRequest(BaseModel):
 class AdminInventoryRequest(BaseModel):
     request_id: UUID = Field(default_factory=uuid4)
     query: str = Field(default="", max_length=200)
+    date_from: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    date_to: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     max_pages: int = Field(default=1, ge=1, le=10)
     display: int = Field(default=20, ge=1, le=100)
+
+    @model_validator(mode="after")
+    def valid_window(self) -> Self:
+        from klegal_gold.sources.scourt import validate_window
+
+        validate_window(self.date_from, self.date_to)
+        return self
 
 
 class CaseSearchItem(BaseModel):
@@ -213,7 +222,12 @@ def create_app() -> FastAPI:
         queue = Queue(db, lease_seconds=300)
         request_key = "web-scourt-inventory:" + str(body.request_id)
         job = queue.submit_scourt_inventory(
-            request_key, query=body.query, max_pages=body.max_pages, display=body.display
+            request_key,
+            query=body.query,
+            max_pages=body.max_pages,
+            display=body.display,
+            date_from=body.date_from,
+            date_to=body.date_to,
         )
         return {"job_id": str(job.job_id), "status": job.status}
 
@@ -275,7 +289,8 @@ def create_app() -> FastAPI:
         with db.connect() as conn:
             prior = conn.execute(
                 "SELECT i.artifact_id FROM inventories i JOIN artifacts a USING(artifact_id) "
-                "WHERE i.source=%s AND i.scope_hash=%s AND i.snapshot_id<>%s "
+                "WHERE i.source=%s AND i.scope_hash=%s "
+                "AND split_part(i.snapshot_id,':',1)<>split_part(%s,':',1) "
                 "AND a.created_at < (SELECT created_at FROM artifacts WHERE artifact_id=%s) "
                 "ORDER BY a.created_at DESC LIMIT 1",
                 (current.source.value, current.scope_hash, current.snapshot_id, snapshot_artifact),
@@ -293,6 +308,7 @@ def create_app() -> FastAPI:
             baseline,
             legacy_source_ids=catalog.source_ids,
             collected_source_ids=[item["source_id"] for item in collected],
+            preservation_checked=True,
         )
         artifact_id = records.save_inventory_delta(delta)
         counts: dict[str, int] = {}
@@ -311,6 +327,7 @@ def create_app() -> FastAPI:
     def submit_scourt_delta_details(
         artifact_id: str,
         max_details: int = Query(default=10, ge=1, le=50),
+        offset: int = Query(default=0, ge=0, le=1000),
         request_id: UUID | None = None,
         refresh_source_id: str | None = Query(default=None, pattern=r"^[0-9]{1,30}$"),
         _: object = Depends(require_admin),
@@ -323,27 +340,44 @@ def create_app() -> FastAPI:
         delta = InventoryDelta.from_payload(json.loads(records.read(artifact_id)))
         if delta.source != "scourt":
             raise ValueError("NOT_SCOURT_INVENTORY_DELTA")
-        candidates = detail_fetch_candidates(delta)
+        from klegal_gold.ingestion.window import window_candidates
+
+        try:
+            candidates, is_window = window_candidates(
+                records, delta, detail_fetch_candidates(delta)
+            )
+        except ValueError as exc:
+            if str(exc) == "WINDOW_INVENTORY_INCOMPLETE":
+                raise HTTPException(400, "WINDOW_INVENTORY_INCOMPLETE") from None
+            raise
         if refresh_source_id is not None:
             if not any(
                 entry.source_id == refresh_source_id
-                and entry.kind in {"NEW", "LEGACY_KNOWN", "CURRENT_KNOWN", "CHANGED", "UNCHANGED"}
+                and entry.kind
+                in {"NEW", "LEGACY_KNOWN", "CURRENT_KNOWN", "CHANGED", "UNCHANGED", "UNPRESERVED"}
                 for entry in delta.entries
             ):
                 raise HTTPException(status_code=400, detail="SOURCE_NOT_IN_OBSERVED_DELTA")
             candidates = (refresh_source_id,)
         queue = Queue(db, lease_seconds=300)
-        request_key_prefix = "web-scourt-detail:" + str(request_id or artifact_id)
+        request_key_prefix = (
+            "web-scourt-window:" + delta.current_snapshot_id
+            if is_window and refresh_source_id is None
+            else "web-scourt-detail:" + str(request_id or artifact_id)
+        )
         jobs = [
             queue.submit_scourt_detail(
                 f"{request_key_prefix}:{delta.current_snapshot_id}:{source_id}", source_id
             )
-            for source_id in candidates[:max_details]
+            for source_id in candidates[offset : offset + max_details]
         ]
         return {
             "delta_artifact_id": artifact_id,
             "candidate_count": len(candidates),
             "registered": len(jobs),
+            "next_offset": offset + len(jobs),
+            "exhausted": offset + len(jobs) >= len(candidates),
+            "source_ids": list(candidates[offset : offset + max_details]),
             "job_ids": [str(job.job_id) for job in jobs],
         }
 

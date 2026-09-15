@@ -15,6 +15,7 @@ class InventoryDeltaKind(StrEnum):
     UNCHANGED = "UNCHANGED"
     LEGACY_KNOWN = "LEGACY_KNOWN"
     CURRENT_KNOWN = "CURRENT_KNOWN"
+    UNPRESERVED = "UNPRESERVED"
     MISSING = "MISSING"
     ABSENCE_UNCONFIRMED = "ABSENCE_UNCONFIRMED"
 
@@ -110,6 +111,7 @@ def compare_inventory(
     *,
     legacy_source_ids: Iterable[str] = (),
     collected_source_ids: Iterable[str] = (),
+    preservation_checked: bool = False,
 ) -> InventoryDelta:
     """Compare equal-scope snapshots without treating incomplete listings as absence."""
     if baseline is not None and current.source != baseline.source:
@@ -134,7 +136,13 @@ def compare_inventory(
                 else InventoryDeltaKind.NEW
             )
         elif previous_hash == current_hash:
-            kind = InventoryDeltaKind.UNCHANGED
+            kind = (
+                InventoryDeltaKind.UNPRESERVED
+                if preservation_checked
+                and source_id not in known_ids
+                and source_id not in collected_ids
+                else InventoryDeltaKind.UNCHANGED
+            )
         else:
             kind = InventoryDeltaKind.CHANGED
         entries.append(InventoryDeltaEntry(source_id, kind, previous_hash, current_hash))
@@ -175,7 +183,8 @@ def detail_fetch_candidates(
     candidates = {
         entry.source_id
         for entry in delta.entries
-        if entry.kind in {InventoryDeltaKind.NEW, InventoryDeltaKind.CHANGED}
+        if entry.kind
+        in {InventoryDeltaKind.NEW, InventoryDeltaKind.CHANGED, InventoryDeltaKind.UNPRESERVED}
     }
     candidates.update(_known_ids(incomplete_source_ids))
     return tuple(sorted(candidates))

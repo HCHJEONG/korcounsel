@@ -36,7 +36,11 @@ source ID와 법원+병합 사건번호 집합+재판 종류의 보수적인 일
 3. 각 대상의 원문→60필드→reader·이미지·제공 조문 처리를 영속 job으로 추적하고 실제 일반 검색에서 검증한다. 생성 종료와 검증 보류를 분리한다.
 4. 이 구간 검증 뒤 2025-01~03부터 이어가고, 2026-08-31까지 진행한다. 최근 시험 수집한 23건은 해당 구간에서 재사용한다.
 
-현재 앱 inventory는 검색어 중심이며 날짜 범위 입력·scope·worker payload 연결은 아직 없다. 관찰한 날짜 조건과 기간별 페이지 재개를 정식 관리자 수집 경로에 연결한 뒤, 위 후보를 실행 대상으로 고정해야 한다. 이번 실행은 **경계/대상 목록 감사**이며 410건의 상세 본문 수집·60필드 처리를 실행한 것이 아니다.
+관리자 웹/API에 선고일 범위(양쪽 날짜·최대 93일), 범위별 inventory scope, 보존 페이지 기준 선고일 오름차순 상세 등록을 연결했다. 기간 목록의 실패 페이지 또는 total 대비 관찰 누락이 있으면 상세 등록을 거절한다. 불변 delta의 offset을 따라 최대 50건씩 이어 등록하고 같은 delta/대상 재요청은 기존 job을 재사용한다. inventory job ID는 화면 URL에 남아 새로고침 후 다시 조회할 수 있다.
+
+사용자의 실행 승인 후 2024-09 경계 보완부터 실제 관리자 인증 API로 실행해 4개 기간의 410건 모두 후속 job과 필드 생성을 종료했다. 실행 상태와 각 후속 job은 `data/window-run-20260915/progress.json` 및 PostgreSQL queue에 기록한다. 각 월의 후속 job이 terminal 상태가 된 뒤 다음 월을 시작하며 실패/검증 보류를 별도 집계한다. terminal은 의미 검증 완료를 뜻하지 않는다.
+
+첫 실제 실행에서 같은 inventory 실행의 앞 페이지를 이전 snapshot으로 잘못 비교하는 문제가 발견됐다. snapshot 실행 ID를 비교해 같은 실행의 페이지를 baseline에서 제외하도록 수정했다. 이전 목록에 관찰됐더라도 본문 보존 이력이 없는 항목은 `UNPRESERVED` 후보로 다시 등록한다. 먼저 등록된 7건은 보존하고 나머지 50건을 이어 등록해 9월 대상 57건에 맞췄다. 원본 및 잘못 비교한 delta도 삭제하지 않는다.
 
 ## 근거와 한계
 
@@ -44,4 +48,69 @@ source ID와 법원+병합 사건번호 집합+재판 종류의 보수적인 일
 - [기존 전수 날짜 분포](../data/window-boundary-20260915/legacy-date-distribution.json)
 - DB 감사 artifact: `window-boundary-audit:ed08f4695f72fadee7937b5056309cfdc6c5fb256b6ee0b1add3eec1d5b6070c`.
 - 2024년 8월 이전 전체 기간의 누락 여부는 이번에 확정하지 않았다. 현재 공개 목록의 범위이며 비공개/미제공 판결 전체 수를 의미하지 않는다.
-- 원문/기존 Parquet/reader와 앞선 미커밋 구현을 변경하지 않았다. 이번 추가물은 감사 데이터와 계획 문서다.
+- 원문/기존 Parquet/reader와 앞선 미커밋 구현을 변경하지 않았다. 경계 감사 뒤의 구현·실행은 위 실행 구간 기록을 따른다.
+
+
+## 9월 경계 보완 실측 결과 (당시 v3 이력)
+
+57건의 원문·reader·이미지/제공 조문 후속 job·60필드 생성이 종료됐다. 실패 job 0, 필드 ERROR/NOT_PROCESSED 0이다. 일반 검색에서 57건 모두 최신 reader로 조회되고 본문·60필드 API가 응답하며 원문 hash·이미지 위치가 유지됨을 전수 검증했다. 본문 이미지 18곳·조문 이미지 51곳의 내부 URL 응답 bytes/hash를 확인했다. 법령 적용 버전 미확인은 그대로 유지한다.
+
+lawgo 연결은 EXACT 43, CONFLICT 6, UNMATCHED 8건이다. 조문 위치는 PRESERVED 596, UNLINKED 274, AMBIGUOUS 12, FAILED 1곳이다. 60필드 상태는 REVIEW 57건: 폐기 역참조 감사 57건, 사건기호 분류 대조 44건, lawgo 동일성 충돌 6건이 포함된다. 값 생성과 전체 의미 검증 완료를 혼동하지 않는다.
+
+- [57행·60열 snapshot](../data/window-run-20260915/fields-fa65304d5f4bda24625d5fc17fad7407704ca5cd6e9a4fd2444c48e6112d0b22.parquet)
+- [9월 전수 검증 기록](../data/window-run-20260915/validation-2cac27315232d6ff8b0e19cb103f4e7b1593489bf435ab4b3e8e7372ab911c4c.json)
+- 실제 브라우저 표본 3건: 일반 검색→본문→60필드·새로고침 복원, 날짜 입력, 잘못된 날짜 범위 422, 로그아웃 후 401 확인.
+- Python/PostgreSQL 전체 765개, ruff check/format, mypy, pnpm lint/build, git diff --check 통과. 이후 같은 관찰의 delta 재계산 중 중복 등록 방지 회귀도 통과했다.
+- 이어 10월 116건을 등록했다. 11~12월 결과까지 종료된 것으로 표시하지 않는다.
+
+
+9월 조문 실패 1곳은 `2026000030671`(서울중앙지방법원 2024-09-04, 2023나72693)의 `공인중개사법 제25조의3` 참조다. 제공 응답 2,182 bytes는 해당 조문 table 대신 법령 팝업으로 이동하는 스크립트와 hidden law ID를 담았다. 본문 부재를 추출 성공으로 처리하거나 현행 법령 전체로 대체하지 않았으며 `LAWGO_ARTICLE_STRUCTURE_CHANGED`와 위치별 재시도 대기를 유지한다. 원본 artifact는 `current-lawgo:8be278ef-4d84-493b-adcf-a1823952b16b:article:d97e0bbdc28d03d965a33da50ccbf5249232068379e653de07e26e4ba3da0a9b`다.
+
+
+9월 필드 추가 점검에서 주문·이유·판사·사건번호·법원·선고일은 각각 57/57건 PRESENT다. 판시사항 18건, 판결요지 5건, 당사자 40건은 PRESENT이며 나머지는 현재 제공 구획 기준 NOT_PROVIDED다. 하급심 사건기호 REVIEW 44건의 기존 대응 분류를 별도 감사했으며 나/가합/가단→민사, 구단/구합/누→행정, 르→가사, 고단/노→형사로 기존 저장값이 일관됐다. 분류표 확대는 새 규칙 revision으로 처리할 후속 과제로 남겼으며 실행 도중 기존 필드 revision을 바꾸지 않았다.
+
+
+## 10월 검증과 추출 규칙 교정
+
+10월 116건의 원문/후속 처리/60필드 job 종료와 일반 검색 최신 revision·본문·필드·이미지 bytes 검증을 확인했다. v3 검증 snapshot은 `fields-f85dbfddcd1581cb5092d9150e8bc39322df3aa6b41c5e123323c2786b11edc4.parquet`, 검증 기록은 `validation-3d293ba49382ebada93c519f5b19d7e09251a3c242a3e69efd45d36eaecd0b5f.json`이다. 본문 이미지 45곳·조문 이미지 82곳, 조문 보존 1,674곳·미연결 503곳·모호 38곳이었다.
+
+v3 이유 NOT_PROVIDED 1건을 추가 조사한 결과 실제 원문 `【이    유주1)】`를 인식하지 못한 추출 오류였다. `2026000033679`(서울중앙지방법원 2024-10-16, 2023고합1098)의 원문에는 이유가 있고, v3 주문에 이유가 포함돼 있었다. `case-fields-4`로 알려진 제목에 붙은 각주 표지의 인식을 추가했다. 원문/visible text/값의 각주와 evidence range는 유지한다. 이후 생성은 v4로 전환하고 기존 자료의 새 revision도 생성·관리자 API job으로 등록했다. 이전 v3 snapshot과 manifest는 교정 이력으로 남긴다.
+
+첫 v4 200건 재생성 비교에서 처리 시각 외 값 변경은 위 1건의 주문/이유뿐이었다. 이전 revision bytes 불변을 확인했으며, 전체 회귀 768개·mypy·ruff를 통과했다. 최종 집계는 v4 기준으로 다시 발행한다. 상세 계약은 [60필드 계약](case-fields-contract.md)을 따른다.
+
+
+## 발행 범위와 v4 발행 이력
+
+9월 57건 + 10월 116건 + 11월 111건 + 12월 126건 = 410건이다. 첫 조사 목록의 기존 대응 30건은 새 상세 수집에서 제외했다. 410건의 원문/reader/후속 job 및 60필드 생성이 종료됐고 실패 job은 0건이다. 전체 의미 검증까지 확정한 것은 아니며 아래 보류 항목을 유지한다.
+
+[앞선 23건 + 이번 410건의 433행·60열 v4 snapshot](../data/window-run-20260915/current-433-v4-cec91f8f514f3f9d21c34bb0e1a71d880400c1b5ac73a2d27bf3344b1f53dd3f.parquet)과 [revision별 명세](../data/window-run-20260915/current-433-v4-cec91f8f514f3f9d21c34bb0e1a71d880400c1b5ac73a2d27bf3344b1f53dd3f.json)를 발행했다. 이것은 고정된 두 cohort의 snapshot이며 DB의 모든 CURRENT_SOURCE 표현을 신규 판례로 센 숫자가 아니다.
+
+집계 시점 CURRENT_SOURCE source ID 2,260개 중 1,825개는 legacy source catalog에 직접 대응한다. catalog 밖 435개에는 위 433개 외에 과거 표본 2029039와 3259074가 있다. 전자는 기존 6429행과의 재결 대응 후보가 이미 문서에 기록됐고, 후자는 특허법원 2019-01-17 2017허1854로 일반 검색의 기존 26270행과 법원·선고일·사건번호가 대응한다. 이를 이번 신규 수집이나 자동 확정 merge로 세지 않았다. scourt source_versions ID는 2,257개이고 reader 미등록은 0개다. source version/reader 표현 수를 고유 판례 수와 혼동하지 않는다.
+
+기존 corrected Parquet은 89,130행이며 SHA-256 `3fa3a55e5d126e2f2d413c2a6cb1ab2215e135197533899f6c981d54c4d586e2`가 기존 catalog 기록과 일치한다. 원본·과거 reader·기존 Parquet을 덮어쓰지 않았다. 정기 실행·AWS 전송·commit/push는 하지 않았다.
+
+11월 3336265의 연결 실패 조문 1곳은 보존된 제공자 연결로 한 차례 재시도해 PRESERVED가 됐다. 새 reader `50d7a2b0219872d0f27a22ebec678668d0e022094757c97188849d3ad1f82d4b`와 v4 필드 job이 성공했고 원문 hash는 유지됐다. 과거 실패 revision도 남겼다. v4 재생성 관리자 job 222개도 모두 성공했다.
+
+
+## 최종 검증과 현재 snapshot — case-fields-5
+
+2026-09-15 최종 검증 기준은 v5다. 위 월별 v3/v4 기록은 당시 결과이며 현재 조회값은 아래 결과를 따른다. 공백이 든 당사자 제목을 인식하지 못한 119건을 교정했다. 기존 완료 자료 437건의 v5 관리자 재생성 job은 모두 SUCCEEDED이며, 과거 필드 revision·snapshot은 보존했다.
+
+- 실행 대상: 9월 경계 보완 57건, 10월 116건, 11월 111건, 12월 126건, 합계 410건. 원문·reader·후속 job·60필드 생성 종료, 실패 stage 0건.
+- 410건 모두 일반 검색의 최신 reader 선택, 본문/필드 API, 원본 HTML hash 불변, 이미지 위치 유지, 저장 이미지 내부 URL bytes/SHA-256을 전수 검증했다. 원래 고정 목록과 선고일도 일치한다. 미인증 요청은 401이다.
+- 주문·이유·당사자·사건번호·법원·선고일·판사 필드는 각각 PRESENT 410건이다. 판시사항은 PRESENT 265/NOT_PROVIDED 145, 판결요지는 PRESENT 149/NOT_PROVIDED 261이며 제공되지 않은 편집 정보를 생성하지 않았다.
+- 이미지 위치 233곳(본문 78, 제공 조문 155)은 모두 ACQUIRED다. 이 구간에는 미취득 이미지가 없다.
+- lawgo 동일성은 EXACT 306, CONFLICT 36, UNMATCHED 68건이다. 조문 위치는 PRESERVED 5,330, UNLINKED 2,074, AMBIGUOUS 135, FAILED 20곳이다. 남은 실패 20곳은 모두 LAWGO_ARTICLE_STRUCTURE_CHANGED이며, 미연결·모호·실패·법령 버전 미확인 표시는 유지한다. 제공자의 실제 연결만 처리했다.
+- 60필드 ERROR/NOT_PROCESSED는 0건이지만 최종 상태는 REVIEW 410건이다. 전체 corpus 폐기 역참조 감사가 410건 모두에 필요하고, 사건기호 분류 대조 184건과 lawgo 동일성 충돌 36건도 남는다. 생성 종료를 전체 의미 검증 완료로 표시하지 않는다.
+
+현재 발행물:
+
+- [이번 410행·60열 v5 snapshot](../data/window-run-20260915/fields-6034b3be577ecd49bb561d9e70bf82a79826eaef15867bb84eb8828913c4f466.parquet)
+- [410건 전수 검증 기록](../data/window-run-20260915/validation-7bd726dabd81010725a10f2740e0cfc0b345db28a495cabe20953eb2ecb70035.json)
+- [앞선 시험 23건과 합친 433행·60열 v5 snapshot](../data/window-run-20260915/current-433-v5-fdd1a395252eeba9fddf917d25b333ba46039ebcf1b2c64bf258d576f8b9cd5f.parquet)
+- [433행 snapshot 명세](../data/window-run-20260915/current-433-v5-fdd1a395252eeba9fddf917d25b333ba46039ebcf1b2c64bf258d576f8b9cd5f.json)
+- [v5 브라우저 교정 검증](../data/window-run-20260915/correction-03b7ad636c2551b3186178abe7ac831df072801463439309816535f81c0f9653.json)
+
+실제 Chromium 검색→본문→60필드 화면에서 2023고합1098의 이유/주문 분리, 각주 보존, 당사자 표시와 v5 revision을 확인했다. 앞선 브라우저 표본에서 저장 이미지 표시, 위치별 조문 실패·법령 버전 미확인, 날짜 입력 및 새로고침 복원도 확인했다. PostgreSQL을 포함한 전체 테스트 775개, ruff check/format, mypy, pnpm lint/build, git diff --check를 통과했다.
+
+다음 작업은 사건기호 분류표 대조, 제공자 동일성 충돌 검토, 폐기 역참조 감사와 제공 조문 응답 구조 점검이다. 이후 2025-01~03 구간을 같은 절차로 진행할 수 있다. 이번 실행에서는 2025년 수집·정기 실행·AWS 이관·commit/push를 하지 않았다.

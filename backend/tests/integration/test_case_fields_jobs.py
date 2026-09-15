@@ -134,3 +134,18 @@ def test_fields_resume_after_publication_before_checkpoint(db, tmp_path, monkeyp
             ).fetchone()["n"]
             == 1
         )
+
+
+@pytest.mark.parametrize("old_version", ["case-fields-3", "case-fields-4"])
+def test_new_field_rule_keeps_previous_revision_bytes(db, tmp_path, old_version):
+    from klegal_gold.fields.contract import VERSION
+
+    records = Records(db, FileStore(tmp_path))
+    document = make_reader(records)
+    old_key = "case-fields:" + old_version + ":" + document
+    old = json.dumps({"historical_revision": old_version}).encode()
+    records.put_artifact(old_key, old, origin="DERIVED", metadata={})
+    current = FieldStore(records).build(document, "2026-09-15T00:00:00Z")
+    assert current["revision"] == "case-fields:" + VERSION + ":" + document
+    assert current["revision"] != old_key
+    assert records.read(old_key) == old

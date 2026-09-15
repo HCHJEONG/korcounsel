@@ -7,7 +7,7 @@ automatically equate every portal identifier with every legacy contId.
 import json
 import time
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from http.client import HTTPException
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
@@ -28,6 +28,64 @@ from klegal_gold.sources.law_api import (
 
 BASE = "https://portal.scourt.go.kr/pgp/pgp1011/"
 VERSION = "scourt-portal-2"
+
+
+def validate_window(date_from: str | None, date_to: str | None) -> None:
+    if date_from is None and date_to is None:
+        return
+    if not date_from or not date_to:
+        raise SourceError("INCOMPLETE_DATE_WINDOW")
+    try:
+        first, last = date.fromisoformat(date_from), date.fromisoformat(date_to)
+    except ValueError:
+        raise SourceError("INVALID_DATE_WINDOW") from None
+    if (
+        first.isoformat() != date_from
+        or last.isoformat() != date_to
+        or not 0 <= (last - first).days <= 92
+    ):
+        raise SourceError("INVALID_DATE_WINDOW")
+
+
+def window_params(
+    query: str, page: int, display: int, date_from: str, date_to: str
+) -> dict[str, Any]:
+    validate_window(date_from, date_to)
+    return {
+        "dma_searchParam": {
+            "srchwd": query,
+            "sort": (
+                "jis_jdcpc_instn_dvs_cd_s asc, $relevance desc, "
+                "prnjdg_ymd_o desc, jdcpct_gr_cd_s asc"
+            ),
+            "sortType": "정확도",
+            "searchRange": "",
+            "tpcJdcpctCsAlsYn": "",
+            "csNoLstCtt": "",
+            "csNmLstCtt": "",
+            "prvsRefcCtt": "",
+            "searchScope": "",
+            "jisJdcpcInstnDvsCd": "",
+            "jdcpctCdcsCd": "",
+            "prnjdgYmdFrom": date_from.replace("-", ""),
+            "prnjdgYmdTo": date_to.replace("-", ""),
+            "grpJdcpctGrCd": "",
+            "cortNm": "",
+            "pageNo": str(page),
+            "jisJdcpcInstnDvsCdGrp": "",
+            "grpJdcpctGrCdGrp": "",
+            "jdcpctCdcsCdGrp": "",
+            "adjdTypCdGrp": "",
+            "pageSize": str(display),
+            "reSrchFlag": "",
+            "befSrchwd": "",
+            "preSrchConditions": "",
+            "initYn": "N",
+            "jdcpctGrCd": "111|112|130|141|180|182|232|235",
+            "category": "jdcpct",
+            "isKwdSearch": "N",
+        }
+    }
 
 
 def listing_params(query: str, page: int, display: int) -> dict[str, Any]:
@@ -57,6 +115,8 @@ class PortalTransportProtocol(Protocol):
 
     def post_listing(self, query: str, page: int, display: int, progress: Progress) -> Response: ...
 
+    def post_window_listing(self, params: dict[str, Any], progress: Progress) -> Response: ...
+
 
 class PortalTransport:
     def post(self, endpoint: str, source_id: str, progress: Progress) -> Response:
@@ -83,6 +143,9 @@ class PortalTransport:
         return self._send(
             "https://portal.scourt.go.kr/pgp/pgp1001/selectTotalSrchLst.on", params, progress
         )
+
+    def post_window_listing(self, params: dict[str, Any], progress: Progress) -> Response:
+        return self._send(BASE + "selectJdcpctSrchRsltLst.on", params, progress)
 
     def _send(self, url: str, params: dict[str, Any], progress: Progress) -> Response:
         request = Request(
@@ -149,7 +212,11 @@ class ScourtPortalSource:
         transport: PortalTransportProtocol | None = None,
         progress: Progress = lambda: None,
         sleep: Callable[[float], None] = time.sleep,
+        date_from: str | None = None,
+        date_to: str | None = None,
     ) -> None:
+        validate_window(date_from, date_to)
+        self.date_from, self.date_to = date_from, date_to
         self.transport = transport or PortalTransport()
         self.preserve, self.progress, self.sleep = preserve, progress, sleep
 
@@ -183,7 +250,12 @@ class ScourtPortalSource:
         self.progress()
         self.sleep(1)
         self.progress()
-        response = self.transport.post_listing(docket, page, display, self.progress)
+        if self.date_from and self.date_to:
+            response = self.transport.post_window_listing(
+                window_params(docket, page, display, self.date_from, self.date_to), self.progress
+            )
+        else:
+            response = self.transport.post_listing(docket, page, display, self.progress)
         self._preserve(response)
         try:
             value = json.loads(response.body.decode("utf-8-sig"), object_pairs_hook=_object_pairs)
@@ -203,6 +275,17 @@ class ScourtPortalSource:
         ids = [identifier(row.get("jisCntntsSrno")) for row in rows]
         if len(ids) != len(set(ids)):
             raise SourceError("DUPLICATE_SOURCE_ID")
+        if self.date_from and self.date_to:
+            for row in rows:
+                day = str(row.get("prnjdgYmd", ""))
+                if len(day) != 8 or not day.isdigit():
+                    raise SourceError("INVALID_LISTING_DATE")
+                try:
+                    date(int(day[:4]), int(day[4:6]), int(day[6:]))
+                except ValueError:
+                    raise SourceError("INVALID_LISTING_DATE") from None
+                if not self.date_from.replace("-", "") <= day <= self.date_to.replace("-", ""):
+                    raise SourceError("LISTING_OUTSIDE_DATE_WINDOW")
         return Listing(response, page, total, tuple(rows), "jisCntntsSrno")
 
     def fetch_detail(self, source_id: str) -> Detail:

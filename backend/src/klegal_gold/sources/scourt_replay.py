@@ -2,6 +2,7 @@
 
 import json
 from datetime import datetime
+from typing import Any
 
 from klegal_gold.db.records import Records
 from klegal_gold.jobs.queue import Job
@@ -44,4 +45,7 @@ class PreservedScourtTransport:
         raise ValueError("SCOURT_REPLAY_RESPONSE_MISSING")
 
     def post_listing(self, query: str, page: int, display: int, progress: Progress) -> Response:
+        raise ValueError("SCOURT_REPLAY_LISTING_UNSUPPORTED")
+
+    def post_window_listing(self, params: dict[str, Any], progress: Progress) -> Response:
         raise ValueError("SCOURT_REPLAY_LISTING_UNSUPPORTED")

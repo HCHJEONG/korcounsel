@@ -49,6 +49,12 @@ def visible(html: str) -> str:
     return re.sub(r"\n[ \t\r]*\n+", "\n", "".join(parser.parts)).strip()
 
 
+def heading_label(label: str) -> str:
+    # Normalize only for matching; values and evidence ranges keep the original note marker.
+    compact = re.sub(r"\s", "", label)
+    return re.sub(r"(?:주[0-9]+\))+$", "", compact)
+
+
 def extract(
     html: str,
     metadata: dict[str, Any],
@@ -134,16 +140,19 @@ def extract(
     body_labels = {label for name in SECTIONS if name not in TAIL for label in SECTIONS[name]} | {
         "전문"
     }
-    party_label = r"원고|피고|청구인|신청인|항고인|피신청인|상고인|사건본인|참가인|검사"
+    party_label = r"원고|피고|청구인|신청인|항고인|항소인|피신청인|상고인|사건본인|참가인|검사"
     headings = [
         match
         for match in headings
         if (
             (
                 match[1]
-                and (re.sub(r"\s", "", match[1]) in body_labels or re.search(party_label, match[1]))
+                and (
+                    heading_label(match[1]) in body_labels
+                    or re.search(party_label, heading_label(match[1]))
+                )
             )
-            or (match[2] and re.sub(r"\s", "", match[2]) in tail_labels)
+            or (match[2] and heading_label(match[2]) in tail_labels)
         )
     ]
     sections = []
@@ -151,7 +160,7 @@ def extract(
         end = headings[i + 1].start() if i + 1 < len(headings) else len(text)
         sections.append(
             (
-                re.sub(r"\s", "", match[1] or match[2]),
+                heading_label(match[1] or match[2]),
                 bool(match[2]),
                 match.start(),
                 end,
@@ -166,12 +175,7 @@ def extract(
             put(name, value, ev, "제공된 명시적 구획")
             if len(matches) > 1:
                 result[name].update(status="REVIEW", reason="동일 구획 반복: 자동 병합 검토 필요")
-    parties = [
-        s
-        for s in sections
-        if not s[1]
-        and re.search(r"원고|피고|청구인|신청인|항고인|피신청인|상고인|사건본인|참가인|검사", s[0])
-    ]
+    parties = [s for s in sections if not s[1] and re.search(party_label, s[0])]
     if parties:
         put(
             "party_info",

@@ -1,6 +1,6 @@
 # 60필드 대응 계약과 구현 — 2026-09-15
 
-규칙 `case-fields-3`. 실제 corrected Parquet 89,130행의 원래 60컬럼을 대조했다. `__legacy_position`·`__legacy_index`는 제외한다. 기존 저장값은 변환·덮어쓰기 없이 조회하며 새 값과 처리 상태/근거를 분리한다.
+규칙 `case-fields-5`.  실제 corrected Parquet 89,130행의 원래 60컬럼을 대조했다. `__legacy_position`·`__legacy_index`는 제외한다. 기존 저장값은 변환·덮어쓰기 없이 조회하며 새 값과 처리 상태/근거를 분리한다.
 
 ## 계승과 수정
 
@@ -92,7 +92,7 @@
 ## 실제 비교·발행 결과
 
 - 기존 표본: 2010도16942(position 0), 2017허1854(position 26270), 2017도953(position 29641). 판시사항/요지/주문/이유/참조조문/참조판례 18항목 중 값 있는 12항목은 공백·lnfd 정규화 후 기존 저장값과 일치했다. 나머지 6항목은 기존 결측 sentinel과 새 NOT_PROVIDED 차이다.
-- 위 비교에서 `[1]` 번호와 `【청구항 1】`을 본문 구획으로 잘못 나누는 초기 오류를 확인했다. `case-fields-3`은 인정된 문서 구획·당사자 역할·tail 표제만 경계로 사용하며 두 유형의 회귀 테스트를 추가했다. v1/v2 artifact는 그대로 남고 조회 기본값은 v3다.
+- 위 비교에서 `[1]` 번호와 `【청구항 1】`을 본문 구획으로 잘못 나누는 초기 오류를 확인했다. `case-fields-3`은 인정된 문서 구획·당사자 역할·tail 표제만 경계로 사용하며 두 유형의 회귀 테스트를 추가했다. v1/v2 artifact는 그대로 남고 당시 조회 기본값은 v3였다.
 - 최종 23건의 고정 입력·파생 연결·검증은 `data/case-fields-20260915/snapshot-v3.json`, 60필드 Parquet는 `current-23-v3.parquet`에 있다. DB artifact에도 같은 bytes와 manifest가 등록됐다. 현재 23건의 미처리/추출 실패는 0, 폐기 역참조 검증 보류는 23, lawgo 충돌은 3건이다.
 - 기존 89,130행 Parquet와 raw HTML/source artifact/기존 reader는 변경하지 않았다. 초기 2건 보존 replay의 새 reader를 포함해 최종 23건 HTML hash가 최초 고정 입력과 일치한다.
 
@@ -101,3 +101,17 @@
 PostgreSQL 전체 회귀 751개 통과(컨테이너 backup/restore 검사 포함, skip 없음), 이후 추가한 필드 artifact 발행 직후 checkpoint 전 실패·재개 테스트도 통과했다(고유 테스트 총 752개). ruff check/format·mypy(70 source files)·pnpm lint/build·git diff --check를 확인했다.
 
 WSL Chromium에서 신규 23건의 일반 검색→최신 reader→60필드 API 대조, 신규/기존 60필드 UI, view=fields 새로고침, 관리자 필드 재실행→동일 본문 결과 재열기, 저장 이미지, 로그아웃 화면 제거와 미인증 401을 확인했다. 브라우저의 외부 요청은 0건이었다. 결과는 `data/case-fields-20260915/browser-verification.json`과 같은 폴더의 current-fields.png/legacy-fields.png에 있다. 로컬 Compose 반영 완료이며 AWS 변경·정기 실행·commit/push는 하지 않았다.
+
+
+## 각주가 붙은 구획 제목 — case-fields-4
+
+2024년 10월 실제 수집에서 `2026000033679`의 제목이 `【이    유주1)】`로 제공되어 v3가 이유를 NOT_PROVIDED로 분류하고 주문에 이유까지 포함하는 오류를 확인했다. v4는 구획명 비교 시 끝에 붙은 `주숫자)` 각주 표지만 제외해 알려진 구획과 대조한다. HTML·visible text·반환 값·근거 range의 제목/각주 표기는 그대로 유지한다. 번호 문단·특허 청구항을 구획으로 오인하지 않는 기존 제한도 유지한다.
+
+기존 종료 자료는 보존된 HTML/metadata/조문 artifact만 재사용해 v4 revision을 생성했다. v3 및 과거 Parquet snapshot은 삭제하지 않는다. 최초 200건 비교에서 생성 시각을 제외한 값 변경은 위 판례의 주문/이유 2필드뿐이었다. 새 worker의 60필드 후속 job도 v4를 사용하며 새 기본 request key는 규칙 버전을 포함한다. 실제 재검증·최종 snapshot은 기간 증보 기록에 연결한다.
+
+
+## 공백이 든 당사자 표제 — case-fields-5
+
+첫 기간 410건의 결측 점검에서 `【원    고】`, `【피 고 인】`, `【상 고 인】`처럼 공백이 든 표제 때문에 119건의 당사자 정보가 NOT_PROVIDED로 잘못 분류된 것을 확인했다. v5는 표제 비교에서만 공백을 정규화하고, 관찰된 항소인 표제도 역할 목록에 포함한다. 원래 제목·이름·본문 문자열과 HTML은 유지한다. 임의 인물 추론이나 값 보완이 아니다.
+
+현재 종료 자료 437건(이번 snapshot cohort 외 기존 보강 자료 포함)의 v4→v5 비교에서 당사자 두 필드만 바뀌었다. party_info 값 변경 144건, party_info_dict 146건이며 그 외 필드값은 처리 시각을 제외하고 같다. 기존 v3/v4 bytes는 유지했다. 공백 원고·피고·피고인·상고인·항소인·군검사 6종 및 이전 revision 불변 회귀를 포함해 전체 775개가 통과했다. 현재 조회/생성 기본값은 v5이며 과거 snapshot은 당시 버전의 이력이다.
